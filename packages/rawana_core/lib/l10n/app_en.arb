@@ -1,0 +1,1275 @@
+{
+  "@@locale": "en",
+  "appName": "Rawana",
+  "appTitlePassenger": "Rawana Passenger",
+  "appTitleDriver": "Rawana Driver",
+  "appVersionFooter": "Rawana · v1.0",
+  "rawanaDriver": "Rawana Driver",
+  "rawanaDriverVersion": "Rawana Driver  v1.0",
+  "rawanaDriverRole": "Rawana driver",
+  "splashTagline": "Smooth rides, anywhere in Kabul",
+  "splashLoading": "Loading your ride…",
+  "driverBadge": "DRIVER",
+  "riderBadge": "RIDER",
+  "preparingDashboard": "Preparing your dashboard",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "next": "Next",
+  "skip": "Skip",
+  "back": "Back",
+  "edit": "Edit",
+  "retry": "Retry",
+  "tryAgain": "Try again",
+  "continueAction": "Continue",
+  "add": "Add",
+  "save": "Save",
+  "submit": "Submit",
+  "details": "Details",
+  "map": "Map",
+  "selected": "selected",
+  "notSet": "Not set",
+  "other": "Other",
+  "orDivider": "OR",
+  "loading": "Loading…",
+  "connecting": "Connecting…",
+  "submitting": "Submitting…",
+  "checking": "Checking…",
+  "requesting": "Requesting…",
+  "confirming": "Confirming...",
+  "signingIn": "Signing in…",
+  "somethingWentWrong": "Something went wrong",
+  "errorWithDetail": "Error: {error}",
+  "@errorWithDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "getStarted": "Get Started",
+  "whereTo": "Where to?",
+  "confirmRide": "Confirm Ride",
+  "findingDriver": "Finding your driver…",
+  "findingYourDriver": "Finding your driver",
+  "driverArriving": "Driver Arriving",
+  "tripStarted": "On the way",
+  "tripCompleted": "Trip Completed",
+  "payCash": "Pay {amount} in cash",
+  "@payCash": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "currencyAfn": "AFN",
+  "sendCode": "Send code",
+  "verifyOtp": "Verify",
+  "resendCode": "Resend code",
+  "goOnline": "Go online",
+  "goOffline": "Go offline",
+  "accept": "Accept",
+  "reject": "Reject",
+  "decline": "Decline",
+  "cancelRide": "Cancel ride",
+  "earnings": "Earnings",
+  "wallet": "Wallet",
+  "history": "History",
+  "profile": "Profile",
+  "logout": "Logout",
+  "logOut": "Log out",
+  "signOut": "Sign out",
+  "noConnection": "No internet connection",
+  "reconnecting": "Reconnecting…",
+  "youAreOfflineReconnect": "You are offline — reconnect to continue",
+  "language": "Language",
+  "chooseYourLanguage": "Choose your language",
+  "languageChangeHint": "You can change this anytime from settings.",
+  "languageEnglish": "English",
+  "languageDari": "دری",
+  "languagePashto": "پښتو",
+  "languageEnglishMeta": "LTR · Latin",
+  "languageDariMeta": "RTL · Dari",
+  "languagePashtoMeta": "RTL · Pashto",
+  "onboardingSlide1Title": "Book a ride in seconds",
+  "onboardingSlide1Body": "Set your destination and confirm — the nearest driver will be on the way.",
+  "onboardingSlide2Title": "Track every kilometre",
+  "onboardingSlide2Body": "See your driver approach in real time on the map, and share trip status with loved ones.",
+  "onboardingSlide3Title": "Cash made simple",
+  "onboardingSlide3Body": "Pay your driver directly in Afghan Afghani (AFN) when you arrive. No card needed.",
+  "continueWithEmail": "Continue with Email",
+  "continueWithPhone": "Continue with phone",
+  "authTermsFooter": "By continuing you agree to our Terms & Privacy Policy.",
+  "agreeTermsConduct": "By continuing you agree to our Terms & Driver Code of Conduct.",
+  "createAccount": "Create account",
+  "welcomeBack": "Welcome back",
+  "welcomeBackCaptain": "Welcome back, captain",
+  "signUpSubtitle": "A few details and you are ready to ride.",
+  "signInSubtitle": "Sign in to keep riding.",
+  "emailLabel": "Email",
+  "emailOptional": "Email (optional)",
+  "fullName": "Full name",
+  "fullNameRequired": "Full name *",
+  "phoneNumberRequired": "Phone number *",
+  "afPhonePrefix": "🇦🇫 +93",
+  "phoneHint": "70 123 4567",
+  "passwordLabel": "Password",
+  "signIn": "Sign in",
+  "alreadyHaveAccount": "Already have an account? Sign in",
+  "newHereCreateAccount": "New here? Create an account",
+  "phoneOtpComingSoon": "Phone OTP will be enabled in production.",
+  "authEntryHeadline": "Let's get you\nmoving.",
+  "authEntrySubtitle": "Sign in to book rides across Kabul in seconds.",
+  "authValueFastTitle": "Fast booking",
+  "authValueFastBody": "Find a nearby driver in under a minute.",
+  "authValueTrustedTitle": "Trusted drivers",
+  "authValueTrustedBody": "Every driver is verified and rated.",
+  "authValuePayTitle": "Pay in AFN cash",
+  "authValuePayBody": "No card required — pay at trip end.",
+  "driveWithRawana": "Drive with\nRawana.",
+  "signInEmailToTest": "Sign in with email to test the driver experience.",
+  "earnOnYourSchedule": "Earn on your own schedule. Get verified, get rides, get paid.",
+  "earnFlexibly": "Earn flexibly",
+  "goOnlineWhenever": "Go online whenever you want.",
+  "dailyPayouts": "Daily payouts",
+  "trackEveryFare": "Track every fare in your wallet.",
+  "driverSupport": "Driver support",
+  "supportTeam247": "A team that has your back, 24/7.",
+  "becomeADriver": "Become a driver",
+  "createDriverAccountInAMinute": "Create your driver account in a minute.",
+  "signInToGoOnline": "Sign in to go online.",
+  "createDriverAccount": "Create driver account",
+  "alreadyADriverSignIn": "Already a driver? Sign in",
+  "newDriverCreateAccount": "New driver? Create account",
+  "enterYourPhone": "Enter your phone",
+  "phoneVerifyHint": "We will send a 6-digit code to verify it is really you.",
+  "phoneKeepsAccountSecure": "We use this to keep your driver account secure.",
+  "otpChannelSms": "SMS",
+  "otpChannelWhatsApp": "WhatsApp",
+  "otpSessionExpired": "Session expired. Go back and request a new code.",
+  "verificationCode": "Verification code",
+  "otpEnterCodeVia": "Enter the 6-digit code we sent via {channel}.",
+  "@otpEnterCodeVia": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "otpEnterCodeViaTo": "Enter the 6-digit code we sent via {channel} to {phone}.",
+  "@otpEnterCodeViaTo": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "resendCodeInSeconds": "Resend code in {seconds}s",
+  "@resendCodeInSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "verificationEmailSent": "Verification email sent. Check your inbox.",
+  "emailNotVerifiedYet": "Email not verified yet. Check your inbox and try again.",
+  "checkYourInbox": "Check your inbox",
+  "weSentVerificationLinkTo": "We sent a verification link to ",
+  "yourEmailFallback": "your email",
+  "tapLinkThenContinue": ". Tap the link to verify, then come back here to continue.",
+  "tapLinkThenContinueOnboarding": ". Tap the link to verify, then come back here to continue onboarding.",
+  "checkSpamTip": "Tip: check your spam or promotions folder if you do not see it.",
+  "iHaveVerifiedContinue": "I have verified - continue",
+  "resendVerificationEmail": "Resend verification email",
+  "backToSignIn": "Back to sign in",
+  "quickDemoAccess": "Quick Demo Access",
+  "demoLoginNeedsSupabase": "Supabase is required for demo login. Add SUPABASE_URL and SUPABASE_ANON_KEY.",
+  "demoLoginFailed": "Demo login failed. Check demo credentials in rawana_core.",
+  "authSupabaseNotConfigured": "Sign-in is not configured. Contact support.",
+  "authInvalidCredentials": "Incorrect email or password. Please check and try again.",
+  "authEmailNotVerified": "Please verify your email before signing in.",
+  "authEmailAlreadyExists": "This email is already registered. Try signing in instead.",
+  "authRateLimit": "Too many attempts. Please wait a minute and try again.",
+  "authDatabaseSignupFailed": "We could not create your account because of a server error. Please try again in a moment.",
+  "authWeakPassword": "Password is too weak. Use at least 8 characters with letters and numbers.",
+  "authInvalidEmail": "Enter a valid email address.",
+  "authInvalidPhone": "Enter a valid Afghan phone number (9 digits, e.g. 70 123 4567).",
+  "authInvalidOtp": "That code is incorrect or expired. Request a new code and try again.",
+  "authWhatsAppUnavailable": "WhatsApp sign-in is not available right now.",
+  "authGenericError": "Something went wrong. Please try again.",
+  "completeYourProfile": "Complete your profile",
+  "almostThere": "Almost there!",
+  "profileSetupSubtitle": "Add your name and phone so your driver can reach you.",
+  "photoUploadFailed": "Photo upload failed: {error}",
+  "@photoUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "driverRegistration": "Driver registration",
+  "yourDetails": "Your details",
+  "needNameAndPhoneBeforeDocs": "Passengers and support need your name and phone before you can upload documents.",
+  "continueToDocuments": "Continue to documents",
+  "gettingYourLocation": "Getting your location…",
+  "gettingLocation": "Getting location…",
+  "currentLocation": "Current location",
+  "locationUnavailable": "Location unavailable",
+  "waitingForLocation": "Waiting for your location…",
+  "myLocation": "My location",
+  "helloName": "Hello, {name}",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingNameFallback": "there",
+  "navRide": "Ride",
+  "help": "Help",
+  "viewSearch": "View search",
+  "viewRide": "View ride",
+  "searchDestination": "Search destination",
+  "quickHome": "Home",
+  "quickWork": "Work",
+  "quickSaved": "Saved",
+  "gpsLocked": "GPS LOCKED",
+  "gpsAcquiring": "ACQUIRING",
+  "gpsBlocked": "GPS BLOCKED",
+  "pickupLabel": "PICKUP",
+  "destinationLabel": "DESTINATION",
+  "currentLabel": "CURRENT",
+  "driverOnTheWay": "Driver on the way",
+  "driverIsArriving": "Driver is arriving",
+  "onTripToDestination": "On trip to destination",
+  "rideInProgress": "Ride in progress",
+  "noSavedAddressTitle": "No {label} address",
+  "@noSavedAddressTitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noSavedAddressBody": "Add a saved address labeled \"{label}\" first.",
+  "@noSavedAddressBody": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "addAddress": "Add address",
+  "invalidSavedAddressCoords": "Invalid saved address coordinates",
+  "kabulFallbackPickup": "Kabul (set exact pickup on map)",
+  "locationUnavailableEnableGps": "Location unavailable. Enable GPS or tap pickup to choose on the map.",
+  "choosePickupFirst": "Choose your pickup location first",
+  "choosePickupFirstShort": "Choose your pickup first",
+  "couldNotSelectPlace": "Could not select place. Try again.",
+  "selectedPickup": "Selected pickup",
+  "selectedDestination": "Selected destination",
+  "enableLocationToBook": "Enable location to book a ride",
+  "planYourTrip": "Plan your trip",
+  "fromLabel": "From",
+  "toLabel": "To",
+  "popularPlaces": "POPULAR PLACES",
+  "suggestions": "SUGGESTIONS",
+  "editPickup": "Edit pickup",
+  "searchPickupLocation": "Search pickup location",
+  "useCurrentLocation": "Use current location",
+  "chooseOnMap": "Choose on map",
+  "movePinToPickup": "Move the pin to your exact pickup",
+  "startTyping": "Start typing",
+  "weWillSuggestPlaces": "We will suggest places near you",
+  "dropPinDestination": "Drop a pin exactly where you want to go",
+  "moveMapToChoose": "Move the map to choose a location",
+  "choosePickup": "Choose pickup",
+  "chooseDestination": "Choose destination",
+  "useThisPickup": "Use this pickup",
+  "useThisDestination": "Use this destination",
+  "tapOrDragMap": "Tap or drag the map, then confirm.",
+  "failedToLoadRideTypes": "Failed to load ride types: {error}",
+  "@failedToLoadRideTypes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noRideTypesAvailable": "No ride types available",
+  "pickupConfirmed": "Pickup confirmed",
+  "pickup": "Pickup",
+  "destination": "Destination",
+  "dropoff": "Drop-off",
+  "chooseYourRide": "Choose your ride",
+  "etaMinToDestination": "~{minutes} min to destination",
+  "@etaMinToDestination": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "payment": "Payment",
+  "cashAfn": "Cash · AFN",
+  "paymentMethodConfirmed": "Payment method confirmed",
+  "tapToConfirmPayment": "Tap to confirm payment at trip end",
+  "requestRideWithFare": "Request {name} · {fare}",
+  "@requestRideWithFare": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "fare": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPaymentToContinue": "Confirm payment to continue",
+  "missingTripDetails": "Missing trip details",
+  "noDriversAvailable": "No drivers available right now. Please try again.",
+  "connectingToNearbyDrivers": "Connecting you to nearby drivers — usually under a minute.",
+  "retryOrCancelBelow": "You can retry or cancel below.",
+  "cancelRequest": "Cancel request",
+  "followingLiveRouteHint": "Following live route. Tap ↓ to return to trip details.",
+  "couldNotOpenWhatsAppCall": "Could not open WhatsApp call",
+  "couldNotOpenWhatsAppMessages": "Could not open WhatsApp messages",
+  "cancelThisRide": "Cancel this ride?",
+  "cancelRideWarning": "Your driver will be notified. Repeated cancellations may incur a fee.",
+  "keepRide": "Keep ride",
+  "shareTripIntro": "I'm on a Rawana trip.",
+  "shareDriver": "Driver: {name}",
+  "@shareDriver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareVehicle": "Vehicle: {vehicle}",
+  "@shareVehicle": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "sharePlate": "Plate: {plate}",
+  "@sharePlate": {
+    "placeholders": {
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "shareFrom": "From: {address}",
+  "@shareFrom": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTo": "To: {address}",
+  "@shareTo": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCurrentLocation": "Current location: {url}",
+  "@shareCurrentLocation": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTripSubject": "My Rawana trip",
+  "driverConfirmedHeadingPickup": "Driver confirmed — heading to pickup",
+  "driverIsAtPickup": "Driver is at your pickup",
+  "backToHome": "Back to home",
+  "you": "You",
+  "yourDriver": "Your driver",
+  "followingYourTrip": "Following your trip",
+  "driverEnRouteToPickup": "Driver en route to pickup",
+  "safety": "Safety",
+  "driverLiveLocation": "Driver live location",
+  "yourPickupSpot": "Your pickup spot",
+  "hintFollowLiveRoute": "Route line updates as your driver moves. Tap Start navigation to follow live.",
+  "hintWatchDriverApproach": "Watch your driver approach on the map. ETA updates automatically.",
+  "followTripRoute": "Follow trip route",
+  "followDriverToPickup": "Follow driver to pickup",
+  "call": "Call",
+  "message": "Message",
+  "shareTrip": "Share trip",
+  "driverArrivedNotice": "Your driver is at your pickup location.",
+  "youHaveArrived": "You have arrived",
+  "thanksForRiding": "Thank you for riding with Rawana.",
+  "payYourDriver": "PAY YOUR DRIVER",
+  "howWasYourTrip": "How was your trip?",
+  "feedbackHelpsDrivers": "Your feedback helps drivers improve.",
+  "ratingTagCleanCar": "Clean car",
+  "ratingTagSafeDriving": "Safe driving",
+  "ratingTagFriendlyDriver": "Friendly driver",
+  "ratingTagOnTime": "On time",
+  "ratingTagGoodNavigation": "Good navigation",
+  "submitRating": "Submit rating",
+  "skipRating": "Skip rating",
+  "reportAnIssue": "Report an issue",
+  "ratingFailed": "Rating failed: {error}",
+  "@ratingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tripTitleWithId": "Trip · {id}",
+  "@tripTitleWithId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tripSummary": "Trip summary",
+  "totalFare": "Total fare",
+  "driverLabel": "DRIVER",
+  "whatsAppDriver": "WhatsApp driver",
+  "whatsAppCallDriver": "WhatsApp call driver",
+  "rideHistory": "Ride history",
+  "failedToLoadHistory": "Failed to load history: {error}",
+  "@failedToLoadHistory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noTripsYet": "No trips yet",
+  "pastRidesHint": "Your past rides will appear here.",
+  "fromAddress": "From {address}",
+  "@fromAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "statusSearching": "Searching",
+  "statusAccepted": "Accepted",
+  "statusDriverArriving": "Driver arriving",
+  "statusTripStarted": "Trip started",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled",
+  "completed": "Completed",
+  "account": "Account",
+  "failedToLoadProfile": "Failed to load profile: {error}",
+  "@failedToLoadProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerFallbackName": "Passenger",
+  "tripsStat": "Trips",
+  "ratingStat": "Rating",
+  "memberStat": "Member",
+  "memberNew": "New",
+  "preferences": "Preferences",
+  "savedAddresses": "Saved addresses",
+  "notifications": "Notifications",
+  "safetyAndSupport": "Safety & Support",
+  "emergencyContacts": "Emergency contacts",
+  "helpCentre": "Help centre",
+  "enableLocationToSaveAddress": "Enable location to save this address",
+  "saveANewAddress": "Save a new address",
+  "usesCurrentGps": "Uses your current GPS location for coordinates.",
+  "addressLabel": "Label",
+  "addressLabelHint": "Home, Work, Gym…",
+  "addressField": "Address",
+  "saveAddress": "Save address",
+  "failedToLoadAddresses": "Failed to load addresses: {error}",
+  "@failedToLoadAddresses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noSavedAddresses": "No saved addresses",
+  "savedAddressesEmptyHint": "Save Home, Work and other places\nfor one-tap booking.",
+  "noNotificationsYet": "No notifications yet",
+  "notificationsEmptyHint": "Trip updates and promotions will appear here\nwhen push notifications are enabled.",
+  "needAHand": "Need a hand?",
+  "helpTeam247": "Our team is here to help, 24/7.",
+  "commonQuestions": "Common questions",
+  "faqBookTitle": "How do I book a ride?",
+  "faqBookBody": "Open the app, tap \"Where to?\", set your destination, choose a ride type, and confirm. Your nearest driver will be on the way.",
+  "faqPayTitle": "How do I pay?",
+  "faqPayBody": "Pay the driver in Afghan Afghani (AFN) cash at the end of your trip.",
+  "reportSafetyOrTripIssue": "Report a safety or trip issue",
+  "addEmergencyContact": "Add emergency contact",
+  "name": "Name",
+  "phone": "Phone",
+  "saveContact": "Save contact",
+  "failedToLoadContacts": "Failed to load contacts: {error}",
+  "@failedToLoadContacts": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noContactsYet": "No contacts yet",
+  "emergencyContactsEmptyHint": "Add up to 3 trusted contacts.\nThey will be notified during emergencies.",
+  "navigate": "Navigate",
+  "estimatedFare": "Estimated fare",
+  "minutesShort": "min",
+  "secondsShort": "sec",
+  "distanceKm": "{km} km",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceMeters": "{meters} m",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "etaMinutes": "{minutes} min",
+  "@etaMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "routeDistance": "route distance",
+  "whatsApp": "WhatsApp",
+  "endNavigation": "End navigation",
+  "navigating": "Navigating",
+  "followingSelectedRoute": "Following selected route",
+  "routes": "Routes",
+  "routeShortest": "Shortest",
+  "routeFastest": "Fastest",
+  "routeChipDurationDistance": "{minutes}m · {km}km",
+  "@routeChipDurationDistance": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyDriver": "Nearby driver",
+  "driver": "Driver",
+  "passenger": "Passenger",
+  "activeRide": "Active ride",
+  "continueOnHighlightedRoute": "Continue on the highlighted route",
+  "startNavigation": "Start navigation",
+  "issueWithTrip": "Issue with trip #{id}",
+  "@issueWithTrip": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "reportValidation": "Please add a subject and at least 10 characters of detail.",
+  "reportSubmitted": "Report submitted. Our team will follow up.",
+  "failedToSubmit": "Failed to submit: {error}",
+  "@failedToSubmit": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tripShortId": "Trip {id}",
+  "@tripShortId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "category": "Category",
+  "subject": "Subject",
+  "whatHappened": "What happened?",
+  "safetyReportPriority": "Safety reports are prioritised. If you are in immediate danger, contact local emergency services.",
+  "submitReport": "Submit report",
+  "supportBilling": "Billing / overcharge",
+  "supportDriverBehaviour": "Driver behaviour",
+  "supportSafetyConcern": "Safety concern",
+  "supportTechnical": "App / technical issue",
+  "supportOther": "Other",
+  "supportFarePayment": "Fare / payment issue",
+  "supportPassengerBehaviour": "Passenger behaviour",
+  "docDriverLicence": "Driver Licence",
+  "docVehicleRegistration": "Vehicle Registration",
+  "docNationalId": "National ID",
+  "docProfilePhoto": "Profile Photo",
+  "docVehicleInfo": "Vehicle Info",
+  "supabaseRequiredForUpload": "Supabase required for document upload",
+  "documentUploaded": "Document uploaded",
+  "uploadFailed": "Upload failed: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseUploadAllDocuments": "Please upload all required documents",
+  "enterVehicleMakeModelPlate": "Enter vehicle make, model, and plate number",
+  "pleaseUploadDocumentFirst": "Please upload the document first",
+  "stepOfTotal": "Step {current} of {total}",
+  "@stepOfTotal": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "takeClearPhotoOf": "Take a clear, well-lit photo of your {document}.",
+  "@takeClearPhotoOf": {
+    "placeholders": {
+      "document": {
+        "type": "String"
+      }
+    }
+  },
+  "tellUsAboutVehicle": "Tell us about the vehicle you will drive.",
+  "submitForReview": "Submit for review",
+  "captureDocument": "Capture document",
+  "looksGoodCanRetake": "Looks good - you can retake if needed.",
+  "jpgPngKeptPrivate": "JPG or PNG, kept private and secure.",
+  "retakePhoto": "Retake photo",
+  "takePhoto": "Take photo",
+  "vehicleMakeExample": "Vehicle make (e.g. Toyota)",
+  "vehicleModelExample": "Model (e.g. Corolla)",
+  "plateNumber": "Plate number",
+  "couldNotCheckStatus": "Could not check status",
+  "applicationNotApproved": "Application not approved",
+  "applicationUnderReview": "Application under review",
+  "documentsCouldNotBeVerified": "Your documents could not be verified. Please review and resubmit.",
+  "verifyingDocuments24to48": "We are verifying your documents. This usually takes 24–48 hours. You will be notified once your account is approved.",
+  "documentsSubmitted": "Documents submitted",
+  "reviewFailedResubmit": "Review failed — resubmit required",
+  "backgroundVehicleVerification": "Background & vehicle verification",
+  "welcomeOnboard": "Welcome onboard",
+  "resubmitDocuments": "Resubmit documents",
+  "refreshStatus": "Refresh status",
+  "mustBeApprovedToGoOnline": "Your account must be approved before going online",
+  "enableLocationToGoOnline": "Enable location to go online and receive ride requests.",
+  "couldNotGoOnline": "Could not go online. Check approval and connection.",
+  "rideCancelled": "Ride cancelled",
+  "headToPickup": "Head to pickup",
+  "navigateToPickup": "Navigate to pickup",
+  "atPickup": "At pickup",
+  "continuePickup": "Continue pickup",
+  "tripInProgress": "Trip in progress",
+  "continueTrip": "Continue trip",
+  "activeTrip": "Active trip",
+  "viewTrip": "View trip",
+  "verifiedDriver": "Verified driver",
+  "youAreOffline": "You are offline",
+  "youAreOnline": "You are online",
+  "switchOnlineToReceiveRides": "Switch online to start receiving rides",
+  "todaysEarnings": "Today's earnings",
+  "lastSession": "Last session",
+  "trips": "Trips",
+  "gross": "Gross",
+  "rating": "Rating",
+  "receivingRides": "Receiving rides",
+  "tapToStart": "Tap to start",
+  "acceptFailed": "Accept failed: {error}",
+  "@acceptFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newRideRequest": "New ride request",
+  "respondNowTimeRunningOut": "Respond now — time is running out",
+  "reviewRouteAndAccept": "Review route and accept quickly",
+  "acceptRide": "Accept ride",
+  "minEta": "min ETA",
+  "distance": "distance",
+  "passengerWillBeNotifiedTripEnds": "The passenger will be notified and the trip will end.",
+  "rideCancelledFee": "Ride cancelled. Fee: {amount}",
+  "@rideCancelledFee": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelFailed": "Cancel failed: {error}",
+  "@cancelFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backToDashboard": "Back to dashboard",
+  "namePickup": "{name} pickup",
+  "@namePickup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerPickup": "Passenger pickup",
+  "whatsAppPassenger": "WhatsApp passenger",
+  "whatsAppCallPassenger": "WhatsApp call passenger",
+  "headingToPickup": "Heading to pickup",
+  "waitingAtPickupMarker": "Waiting at the pickup marker",
+  "passengerPickupLocation": "Passenger pickup location",
+  "inAppNavigationStarted": "In-app navigation started.",
+  "iveArrivedAtPickup": "I've arrived at pickup",
+  "youAreAtPickupLocation": "You are at the passenger pickup location.",
+  "tapStartNavigation": "Tap Start navigation to follow the route.",
+  "samePickupLocation": "You and the passenger are at the same pickup location.",
+  "tripStartedFollowRoute": "Trip started. Follow the route to the destination.",
+  "completeThisTrip": "Complete this trip?",
+  "onlyCompleteAfterDestination": "Only complete after the passenger has reached the destination.",
+  "keepDriving": "Keep driving",
+  "completeTrip": "Complete trip",
+  "onlyCancelIfCannotContinue": "Only cancel if you cannot safely continue. The passenger will be notified.",
+  "waitingForPassenger": "Waiting for passenger",
+  "dropoffWithAddress": "Drop-off: {address}",
+  "@dropoffWithAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "atPickupStartWhenOnboard": "At pickup — start trip when passenger is onboard",
+  "yourCurrentLocation": "Your current location",
+  "mayCancelWithoutFeeNoShow": "You may cancel without fee if the passenger did not show.",
+  "startTripOnceOnboard": "Start the trip once the passenger is in your car.",
+  "navigateToDropoff": "Navigate to drop-off",
+  "cancelRideNoFee": "Cancel ride (no fee)",
+  "goToPickup": "Go to pickup",
+  "startTrip": "Start trip",
+  "tripStartedKeepDriving": "Trip started - keep driving",
+  "statusLabel": "Status: {status}",
+  "@statusLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "tagPolite": "Polite",
+  "tagOnTimeAtPickup": "On time at pickup",
+  "tagClearDirections": "Clear directions",
+  "tagRespectful": "Respectful",
+  "tagEasyPickup": "Easy pickup",
+  "couldNotUpdateAvailability": "Could not update availability",
+  "greatJob": "Great job!",
+  "tripCompletedFareBreakdown": "Trip completed. Here's your fare breakdown.",
+  "rateYourPassenger": "Rate your passenger",
+  "feedbackKeepsRawanaSafe": "Your feedback helps keep Rawana safe and reliable.",
+  "openToNewRequests": "You are open to new ride requests",
+  "goOnlineToReceiveRequests": "Go online to receive new requests",
+  "youEarned": "YOU EARNED",
+  "grossFare": "Gross fare",
+  "rawanaFeePercent": "Rawana fee ({percent}%)",
+  "@rawanaFeePercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "yourEarnings": "Your earnings",
+  "today": "Today",
+  "thisWeek": "This week",
+  "thisMonth": "This month",
+  "couldNotLoadEarnings": "Could not load earnings",
+  "platformFee": "Platform fee",
+  "avgPerTrip": "Avg / trip",
+  "netEarnings": "Net earnings",
+  "noTripsYetPeriod": "No trips yet {period}",
+  "@noTripsYetPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsCompletedOne": "{count} trip completed",
+  "@tripsCompletedOne": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsCompletedOther": "{count} trips completed",
+  "@tripsCompletedOther": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "howEarningsWork": "How earnings work",
+  "earningsExplainer": "Gross fares are what passengers paid. Platform fee is deducted automatically; net earnings are deposited to your wallet and become available for payout.",
+  "activitySnapshot": "Activity snapshot",
+  "completeTripsToSeeActivity": "Complete trips to see your activity pattern.",
+  "couldNotLoadWallet": "Could not load wallet",
+  "recentTransactions": "Recent transactions",
+  "couldNotLoadTransactions": "Could not load transactions",
+  "requestPayoutQuestion": "Request payout?",
+  "willTransferToPayoutAccount": "We will transfer {amount} from your wallet. Rawana processes payouts — no bank account is required in the app.",
+  "@willTransferToPayoutAccount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payoutRequested": "Payout requested",
+  "availableBalance": "Available balance",
+  "pendingAmount": "Pending {amount}",
+  "@pendingAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "requestPayout": "Request payout",
+  "noFundsYet": "No funds yet",
+  "noTransactionsYet": "No transactions yet",
+  "earningsPayoutsWillShowHere": "Earnings and payouts will show up here.",
+  "transaction": "Transaction",
+  "tripHistory": "Trip history",
+  "couldNotLoadTripHistory": "Could not load trip history",
+  "totalEarned": "Total earned",
+  "allTrips": "All trips",
+  "unknownDestination": "Unknown destination",
+  "unknownPickup": "Unknown pickup",
+  "pickupUnknown": "Pickup unknown",
+  "fromPickup": "From {pickup}",
+  "@fromPickup": {
+    "placeholders": {
+      "pickup": {
+        "type": "String"
+      }
+    }
+  },
+  "completedCancelledRidesAppearHere": "Your completed and cancelled rides will appear here.",
+  "failedToLoadTrip": "Failed to load trip: {error}",
+  "@failedToLoadTrip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMin": "{n} min",
+  "@durationMin": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "openRouteInMaps": "Open route in Maps",
+  "profileUpdated": "Profile updated",
+  "signOutQuestion": "Sign out?",
+  "signOutNeedSignBackIn": "You will need to sign back in to receive ride requests.",
+  "couldNotLoadProfile": "Could not load profile",
+  "driverFallbackName": "Driver",
+  "vehicle": "Vehicle",
+  "makeAndModel": "Make & model",
+  "quickActions": "Quick actions",
+  "myDocuments": "My documents",
+  "viewUploadedPapers": "View uploaded verification papers",
+  "privacyAndSecurity": "Privacy & security",
+  "manageAccountSafety": "Manage your account safety",
+  "personalDetails": "Personal details",
+  "vehicleMake": "Vehicle make",
+  "vehicleModel": "Vehicle model",
+  "saveChanges": "Save changes",
+  "couldNotLoadDocuments": "Could not load documents",
+  "documentsVerified": "Your documents are verified.",
+  "documentsAwaitingReview": "Documents submitted — awaiting admin review.",
+  "uploadDocsToStartEarning": "Upload your documents to start earning.",
+  "noDocumentsYet": "No documents yet",
+  "uploadLicenceRegId": "Upload your licence, registration, and ID to get approved.",
+  "uploadDocuments": "Upload documents",
+  "submittedFiles": "Submitted files",
+  "updateDocuments": "Update documents",
+  "documentNotUploaded": "{label} — not uploaded",
+  "@documentNotUploaded": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordMinEightChars": "Password must be at least 8 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "passwordUpdated": "Password updated",
+  "requestAccountDeletion": "Request account deletion",
+  "accountProtectedNeverSharePassword": "Your account is protected with secure sign-in. Never share your password with anyone.",
+  "signInSection": "Sign-in",
+  "notLinked": "Not linked",
+  "verified": "Verified",
+  "unverified": "Unverified",
+  "changePassword": "Change password",
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "updatePassword": "Update password",
+  "policies": "Policies",
+  "termsAndPolicies": "Terms & policies",
+  "howRawanaOperates": "How Rawana operates",
+  "driverGuidelines": "Driver guidelines",
+  "bestPracticesOnPlatform": "Best practices on the platform",
+  "teamWillProcessRequest": "Our team will process your request",
+  "supportEmailFallback": "Email: support@rawana.af",
+  "support": "Support",
+  "getHelp": "Get help",
+  "reportATripIssue": "Report a trip issue",
+  "lostItemWrongFareRoute": "Lost item, wrong fare, route problem",
+  "reportASafetyConcern": "Report a safety concern",
+  "tellUsUnsafeBehaviour": "Tell us about unsafe behaviour",
+  "contactAdmin": "Contact admin",
+  "emailOurSupportTeam": "Email our support team",
+  "resources": "Resources",
+  "bestPracticesKeepRatingHigh": "Best practices to keep your rating high",
+  "myReports": "My reports",
+  "couldNotLoadReports": "Could not load your reports: {error}",
+  "@couldNotLoadReports": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noSupportReportsYet": "No support reports yet. Use the options above if you need help.",
+  "supportTicket": "Support ticket",
+  "ticketStatusOpen": "open",
+  "weHaveYourBack": "We have your back",
+  "getHelp247": "Get help from our team, 24/7.",
+  "couldNotLoadTrips": "Could not load trips",
+  "completeRideThenReport": "Complete a ride first, then you can report an issue here.",
+  "selectTripNeedHelp": "Select the trip you need help with",
+  "generalIssueNoTrip": "General issue (no trip)",
+  "notificationsEmptyMessage": "Ride requests, payout updates, and announcements\nwill appear here.",
+  "performance": "Performance",
+  "couldNotLoadPerformance": "Could not load performance",
+  "serviceMetrics": "Service metrics",
+  "acceptanceRate": "Acceptance rate",
+  "cancellationRate": "Cancellation rate",
+  "totalTrips": "Total trips",
+  "onlineTime": "Online time",
+  "hoursShort": "{h}h",
+  "@hoursShort": {
+    "placeholders": {
+      "h": {
+        "type": "String"
+      }
+    }
+  },
+  "hoursMinutesShort": "{h}h {m}m",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "h": {
+        "type": "String"
+      },
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "averageRiderRating": "Average rider rating",
+  "higherAcceptanceLowerCancelTip": "Higher acceptance and lower cancellation rates help you get more ride requests.",
+  "cancelReasonNotAtPickup": "Passenger not at pickup",
+  "cancelReasonWrongPickup": "Wrong pickup location",
+  "cancelReasonSafety": "Safety concern",
+  "cancelReasonVehicle": "Vehicle issue",
+  "cancelReasonEmergency": "Personal emergency",
+  "cancelReasonNoShow": "Passenger no-show",
+  "noFeePassengerNoShow": "No cancellation fee — passenger did not show up after the waiting period.",
+  "cancellationFeeMayApply": "A cancellation fee may apply if you cancel now.",
+  "reason": "REASON",
+  "waitingPeriodEndedNoFee": "Waiting period ended. You may cancel without a fee if the passenger did not show.",
+  "freeWaitRemaining": "Free wait: {time} remaining",
+  "@freeWaitRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerNoShowWindow": "Passenger no-show window",
+  "cancelWithoutFeeIn": "Cancel without fee in {time}",
+  "@cancelWithoutFeeIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrived": "Arrived",
+  "trip": "Trip",
+  "done": "Done",
+  "accountNotRegisteredAsDriver": "This account is not registered as a driver. Sign in with your driver account.",
+  "sessionExpiredSignInAgain": "Session expired. Sign out and sign in again.",
+  "driverProfileNotFound": "Driver profile not found. Complete document upload first.",
+  "cannotReachRawanaServer": "Cannot reach the Rawana server. Check your connection and try again.",
+  "couldNotLoadDriverProfile": "Could not load driver profile.",
+  "driverGuideProfessionalTitle": "Stay professional",
+  "driverGuideProfessionalBody": "Greet passengers politely, keep your vehicle clean, and follow local traffic laws. A calm, respectful attitude is the fastest way to earn five-star ratings.",
+  "driverGuideAcceptTitle": "Accept rides promptly",
+  "driverGuideAcceptBody": "High acceptance rates help you receive more requests. Only go online when you are ready to drive. If you must decline, do it quickly so the passenger can find another driver.",
+  "driverGuideNavigateTitle": "Navigate accurately",
+  "driverGuideNavigateBody": "Use the in-app route to pickup and drop-off. Confirm the destination with the passenger before starting the trip. If the address is unclear, call or message through the app.",
+  "driverGuideSafetyTitle": "Safety first",
+  "driverGuideSafetyBody": "Do not drive tired or under the influence. Report safety concerns immediately through Support. In an emergency, contact local authorities first, then notify Rawana.",
+  "driverGuideFaresTitle": "Fares & payments",
+  "driverGuideFaresBody": "Fares are calculated automatically from distance, time, and zone pricing. Do not ask passengers for extra cash unless agreed in the app. Earnings appear in your wallet after each completed trip.",
+  "driverGuideCancellationsTitle": "Cancellations",
+  "driverGuideCancellationsBody": "Avoid cancelling after accepting a ride. Frequent cancellations lower your performance score and may reduce future requests. Cancel only when necessary and add a clear reason.",
+  "termsDriverAgreement": "Driver agreement",
+  "termsDriverAgreementBody": "By using Rawana Driver you agree to provide ride-hailing services in line with platform rules, local regulations, and the documents you submitted during onboarding.",
+  "termsAccountVerification": "Account & verification",
+  "termsAccountVerificationBody": "You must keep your licence, vehicle registration, and identity documents valid and up to date. Rawana may suspend accounts with expired or fraudulent documents.",
+  "termsEarningsPayouts": "Earnings & payouts",
+  "termsEarningsPayoutsBody": "Trip fares are credited to your wallet minus Rawana's commission. Payout requests are processed according to finance team schedules. Fraudulent activity may result in withheld balances.",
+  "termsPrivacy": "Privacy",
+  "termsPrivacyBody": "We collect location while you are online, trip history, and contact details to operate the service. Passenger phone numbers may be masked during active trips. See Privacy & security in your profile for account controls.",
+  "termsConductSuspension": "Conduct & suspension",
+  "termsConductSuspensionBody": "Harassment, discrimination, unsafe driving, or repeated complaints can lead to temporary suspension or permanent removal from the platform.",
+  "termsSupport": "Support",
+  "termsSupportBody": "For disputes, safety reports, or account help, use in-app Support or email support@rawana.af. We aim to respond to urgent safety issues as quickly as possible.",
+  "noCancellationFee": "No cancellation fee",
+  "cancellationFeeAmount": "Cancellation fee: {amount}",
+  "@cancellationFeeAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelSearchTitle": "Cancel this request?",
+  "cancelSearchBody": "You can request another ride right away. There is no fee while we are still finding a driver.",
+  "collectCashAmount": "Collect {amount} cash",
+  "@collectCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashCollected": "Cash collected",
+  "openInGoogleMaps": "Open in Google Maps",
+  "tooFarContinueAnyway": "You are {distance} m from the pin. Continue anyway?",
+  "@tooFarContinueAnyway": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "continueAnyway": "Continue anyway",
+  "payDriverCashAmount": "Pay your driver {amount} cash",
+  "@payDriverCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashSelectedInfo": "Cash · AFN — pay your driver at drop-off",
+  "cashFare": "Cash fare",
+  "rideType": "Ride type",
+  "selectRideType": "Which rides should you receive?",
+  "fareBreakdown": "Fare breakdown",
+  "baseFare": "Base fare",
+  "distanceFare": "Distance · {km} km",
+  "@distanceFare": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "timeFare": "Time · {minutes} min",
+  "@timeFare": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "taxLabel": "Tax",
+  "totalCash": "Total cash",
+  "cancelGraceSeconds": "Free to cancel for the first {seconds} seconds after a driver accepts.",
+  "@cancelGraceSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "maxEmergencyContacts": "You can save up to 3 emergency contacts.",
+  "maxContactsReached": "Maximum of 3 emergency contacts reached.",
+  "useThisLocation": "Use this location",
+  "chooseSavedPlace": "Choose location",
+  "vehicleYear": "Vehicle year",
+  "vehicleColour": "Vehicle colour",
+  "openInWaze": "Open in Waze",
+  "chooseMapsApp": "Open in maps",
+  "findingAnotherDriver": "Your previous driver cancelled. We are finding you another driver.",
+  "filterFrom": "From date",
+  "filterTo": "To date",
+  "clearFilters": "Clear filters",
+  "accountBlocked": "This account is blocked and cannot book rides.",
+  "editName": "Edit name",
+  "promoCode": "Promo code",
+  "applyPromo": "Apply",
+  "promoApplied": "Promo applied",
+  "promoInvalid": "This promo code is not valid.",
+  "promoExpired": "This promo code has expired.",
+  "discount": "Discount",
+  "writeAReview": "Write a review (optional)",
+  "ratingCommentHint": "How was the trip?",
+  "tripReceipt": "Trip receipt",
+  "viewReceipt": "View receipt",
+  "maintenanceTitle": "We’ll be back shortly",
+  "forceUpdateTitle": "Update required",
+  "forceUpdateBody": "Please update Rawana to continue.",
+  "updateApp": "Update app",
+  "exportMyData": "Download my data",
+  "deleteAccount": "Delete account",
+  "deleteAccountConfirm": "Delete this account? This cannot be undone.",
+  "deleteAccountWarning": "Your profile and saved places will be removed. Trip records are kept for legal and safety reasons.",
+  "accountDeleted": "Your account has been deleted.",
+  "dataExported": "Your data file is ready.",
+  "sos": "SOS",
+  "sosConfirm": "Send your live location to emergency contacts?",
+  "sosSent": "Emergency alert sent.",
+  "sosFailed": "Could not send SOS. Share your trip instead.",
+  "sosNoContacts": "Add an emergency contact first.",
+  "sendSos": "Send SOS",
+  "yourTickets": "Your tickets",
+  "noTickets": "No support tickets yet",
+  "reply": "Reply",
+  "sendReply": "Send reply",
+  "recentRatings": "Recent ratings",
+  "noRatingsYet": "No written ratings yet",
+  "lowRatingAlert": "Your rating is below the platform threshold. Focus on safe, on-time trips.",
+  "highCancelAlert": "Your cancellation rate is high. Accepting more trips protects your account.",
+  "typicalDriverRating": "Nearby drivers avg. {rating}",
+  "@typicalDriverRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "tooManyCancellations": "You have reached today’s cancellation limit. Try again tomorrow.",
+  "markAllRead": "Mark read",
+  "emergencyContactsCount": "{count} of {max} contacts",
+  "@emergencyContactsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "loadMore": "Load more",
+  "payoutMethod": "Payout method",
+  "payoutAccount": "Account number",
+  "savePayoutDetails": "Save payout details",
+  "payoutDetailsSaved": "Payout details saved",
+  "tooFarFromPickup": "You are {distance} m from the pickup point. Move within {required} m to confirm arrival.",
+  "@tooFarFromPickup": {
+    "placeholders": {
+      "distance": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "tooFarFromDropoff": "You are {distance} m from the drop-off point. Move within {required} m to complete the trip.",
+  "@tooFarFromDropoff": {
+    "placeholders": {
+      "distance": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "rideCancelledByPassenger": "The passenger cancelled this ride.",
+  "rideCancelledBySupport": "This ride was cancelled by Rawana support.",
+  "rideCancelledByDriver": "Your driver cancelled. We are finding you another driver.",
+  "rideCancelledNoDrivers": "No drivers were available for this ride.",
+  "rideCancelledGeneric": "This ride was cancelled.",
+  "rateLastTripTitle": "How was your last ride?",
+  "rateLastTripBody": "Rate your trip to {destination} to help us keep drivers great.",
+  "@rateLastTripBody": {
+    "placeholders": {
+      "destination": { "type": "String" }
+    }
+  },
+  "rateNow": "Rate now",
+  "resumingActiveTrip": "You already have a ride in progress. Taking you back to it.",
+  "youKeep": "YOU KEEP",
+  "commissionOwedToRawana": "Commission owed to Rawana",
+  "outstandingFeeCollected": "Cancellation fee collected for Rawana",
+  "totalCashToCollect": "Total cash to collect",
+  "amountOwedToRawana": "You owe Rawana",
+  "creditFromRawana": "Rawana owes you",
+  "balanceSettled": "All settled",
+  "balanceSettledBody": "You have no commission to pay right now.",
+  "debtLimitLabel": "Limit {amount}",
+  "@debtLimitLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "debtLimitReachedTitle": "Settle your balance to keep driving",
+  "debtLimitReachedBody": "You owe {owed}. Drivers over the {limit} limit cannot go online until finance records a payment.",
+  "@debtLimitReachedBody": { "placeholders": { "owed": { "type": "String" }, "limit": { "type": "String" } } },
+  "howToSettle": "How to pay Rawana",
+  "walletCashFirstExplainer": "You keep every fare in cash. Rawana's commission is added to your balance here and you settle it with finance.",
+  "outstandingFeeIncluded": "Includes {amount} unpaid cancellation fee from a previous ride",
+  "@outstandingFeeIncluded": { "placeholders": { "amount": { "type": "String" } } },
+  "cancellationFeeChargedNextRide": "A {amount} cancellation fee will be added to your next ride.",
+  "@cancellationFeeChargedNextRide": { "placeholders": { "amount": { "type": "String" } } },
+  "txCommission": "Commission",
+  "txSettlement": "Payment to Rawana",
+  "txCancellationFee": "Cancellation fee compensation",
+  "txFeeCollected": "Cancellation fee collected",
+  "txPayout": "Payout",
+  "txAdjustment": "Adjustment",
+  "txCashCollected": "Cash fare (kept by you)"
+}

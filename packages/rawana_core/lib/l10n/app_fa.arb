@@ -1,0 +1,1275 @@
+{
+  "@@locale": "fa",
+  "appName": "روانا",
+  "appTitlePassenger": "روانا مسافر",
+  "appTitleDriver": "روانا راننده",
+  "appVersionFooter": "روانا · نسخه ۱.۰",
+  "rawanaDriver": "روانا راننده",
+  "rawanaDriverVersion": "روانا راننده  نسخه ۱.۰",
+  "rawanaDriverRole": "راننده روانا",
+  "splashTagline": "سفرهای راحت، در هر نقطه کابل",
+  "splashLoading": "سفر شما بارگذاری می‌شود…",
+  "driverBadge": "راننده",
+  "riderBadge": "مسافر",
+  "preparingDashboard": "داشبورد شما آماده می‌شود",
+  "cancel": "لغو",
+  "confirm": "تأیید",
+  "next": "بعدی",
+  "skip": "رد کردن",
+  "back": "بازگشت",
+  "edit": "ویرایش",
+  "retry": "تلاش دوباره",
+  "tryAgain": "دوباره تلاش کنید",
+  "continueAction": "ادامه",
+  "add": "افزودن",
+  "save": "ذخیره",
+  "submit": "ارسال",
+  "details": "جزئیات",
+  "map": "نقشه",
+  "selected": "انتخاب‌شده",
+  "notSet": "تنظیم نشده",
+  "other": "سایر",
+  "orDivider": "یا",
+  "loading": "در حال بارگذاری…",
+  "connecting": "در حال اتصال…",
+  "submitting": "در حال ارسال…",
+  "checking": "در حال بررسی…",
+  "requesting": "در حال درخواست…",
+  "confirming": "در حال تأیید...",
+  "signingIn": "در حال ورود…",
+  "somethingWentWrong": "مشکلی پیش آمد",
+  "errorWithDetail": "خطا: {error}",
+  "@errorWithDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "getStarted": "شروع کنید",
+  "whereTo": "کجا می‌روید؟",
+  "confirmRide": "تأیید سفر",
+  "findingDriver": "در حال یافتن راننده…",
+  "findingYourDriver": "در حال یافتن راننده",
+  "driverArriving": "راننده در راه است",
+  "tripStarted": "در مسیر مقصد",
+  "tripCompleted": "سفر تکمیل شد",
+  "payCash": "پرداخت {amount} نقدی",
+  "@payCash": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "currencyAfn": "افغانی",
+  "sendCode": "ارسال کد",
+  "verifyOtp": "تأیید",
+  "resendCode": "ارسال مجدد",
+  "goOnline": "آنلاین شوید",
+  "goOffline": "آفلاین شوید",
+  "accept": "قبول",
+  "reject": "رد",
+  "decline": "رد کردن",
+  "cancelRide": "لغو سفر",
+  "earnings": "درآمد",
+  "wallet": "کیف پول",
+  "history": "تاریخچه",
+  "profile": "پروفایل",
+  "logout": "خروج",
+  "logOut": "خروج",
+  "signOut": "خروج از حساب",
+  "noConnection": "اتصال اینترنت وجود ندارد",
+  "reconnecting": "در حال اتصال مجدد…",
+  "youAreOfflineReconnect": "آفلاین هستید — برای ادامه وصل شوید",
+  "language": "زبان",
+  "chooseYourLanguage": "زبان خود را انتخاب کنید",
+  "languageChangeHint": "هر زمان می‌توانید این را از تنظیمات تغییر دهید.",
+  "languageEnglish": "English",
+  "languageDari": "دری",
+  "languagePashto": "پښتو",
+  "languageEnglishMeta": "چپ به راست · لاتین",
+  "languageDariMeta": "راست به چپ · دری",
+  "languagePashtoMeta": "راست به چپ · پشتو",
+  "onboardingSlide1Title": "سفر را در چند ثانیه رزرو کنید",
+  "onboardingSlide1Body": "مقصد را مشخص کنید و تأیید کنید — نزدیک‌ترین راننده در راه خواهد بود.",
+  "onboardingSlide2Title": "هر کیلومتر را دنبال کنید",
+  "onboardingSlide2Body": "راننده را زنده روی نقشه ببینید و وضعیت سفر را با عزیزان شریک کنید.",
+  "onboardingSlide3Title": "پرداخت نقدی ساده",
+  "onboardingSlide3Body": "در مقصد مستقیماً به افغانی (AFN) به راننده بپردازید. کارت لازم نیست.",
+  "continueWithEmail": "ادامه با ایمیل",
+  "continueWithPhone": "ادامه با تلفن",
+  "authTermsFooter": "با ادامه، با شرایط و سیاست حریم خصوصی موافقت می‌کنید.",
+  "agreeTermsConduct": "با ادامه، با شرایط و آیین‌نامه رانندگان موافقت می‌کنید.",
+  "createAccount": "ایجاد حساب",
+  "welcomeBack": "خوش آمدید",
+  "welcomeBackCaptain": "خوش آمدید، کاپیتان",
+  "signUpSubtitle": "چند جزئیات و آماده سفر هستید.",
+  "signInSubtitle": "وارد شوید تا سفر ادامه یابد.",
+  "emailLabel": "ایمیل",
+  "emailOptional": "ایمیل (اختیاری)",
+  "fullName": "نام کامل",
+  "fullNameRequired": "نام کامل *",
+  "phoneNumberRequired": "شماره تلفن *",
+  "afPhonePrefix": "🇦🇫 +93",
+  "phoneHint": "70 123 4567",
+  "passwordLabel": "رمز عبور",
+  "signIn": "ورود",
+  "alreadyHaveAccount": "حساب دارید؟ وارد شوید",
+  "newHereCreateAccount": "تازه هستید؟ حساب بسازید",
+  "phoneOtpComingSoon": "کد تلفنی در نسخه نهایی فعال می‌شود.",
+  "authEntryHeadline": "بیایید حرکت\nکنیم.",
+  "authEntrySubtitle": "وارد شوید و در چند ثانیه در کابل سفر رزرو کنید.",
+  "authValueFastTitle": "رزرو سریع",
+  "authValueFastBody": "راننده نزدیک را در کمتر از یک دقیقه پیدا کنید.",
+  "authValueTrustedTitle": "رانندگان معتبر",
+  "authValueTrustedBody": "هر راننده تأیید و امتیازدهی شده است.",
+  "authValuePayTitle": "پرداخت نقدی افغانی",
+  "authValuePayBody": "کارت لازم نیست — در پایان سفر بپردازید.",
+  "driveWithRawana": "با روانا\nرانندگی کنید.",
+  "signInEmailToTest": "با ایمیل وارد شوید تا تجربه راننده را ببینید.",
+  "earnOnYourSchedule": "طبق برنامه خود درآمد داشته باشید. تأیید شوید، سفر بگیرید، پول بگیرید.",
+  "earnFlexibly": "درآمد انعطاف‌پذیر",
+  "goOnlineWhenever": "هر زمان که بخواهید آنلاین شوید.",
+  "dailyPayouts": "پرداخت روزانه",
+  "trackEveryFare": "هر کرایه را در کیف پول دنبال کنید.",
+  "driverSupport": "پشتیبانی راننده",
+  "supportTeam247": "تیمی که شبانه‌روز پشتیبان شماست.",
+  "becomeADriver": "راننده شوید",
+  "createDriverAccountInAMinute": "حساب رانندگی را در یک دقیقه بسازید.",
+  "signInToGoOnline": "برای آنلاین شدن وارد شوید.",
+  "createDriverAccount": "ایجاد حساب راننده",
+  "alreadyADriverSignIn": "قبلاً راننده هستید؟ وارد شوید",
+  "newDriverCreateAccount": "راننده جدید؟ حساب بسازید",
+  "enterYourPhone": "شماره تلفن را وارد کنید",
+  "phoneVerifyHint": "یک کد ۶ رقمی می‌فرستیم تا هویت شما تأیید شود.",
+  "phoneKeepsAccountSecure": "از این برای امنیت حساب رانندگی شما استفاده می‌کنیم.",
+  "otpChannelSms": "پیامک",
+  "otpChannelWhatsApp": "واتساپ",
+  "otpSessionExpired": "نشست منقضی شد. برگردید و کد جدید بگیرید.",
+  "verificationCode": "کد تأیید",
+  "otpEnterCodeVia": "کد ۶ رقمی را که از طریق {channel} فرستادیم وارد کنید.",
+  "@otpEnterCodeVia": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "otpEnterCodeViaTo": "کد ۶ رقمی را که از طریق {channel} به {phone} فرستادیم وارد کنید.",
+  "@otpEnterCodeViaTo": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "resendCodeInSeconds": "ارسال مجدد تا {seconds} ثانیه",
+  "@resendCodeInSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "verificationEmailSent": "ایمیل تأیید ارسال شد. صندوق ورودی را بررسی کنید.",
+  "emailNotVerifiedYet": "ایمیل هنوز تأیید نشده. صندوق ورودی را بررسی کنید و دوباره تلاش کنید.",
+  "checkYourInbox": "صندوق ورودی را بررسی کنید",
+  "weSentVerificationLinkTo": "لینک تأیید را به ",
+  "yourEmailFallback": "ایمیل شما",
+  "tapLinkThenContinue": " فرستادیم. روی لینک بزنید و سپس برای ادامه به اینجا برگردید.",
+  "tapLinkThenContinueOnboarding": " فرستادیم. روی لینک بزنید و سپس برای ادامه ثبت‌نام به اینجا برگردید.",
+  "checkSpamTip": "نکته: اگر ندیدید پوشه هرزنامه یا تبلیغات را بررسی کنید.",
+  "iHaveVerifiedContinue": "تأیید کردم — ادامه",
+  "resendVerificationEmail": "ارسال دوباره ایمیل تأیید",
+  "backToSignIn": "بازگشت به ورود",
+  "quickDemoAccess": "ورود آزمایشی سریع",
+  "demoLoginNeedsSupabase": "برای ورود آزمایشی سوپابیس لازم است.",
+  "demoLoginFailed": "ورود آزمایشی ناموفق بود.",
+  "authSupabaseNotConfigured": "ورود پیکربندی نشده است. با پشتیبانی تماس بگیرید.",
+  "authInvalidCredentials": "ایمیل یا رمز نادرست است. دوباره تلاش کنید.",
+  "authEmailNotVerified": "قبل از ورود ایمیل خود را تأیید کنید.",
+  "authEmailAlreadyExists": "این ایمیل قبلاً ثبت شده. وارد شوید.",
+  "authRateLimit": "تلاش‌های زیاد. یک دقیقه صبر کنید و دوباره تلاش کنید.",
+  "authDatabaseSignupFailed": "به‌خاطر خطای سرور حساب ساخته نشد. کمی بعد دوباره تلاش کنید.",
+  "authWeakPassword": "رمز ضعیف است. حداقل ۸ حرف با حروف و عدد استفاده کنید.",
+  "authInvalidEmail": "یک ایمیل معتبر وارد کنید.",
+  "authInvalidPhone": "شماره افغانی معتبر وارد کنید (۹ رقم، مثلاً 70 123 4567).",
+  "authInvalidOtp": "کد نادرست یا منقضی است. کد جدید بگیرید.",
+  "authWhatsAppUnavailable": "ورود واتساپ فعلاً در دسترس نیست.",
+  "authGenericError": "مشکلی پیش آمد. دوباره تلاش کنید.",
+  "completeYourProfile": "پروفایل خود را تکمیل کنید",
+  "almostThere": "تقریباً تمام شد!",
+  "profileSetupSubtitle": "نام و تلفن را اضافه کنید تا راننده بتواند با شما تماس بگیرد.",
+  "photoUploadFailed": "بارگذاری عکس ناموفق: {error}",
+  "@photoUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "driverRegistration": "ثبت‌نام راننده",
+  "yourDetails": "اطلاعات شما",
+  "needNameAndPhoneBeforeDocs": "قبل از بارگذاری مدارک، نام و تلفن شما لازم است.",
+  "continueToDocuments": "ادامه به مدارک",
+  "gettingYourLocation": "موقعیت شما گرفته می‌شود…",
+  "gettingLocation": "گرفتن موقعیت…",
+  "currentLocation": "موقعیت فعلی",
+  "locationUnavailable": "موقعیت در دسترس نیست",
+  "waitingForLocation": "منتظر موقعیت شما…",
+  "myLocation": "موقعیت من",
+  "helloName": "سلام، {name}",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingNameFallback": "دوست",
+  "navRide": "سفر",
+  "help": "راهنما",
+  "viewSearch": "مشاهده جستجو",
+  "viewRide": "مشاهده سفر",
+  "searchDestination": "جستجوی مقصد",
+  "quickHome": "خانه",
+  "quickWork": "محل کار",
+  "quickSaved": "ذخیره‌شده",
+  "gpsLocked": "جی‌پی‌اس قفل شد",
+  "gpsAcquiring": "در حال دریافت",
+  "gpsBlocked": "جی‌پی‌اس مسدود",
+  "pickupLabel": "سوار شدن",
+  "destinationLabel": "مقصد",
+  "currentLabel": "فعلی",
+  "driverOnTheWay": "راننده در راه است",
+  "driverIsArriving": "راننده می‌رسد",
+  "onTripToDestination": "در مسیر مقصد",
+  "rideInProgress": "سفر در جریان است",
+  "noSavedAddressTitle": "آدرس {label} وجود ندارد",
+  "@noSavedAddressTitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noSavedAddressBody": "ابتدا یک آدرس ذخیره‌شده با برچسب «{label}» اضافه کنید.",
+  "@noSavedAddressBody": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "addAddress": "افزودن آدرس",
+  "invalidSavedAddressCoords": "مختصات آدرس ذخیره‌شده نامعتبر است",
+  "kabulFallbackPickup": "کابل (نقطه سوار شدن را روی نقشه مشخص کنید)",
+  "locationUnavailableEnableGps": "موقعیت در دسترس نیست. جی‌پی‌اس را روشن کنید یا سوار شدن را روی نقشه انتخاب کنید.",
+  "choosePickupFirst": "ابتدا محل سوار شدن را انتخاب کنید",
+  "choosePickupFirstShort": "ابتدا سوار شدن را انتخاب کنید",
+  "couldNotSelectPlace": "مکان انتخاب نشد. دوباره تلاش کنید.",
+  "selectedPickup": "سوار شدن انتخاب‌شده",
+  "selectedDestination": "مقصد انتخاب‌شده",
+  "enableLocationToBook": "برای رزرو سفر موقعیت را فعال کنید",
+  "planYourTrip": "سفر خود را برنامه‌ریزی کنید",
+  "fromLabel": "از",
+  "toLabel": "به",
+  "popularPlaces": "مکان‌های محبوب",
+  "suggestions": "پیشنهادها",
+  "editPickup": "ویرایش سوار شدن",
+  "searchPickupLocation": "جستجوی محل سوار شدن",
+  "useCurrentLocation": "استفاده از موقعیت فعلی",
+  "chooseOnMap": "انتخاب روی نقشه",
+  "movePinToPickup": "پین را به محل دقیق سوار شدن ببرید",
+  "startTyping": "شروع به نوشتن کنید",
+  "weWillSuggestPlaces": "مکان‌های نزدیک شما را پیشنهاد می‌کنیم",
+  "dropPinDestination": "پین را دقیقاً جایی که می‌روید بگذارید",
+  "moveMapToChoose": "نقشه را حرکت دهید تا مکان را انتخاب کنید",
+  "choosePickup": "انتخاب سوار شدن",
+  "chooseDestination": "انتخاب مقصد",
+  "useThisPickup": "استفاده از این سوار شدن",
+  "useThisDestination": "استفاده از این مقصد",
+  "tapOrDragMap": "نقشه را لمس یا بکشید، سپس تأیید کنید.",
+  "failedToLoadRideTypes": "بارگذاری نوع سفر ناموفق: {error}",
+  "@failedToLoadRideTypes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noRideTypesAvailable": "نوع سفری موجود نیست",
+  "pickupConfirmed": "سوار شدن تأیید شد",
+  "pickup": "سوار شدن",
+  "destination": "مقصد",
+  "dropoff": "پیاده شدن",
+  "chooseYourRide": "سفر خود را انتخاب کنید",
+  "etaMinToDestination": "حدود {minutes} دقیقه تا مقصد",
+  "@etaMinToDestination": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "payment": "پرداخت",
+  "cashAfn": "نقدی · افغانی",
+  "paymentMethodConfirmed": "روش پرداخت تأیید شد",
+  "tapToConfirmPayment": "برای تأیید پرداخت در پایان سفر بزنید",
+  "requestRideWithFare": "درخواست {name} · {fare}",
+  "@requestRideWithFare": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "fare": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPaymentToContinue": "برای ادامه پرداخت را تأیید کنید",
+  "missingTripDetails": "جزئیات سفر ناقص است",
+  "noDriversAvailable": "الان راننده‌ای موجود نیست. دوباره تلاش کنید.",
+  "connectingToNearbyDrivers": "شما را به رانندگان نزدیک وصل می‌کنیم — معمولاً کمتر از یک دقیقه.",
+  "retryOrCancelBelow": "می‌توانید پایین دوباره تلاش کنید یا لغو کنید.",
+  "cancelRequest": "لغو درخواست",
+  "followingLiveRouteHint": "مسیر زنده دنبال می‌شود. برای بازگشت به جزئیات ↓ را بزنید.",
+  "couldNotOpenWhatsAppCall": "تماس واتساپ باز نشد",
+  "couldNotOpenWhatsAppMessages": "پیام واتساپ باز نشد",
+  "cancelThisRide": "این سفر لغو شود؟",
+  "cancelRideWarning": "راننده مطلع می‌شود. لغو مکرر ممکن است هزینه داشته باشد.",
+  "keepRide": "سفر بماند",
+  "shareTripIntro": "من در سفر روانا هستم.",
+  "shareDriver": "راننده: {name}",
+  "@shareDriver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareVehicle": "موتر: {vehicle}",
+  "@shareVehicle": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "sharePlate": "نمبر پلیت: {plate}",
+  "@sharePlate": {
+    "placeholders": {
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "shareFrom": "از: {address}",
+  "@shareFrom": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTo": "به: {address}",
+  "@shareTo": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCurrentLocation": "موقعیت فعلی: {url}",
+  "@shareCurrentLocation": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTripSubject": "سفر روانا من",
+  "driverConfirmedHeadingPickup": "راننده تأیید کرد — به سمت سوار شدن",
+  "driverIsAtPickup": "راننده در محل سوار شدن است",
+  "backToHome": "بازگشت به خانه",
+  "you": "شما",
+  "yourDriver": "راننده شما",
+  "followingYourTrip": "دنبال کردن سفر شما",
+  "driverEnRouteToPickup": "راننده در مسیر سوار شدن",
+  "safety": "ایمنی",
+  "driverLiveLocation": "موقعیت زنده راننده",
+  "yourPickupSpot": "محل سوار شدن شما",
+  "hintFollowLiveRoute": "خط مسیر با حرکت راننده به‌روز می‌شود. برای دنبال کردن زنده، شروع ناوبری را بزنید.",
+  "hintWatchDriverApproach": "نزدیک شدن راننده را روی نقشه ببینید. زمان تقریبی خودکار به‌روز می‌شود.",
+  "followTripRoute": "دنبال کردن مسیر سفر",
+  "followDriverToPickup": "دنبال کردن راننده تا سوار شدن",
+  "call": "تماس",
+  "message": "پیام",
+  "shareTrip": "اشتراک سفر",
+  "driverArrivedNotice": "راننده شما در محل سوار شدن است.",
+  "youHaveArrived": "رسیدید",
+  "thanksForRiding": "از سفر با روانا سپاسگزاریم.",
+  "payYourDriver": "به راننده بپردازید",
+  "howWasYourTrip": "سفر چطور بود؟",
+  "feedbackHelpsDrivers": "بازخورد شما به رانندگان کمک می‌کند بهتر شوند.",
+  "ratingTagCleanCar": "موتر تمیز",
+  "ratingTagSafeDriving": "رانندگی ایمن",
+  "ratingTagFriendlyDriver": "راننده مؤدب",
+  "ratingTagOnTime": "به‌موقع",
+  "ratingTagGoodNavigation": "مسیریابی خوب",
+  "submitRating": "ارسال امتیاز",
+  "skipRating": "رد کردن امتیاز",
+  "reportAnIssue": "گزارش مشکل",
+  "ratingFailed": "امتیازدهی ناموفق: {error}",
+  "@ratingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tripTitleWithId": "سفر · {id}",
+  "@tripTitleWithId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tripSummary": "خلاصه سفر",
+  "totalFare": "کرایه کل",
+  "driverLabel": "راننده",
+  "whatsAppDriver": "واتساپ راننده",
+  "whatsAppCallDriver": "تماس واتساپ با راننده",
+  "rideHistory": "تاریخچه سفرها",
+  "failedToLoadHistory": "بارگذاری تاریخچه ناموفق: {error}",
+  "@failedToLoadHistory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noTripsYet": "هنوز سفری نیست",
+  "pastRidesHint": "سفرهای گذشته اینجا ظاهر می‌شوند.",
+  "fromAddress": "از {address}",
+  "@fromAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "statusSearching": "در حال جستجو",
+  "statusAccepted": "پذیرفته شد",
+  "statusDriverArriving": "راننده در راه",
+  "statusTripStarted": "سفر شروع شد",
+  "statusCompleted": "تکمیل شد",
+  "statusCancelled": "لغو شد",
+  "completed": "تکمیل‌شده",
+  "account": "حساب",
+  "failedToLoadProfile": "بارگذاری پروفایل ناموفق: {error}",
+  "@failedToLoadProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerFallbackName": "مسافر",
+  "tripsStat": "سفرها",
+  "ratingStat": "امتیاز",
+  "memberStat": "عضو",
+  "memberNew": "جدید",
+  "preferences": "ترجیحات",
+  "savedAddresses": "آدرس‌های ذخیره‌شده",
+  "notifications": "اعلان‌ها",
+  "safetyAndSupport": "ایمنی و پشتیبانی",
+  "emergencyContacts": "مخاطبین اضطراری",
+  "helpCentre": "مرکز راهنما",
+  "enableLocationToSaveAddress": "برای ذخیره این آدرس موقعیت را فعال کنید",
+  "saveANewAddress": "ذخیره آدرس جدید",
+  "usesCurrentGps": "از موقعیت فعلی جی‌پی‌اس برای مختصات استفاده می‌کند.",
+  "addressLabel": "برچسب",
+  "addressLabelHint": "خانه، کار، ورزشگاه…",
+  "addressField": "آدرس",
+  "saveAddress": "ذخیره آدرس",
+  "failedToLoadAddresses": "بارگذاری آدرس‌ها ناموفق: {error}",
+  "@failedToLoadAddresses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noSavedAddresses": "آدرس ذخیره‌شده‌ای نیست",
+  "savedAddressesEmptyHint": "خانه، کار و مکان‌های دیگر را ذخیره کنید\nتا با یک ضربه رزرو کنید.",
+  "noNotificationsYet": "هنوز اعلانی نیست",
+  "notificationsEmptyHint": "به‌روزرسانی سفر و پیشنهادها اینجا ظاهر می‌شوند\nوقتی اعلان‌ها فعال باشند.",
+  "needAHand": "کمک می‌خواهید؟",
+  "helpTeam247": "تیم ما شبانه‌روز آماده کمک است.",
+  "commonQuestions": "سؤالات رایج",
+  "faqBookTitle": "چگونه سفر رزرو کنم؟",
+  "faqBookBody": "برنامه را باز کنید، «کجا می‌روید؟» را بزنید، مقصد را مشخص کنید، نوع سفر را انتخاب و تأیید کنید. نزدیک‌ترین راننده در راه خواهد بود.",
+  "faqPayTitle": "چگونه پرداخت کنم؟",
+  "faqPayBody": "در پایان سفر به افغانی نقد به راننده بپردازید.",
+  "reportSafetyOrTripIssue": "گزارش مشکل ایمنی یا سفر",
+  "addEmergencyContact": "افزودن مخاطب اضطراری",
+  "name": "نام",
+  "phone": "تلفن",
+  "saveContact": "ذخیره مخاطب",
+  "failedToLoadContacts": "بارگذاری مخاطبین ناموفق: {error}",
+  "@failedToLoadContacts": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noContactsYet": "هنوز مخاطبی نیست",
+  "emergencyContactsEmptyHint": "تا ۳ مخاطب مورد اعتماد اضافه کنید.\nدر مواقع اضطراری مطلع می‌شوند.",
+  "navigate": "مسیریابی",
+  "estimatedFare": "کرایه تقریبی",
+  "minutesShort": "دقیقه",
+  "secondsShort": "ثانیه",
+  "distanceKm": "{km} کیلومتر",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceMeters": "{meters} متر",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "etaMinutes": "{minutes} دقیقه",
+  "@etaMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "routeDistance": "فاصله مسیر",
+  "whatsApp": "واتساپ",
+  "endNavigation": "پایان ناوبری",
+  "navigating": "در حال مسیریابی",
+  "followingSelectedRoute": "دنبال کردن مسیر انتخاب‌شده",
+  "routes": "مسیرها",
+  "routeShortest": "کوتاه‌ترین",
+  "routeFastest": "سریع‌ترین",
+  "routeChipDurationDistance": "{minutes}د · {km}کم",
+  "@routeChipDurationDistance": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyDriver": "راننده نزدیک",
+  "driver": "راننده",
+  "passenger": "مسافر",
+  "activeRide": "سفر فعال",
+  "continueOnHighlightedRoute": "در مسیر مشخص‌شده ادامه دهید",
+  "startNavigation": "شروع ناوبری",
+  "issueWithTrip": "مشکل در سفر #{id}",
+  "@issueWithTrip": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "reportValidation": "موضوع و حداقل ۱۰ حرف توضیح وارد کنید.",
+  "reportSubmitted": "گزارش ارسال شد. تیم ما پیگیری می‌کند.",
+  "failedToSubmit": "ارسال ناموفق: {error}",
+  "@failedToSubmit": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tripShortId": "سفر {id}",
+  "@tripShortId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "category": "دسته‌بندی",
+  "subject": "موضوع",
+  "whatHappened": "چه اتفاقی افتاد؟",
+  "safetyReportPriority": "گزارش‌های ایمنی در اولویت هستند. اگر در خطر فوری هستید با خدمات اضطراری محلی تماس بگیرید.",
+  "submitReport": "ارسال گزارش",
+  "supportBilling": "صورت‌حساب / اضافه دریافت",
+  "supportDriverBehaviour": "رفتار راننده",
+  "supportSafetyConcern": "نگرانی ایمنی",
+  "supportTechnical": "مشکل برنامه / فنی",
+  "supportOther": "سایر",
+  "supportFarePayment": "مشکل کرایه / پرداخت",
+  "supportPassengerBehaviour": "رفتار مسافر",
+  "docDriverLicence": "جواز رانندگی",
+  "docVehicleRegistration": "ثبت موتر",
+  "docNationalId": "تذکره",
+  "docProfilePhoto": "عکس پروفایل",
+  "docVehicleInfo": "اطلاعات موتر",
+  "supabaseRequiredForUpload": "برای بارگذاری مدرک سوپابیس لازم است",
+  "documentUploaded": "مدرک بارگذاری شد",
+  "uploadFailed": "بارگذاری ناموفق: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseUploadAllDocuments": "همه مدارک لازم را بارگذاری کنید",
+  "enterVehicleMakeModelPlate": "نوع، مدل و نمبر پلیت موتر را وارد کنید",
+  "pleaseUploadDocumentFirst": "ابتدا مدرک را بارگذاری کنید",
+  "stepOfTotal": "مرحله {current} از {total}",
+  "@stepOfTotal": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "takeClearPhotoOf": "از {document} خود یک عکس واضح و روشن بگیرید.",
+  "@takeClearPhotoOf": {
+    "placeholders": {
+      "document": {
+        "type": "String"
+      }
+    }
+  },
+  "tellUsAboutVehicle": "درباره موتری که می‌رانید بگویید.",
+  "submitForReview": "ارسال برای بررسی",
+  "captureDocument": "گرفتن مدرک",
+  "looksGoodCanRetake": "خوب است — در صورت نیاز دوباره بگیرید.",
+  "jpgPngKeptPrivate": "JPG یا PNG، خصوصی و امن نگهداری می‌شود.",
+  "retakePhoto": "گرفتن دوباره عکس",
+  "takePhoto": "گرفتن عکس",
+  "vehicleMakeExample": "نوع موتر (مثلاً تویوتا)",
+  "vehicleModelExample": "مدل (مثلاً کرولا)",
+  "plateNumber": "نمبر پلیت",
+  "couldNotCheckStatus": "وضعیت بررسی نشد",
+  "applicationNotApproved": "درخواست تأیید نشد",
+  "applicationUnderReview": "درخواست در حال بررسی",
+  "documentsCouldNotBeVerified": "مدارک شما تأیید نشد. بررسی و دوباره ارسال کنید.",
+  "verifyingDocuments24to48": "مدارک شما بررسی می‌شود. معمولاً ۲۴ تا ۴۸ ساعت طول می‌کشد. پس از تأیید مطلع می‌شوید.",
+  "documentsSubmitted": "مدارک ارسال شد",
+  "reviewFailedResubmit": "بررسی ناموفق — ارسال دوباره لازم است",
+  "backgroundVehicleVerification": "بررسی سابقه و موتر",
+  "welcomeOnboard": "به جمع ما خوش آمدید",
+  "resubmitDocuments": "ارسال دوباره مدارک",
+  "refreshStatus": "تازه‌سازی وضعیت",
+  "mustBeApprovedToGoOnline": "قبل از آنلاین شدن حساب باید تأیید شود",
+  "enableLocationToGoOnline": "برای آنلاین شدن و دریافت درخواست موقعیت را فعال کنید.",
+  "couldNotGoOnline": "آنلاین نشدید. تأیید و اتصال را بررسی کنید.",
+  "rideCancelled": "سفر لغو شد",
+  "headToPickup": "به محل سوار شدن بروید",
+  "navigateToPickup": "مسیریابی تا سوار شدن",
+  "atPickup": "در محل سوار شدن",
+  "continuePickup": "ادامه سوار شدن",
+  "tripInProgress": "سفر در جریان",
+  "continueTrip": "ادامه سفر",
+  "activeTrip": "سفر فعال",
+  "viewTrip": "مشاهده سفر",
+  "verifiedDriver": "راننده تأییدشده",
+  "youAreOffline": "آفلاین هستید",
+  "youAreOnline": "آنلاین هستید",
+  "switchOnlineToReceiveRides": "برای دریافت سفر آنلاین شوید",
+  "todaysEarnings": "درآمد امروز",
+  "lastSession": "آخرین نشست",
+  "trips": "سفرها",
+  "gross": "ناخالص",
+  "rating": "امتیاز",
+  "receivingRides": "در حال دریافت سفر",
+  "tapToStart": "برای شروع بزنید",
+  "acceptFailed": "قبول ناموفق: {error}",
+  "@acceptFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newRideRequest": "درخواست سفر جدید",
+  "respondNowTimeRunningOut": "الان پاسخ دهید — وقت کم است",
+  "reviewRouteAndAccept": "مسیر را ببینید و سریع قبول کنید",
+  "acceptRide": "قبول سفر",
+  "minEta": "دقیقه تقریبی",
+  "distance": "فاصله",
+  "passengerWillBeNotifiedTripEnds": "مسافر مطلع می‌شود و سفر پایان می‌یابد.",
+  "rideCancelledFee": "سفر لغو شد. هزینه: {amount}",
+  "@rideCancelledFee": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelFailed": "لغو ناموفق: {error}",
+  "@cancelFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backToDashboard": "بازگشت به داشبورد",
+  "namePickup": "سوار شدن {name}",
+  "@namePickup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerPickup": "سوار کردن مسافر",
+  "whatsAppPassenger": "واتساپ مسافر",
+  "whatsAppCallPassenger": "تماس واتساپ با مسافر",
+  "headingToPickup": "به سمت سوار شدن",
+  "waitingAtPickupMarker": "منتظر در نشانه سوار شدن",
+  "passengerPickupLocation": "محل سوار شدن مسافر",
+  "inAppNavigationStarted": "ناوبری داخل برنامه شروع شد.",
+  "iveArrivedAtPickup": "به محل سوار شدن رسیدم",
+  "youAreAtPickupLocation": "شما در محل سوار شدن مسافر هستید.",
+  "tapStartNavigation": "برای دنبال کردن مسیر، شروع ناوبری را بزنید.",
+  "samePickupLocation": "شما و مسافر در یک محل سوار شدن هستید.",
+  "tripStartedFollowRoute": "سفر شروع شد. مسیر را تا مقصد دنبال کنید.",
+  "completeThisTrip": "این سفر تکمیل شود؟",
+  "onlyCompleteAfterDestination": "فقط پس از رسیدن مسافر به مقصد تکمیل کنید.",
+  "keepDriving": "به رانندگی ادامه دهید",
+  "completeTrip": "تکمیل سفر",
+  "onlyCancelIfCannotContinue": "فقط اگر ادامه ایمن ممکن نیست لغو کنید. مسافر مطلع می‌شود.",
+  "waitingForPassenger": "منتظر مسافر",
+  "dropoffWithAddress": "پیاده شدن: {address}",
+  "@dropoffWithAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "atPickupStartWhenOnboard": "در سوار شدن — پس از سوار شدن مسافر سفر را شروع کنید",
+  "yourCurrentLocation": "موقعیت فعلی شما",
+  "mayCancelWithoutFeeNoShow": "اگر مسافر نیامد می‌توانید بدون هزینه لغو کنید.",
+  "startTripOnceOnboard": "وقتی مسافر سوار شد سفر را شروع کنید.",
+  "navigateToDropoff": "مسیریابی تا پیاده شدن",
+  "cancelRideNoFee": "لغو سفر (بدون هزینه)",
+  "goToPickup": "رفتن به سوار شدن",
+  "startTrip": "شروع سفر",
+  "tripStartedKeepDriving": "سفر شروع شد — ادامه دهید",
+  "statusLabel": "وضعیت: {status}",
+  "@statusLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "tagPolite": "مؤدب",
+  "tagOnTimeAtPickup": "به‌موقع در سوار شدن",
+  "tagClearDirections": "آدرس واضح",
+  "tagRespectful": "محترم",
+  "tagEasyPickup": "سوار شدن آسان",
+  "couldNotUpdateAvailability": "وضعیت در دسترس بودن به‌روز نشد",
+  "greatJob": "عالی بود!",
+  "tripCompletedFareBreakdown": "سفر تکمیل شد. جزئیات کرایه این است.",
+  "rateYourPassenger": "به مسافر امتیاز دهید",
+  "feedbackKeepsRawanaSafe": "بازخورد شما روانا را ایمن و قابل اعتماد نگه می‌دارد.",
+  "openToNewRequests": "برای درخواست‌های جدید آماده‌اید",
+  "goOnlineToReceiveRequests": "برای دریافت درخواست جدید آنلاین شوید",
+  "youEarned": "درآمد شما",
+  "grossFare": "کرایه ناخالص",
+  "rawanaFeePercent": "کارمزد روانا ({percent}٪)",
+  "@rawanaFeePercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "yourEarnings": "درآمد شما",
+  "today": "امروز",
+  "thisWeek": "این هفته",
+  "thisMonth": "این ماه",
+  "couldNotLoadEarnings": "درآمد بارگذاری نشد",
+  "platformFee": "کارمزد پلتفرم",
+  "avgPerTrip": "میانگین / سفر",
+  "netEarnings": "درآمد خالص",
+  "noTripsYetPeriod": "هنوز سفری در {period} نیست",
+  "@noTripsYetPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsCompletedOne": "{count} سفر تکمیل شد",
+  "@tripsCompletedOne": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsCompletedOther": "{count} سفر تکمیل شد",
+  "@tripsCompletedOther": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "howEarningsWork": "درآمد چگونه کار می‌کند",
+  "earningsExplainer": "کرایه ناخالص مبلغ پرداخت‌شده مسافر است. کارمزد خودکار کسر می‌شود و درآمد خالص به کیف پول واریز می‌گردد.",
+  "activitySnapshot": "نمای فعالیت",
+  "completeTripsToSeeActivity": "برای دیدن الگوی فعالیت سفرها را تکمیل کنید.",
+  "couldNotLoadWallet": "کیف پول بارگذاری نشد",
+  "recentTransactions": "تراکنش‌های اخیر",
+  "couldNotLoadTransactions": "تراکنش‌ها بارگذاری نشد",
+  "requestPayoutQuestion": "درخواست برداشت؟",
+  "willTransferToPayoutAccount": "{amount} از کیف پول منتقل می‌شود. روانا برداشت را پردازش می‌کند — نیازی به حساب بانکی در برنامه نیست.",
+  "@willTransferToPayoutAccount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payoutRequested": "برداشت درخواست شد",
+  "availableBalance": "موجودی قابل برداشت",
+  "pendingAmount": "در انتظار {amount}",
+  "@pendingAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "requestPayout": "درخواست برداشت",
+  "noFundsYet": "هنوز موجودی نیست",
+  "noTransactionsYet": "هنوز تراکنشی نیست",
+  "earningsPayoutsWillShowHere": "درآمد و برداشت‌ها اینجا نمایش داده می‌شوند.",
+  "transaction": "تراکنش",
+  "tripHistory": "تاریخچه سفرها",
+  "couldNotLoadTripHistory": "تاریخچه سفر بارگذاری نشد",
+  "totalEarned": "کل درآمد",
+  "allTrips": "همه سفرها",
+  "unknownDestination": "مقصد نامعلوم",
+  "unknownPickup": "سوار شدن نامعلوم",
+  "pickupUnknown": "سوار شدن نامعلوم",
+  "fromPickup": "از {pickup}",
+  "@fromPickup": {
+    "placeholders": {
+      "pickup": {
+        "type": "String"
+      }
+    }
+  },
+  "completedCancelledRidesAppearHere": "سفرهای تکمیل و لغوشده اینجا ظاهر می‌شوند.",
+  "failedToLoadTrip": "بارگذاری سفر ناموفق: {error}",
+  "@failedToLoadTrip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMin": "{n} دقیقه",
+  "@durationMin": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "openRouteInMaps": "باز کردن مسیر در نقشه",
+  "profileUpdated": "پروفایل به‌روز شد",
+  "signOutQuestion": "خارج شوید؟",
+  "signOutNeedSignBackIn": "برای دریافت درخواست باید دوباره وارد شوید.",
+  "couldNotLoadProfile": "پروفایل بارگذاری نشد",
+  "driverFallbackName": "راننده",
+  "vehicle": "موتر",
+  "makeAndModel": "نوع و مدل",
+  "quickActions": "اقدامات سریع",
+  "myDocuments": "مدارک من",
+  "viewUploadedPapers": "مشاهده مدارک بارگذاری‌شده",
+  "privacyAndSecurity": "حریم خصوصی و امنیت",
+  "manageAccountSafety": "امنیت حساب را مدیریت کنید",
+  "personalDetails": "اطلاعات شخصی",
+  "vehicleMake": "نوع موتر",
+  "vehicleModel": "مدل موتر",
+  "saveChanges": "ذخیره تغییرات",
+  "couldNotLoadDocuments": "مدارک بارگذاری نشد",
+  "documentsVerified": "مدارک شما تأیید شده است.",
+  "documentsAwaitingReview": "مدارک ارسال شد — در انتظار بررسی ادمین.",
+  "uploadDocsToStartEarning": "برای شروع درآمد مدارک را بارگذاری کنید.",
+  "noDocumentsYet": "هنوز مدرکی نیست",
+  "uploadLicenceRegId": "جواز، ثبت و تذکره را برای تأیید بارگذاری کنید.",
+  "uploadDocuments": "بارگذاری مدارک",
+  "submittedFiles": "فایل‌های ارسال‌شده",
+  "updateDocuments": "به‌روزرسانی مدارک",
+  "documentNotUploaded": "{label} — بارگذاری نشده",
+  "@documentNotUploaded": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordMinEightChars": "رمز باید حداقل ۸ حرف باشد",
+  "passwordsDoNotMatch": "رمزها یکسان نیستند",
+  "passwordUpdated": "رمز به‌روز شد",
+  "requestAccountDeletion": "درخواست حذف حساب",
+  "accountProtectedNeverSharePassword": "حساب شما با ورود امن محافظت می‌شود. رمز را با کسی شریک نکنید.",
+  "signInSection": "ورود",
+  "notLinked": "متصل نیست",
+  "verified": "تأییدشده",
+  "unverified": "تأییدنشده",
+  "changePassword": "تغییر رمز",
+  "newPassword": "رمز جدید",
+  "confirmPassword": "تأیید رمز",
+  "updatePassword": "به‌روزرسانی رمز",
+  "policies": "سیاست‌ها",
+  "termsAndPolicies": "شرایط و سیاست‌ها",
+  "howRawanaOperates": "روانا چگونه کار می‌کند",
+  "driverGuidelines": "راهنمای راننده",
+  "bestPracticesOnPlatform": "بهترین روش‌ها در پلتفرم",
+  "teamWillProcessRequest": "تیم ما درخواست شما را پردازش می‌کند",
+  "supportEmailFallback": "ایمیل: support@rawana.af",
+  "support": "پشتیبانی",
+  "getHelp": "دریافت کمک",
+  "reportATripIssue": "گزارش مشکل سفر",
+  "lostItemWrongFareRoute": "شیء گم‌شده، کرایه نادرست، مشکل مسیر",
+  "reportASafetyConcern": "گزارش نگرانی ایمنی",
+  "tellUsUnsafeBehaviour": "درباره رفتار ناایمن بگویید",
+  "contactAdmin": "تماس با ادمین",
+  "emailOurSupportTeam": "ایمیل به تیم پشتیبانی",
+  "resources": "منابع",
+  "bestPracticesKeepRatingHigh": "روش‌هایی برای حفظ امتیاز بالا",
+  "myReports": "گزارش‌های من",
+  "couldNotLoadReports": "گزارش‌ها بارگذاری نشد: {error}",
+  "@couldNotLoadReports": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noSupportReportsYet": "هنوز گزارشی نیست. در صورت نیاز از گزینه‌های بالا استفاده کنید.",
+  "supportTicket": "تیکت پشتیبانی",
+  "ticketStatusOpen": "باز",
+  "weHaveYourBack": "ما پشتیبان شما هستیم",
+  "getHelp247": "شبانه‌روز از تیم ما کمک بگیرید.",
+  "couldNotLoadTrips": "سفرها بارگذاری نشد",
+  "completeRideThenReport": "ابتدا یک سفر را تکمیل کنید، سپس اینجا گزارش دهید.",
+  "selectTripNeedHelp": "سفری را که نیاز به کمک دارد انتخاب کنید",
+  "generalIssueNoTrip": "مشکل عمومی (بدون سفر)",
+  "notificationsEmptyMessage": "درخواست سفر، به‌روزرسانی برداشت و اطلاعیه‌ها\nاینجا ظاهر می‌شوند.",
+  "performance": "عملکرد",
+  "couldNotLoadPerformance": "عملکرد بارگذاری نشد",
+  "serviceMetrics": "شاخص‌های خدمات",
+  "acceptanceRate": "نرخ قبول",
+  "cancellationRate": "نرخ لغو",
+  "totalTrips": "کل سفرها",
+  "onlineTime": "زمان آنلاین",
+  "hoursShort": "{h} ساعت",
+  "@hoursShort": {
+    "placeholders": {
+      "h": {
+        "type": "String"
+      }
+    }
+  },
+  "hoursMinutesShort": "{h}س {m}د",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "h": {
+        "type": "String"
+      },
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "averageRiderRating": "میانگین امتیاز مسافر",
+  "higherAcceptanceLowerCancelTip": "قبول بیشتر و لغو کمتر باعث درخواست‌های بیشتر می‌شود.",
+  "cancelReasonNotAtPickup": "مسافر در محل سوار شدن نیست",
+  "cancelReasonWrongPickup": "محل سوار شدن اشتباه",
+  "cancelReasonSafety": "نگرانی ایمنی",
+  "cancelReasonVehicle": "مشکل موتر",
+  "cancelReasonEmergency": "اضطرار شخصی",
+  "cancelReasonNoShow": "مسافر حاضر نشد",
+  "noFeePassengerNoShow": "بدون هزینه لغو — مسافر پس از زمان انتظار نیامد.",
+  "cancellationFeeMayApply": "اگر الان لغو کنید ممکن است هزینه اعمال شود.",
+  "reason": "دلیل",
+  "waitingPeriodEndedNoFee": "زمان انتظار تمام شد. اگر مسافر نیامد بدون هزینه لغو کنید.",
+  "freeWaitRemaining": "انتظار رایگان: {time} باقی",
+  "@freeWaitRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerNoShowWindow": "بازه عدم حضور مسافر",
+  "cancelWithoutFeeIn": "لغو بدون هزینه تا {time}",
+  "@cancelWithoutFeeIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrived": "رسید",
+  "trip": "سفر",
+  "done": "تمام",
+  "accountNotRegisteredAsDriver": "این حساب به عنوان راننده ثبت نشده. با حساب راننده وارد شوید.",
+  "sessionExpiredSignInAgain": "نشست منقضی شد. خارج شوید و دوباره وارد شوید.",
+  "driverProfileNotFound": "پروفایل راننده یافت نشد. ابتدا مدارک را بارگذاری کنید.",
+  "cannotReachRawanaServer": "سرور روانا در دسترس نیست. اتصال را بررسی کنید و دوباره تلاش کنید.",
+  "couldNotLoadDriverProfile": "پروفایل راننده بارگذاری نشد.",
+  "driverGuideProfessionalTitle": "حرفه‌ای بمانید",
+  "driverGuideProfessionalBody": "با مسافران مؤدب سلام کنید، موتر را تمیز نگه دارید و قوانین ترافیک را رعایت کنید. رفتار آرام و محترمانه سریع‌ترین راه برای امتیاز پنج‌ستاره است.",
+  "driverGuideAcceptTitle": "سفرها را سریع قبول کنید",
+  "driverGuideAcceptBody": "نرخ قبول بالا درخواست‌های بیشتری می‌آورد. فقط وقتی آماده‌اید آنلاین شوید. اگر رد می‌کنید سریع باشید تا مسافر راننده دیگری پیدا کند.",
+  "driverGuideNavigateTitle": "دقیق مسیریابی کنید",
+  "driverGuideNavigateBody": "از مسیر داخل برنامه برای سوار و پیاده شدن استفاده کنید. قبل از شروع، مقصد را با مسافر تأیید کنید. اگر آدرس مبهم است از برنامه تماس یا پیام دهید.",
+  "driverGuideSafetyTitle": "ایمنی اول",
+  "driverGuideSafetyBody": "خسته یا تحت تأثیر مواد رانندگی نکنید. نگرانی ایمنی را فوراً از پشتیبانی گزارش دهید. در اضطرار ابتدا با مقامات محلی تماس بگیرید سپس روانا را خبر کنید.",
+  "driverGuideFaresTitle": "کرایه و پرداخت",
+  "driverGuideFaresBody": "کرایه از فاصله، زمان و قیمت‌گذاری منطقه خودکار محاسبه می‌شود. پول اضافه نخواهید مگر در برنامه توافق شده باشد. درآمد پس از هر سفر تکمیل‌شده در کیف پول ظاهر می‌شود.",
+  "driverGuideCancellationsTitle": "لغوها",
+  "driverGuideCancellationsBody": "پس از قبول سفر از لغو خودداری کنید. لغو مکرر امتیاز عملکرد را پایین می‌آورد و درخواست‌های آینده را کم می‌کند. فقط در ضرورت لغو کنید و دلیل واضح بنویسید.",
+  "termsDriverAgreement": "توافق‌نامه راننده",
+  "termsDriverAgreementBody": "با استفاده از روانا راننده موافقت می‌کنید خدمات را مطابق قوانین پلتفرم، مقررات محلی و مدارک ثبت‌نام ارائه دهید.",
+  "termsAccountVerification": "حساب و تأیید",
+  "termsAccountVerificationBody": "جواز، ثبت موتر و مدارک هویتی باید معتبر و به‌روز باشد. روانا ممکن حساب‌های با مدارک منقضی یا جعلی را تعلیق کند.",
+  "termsEarningsPayouts": "درآمد و برداشت",
+  "termsEarningsPayoutsBody": "کرایه پس از کسر کارمزد روانا به کیف پول واریز می‌شود. برداشت‌ها طبق برنامه تیم مالی پردازش می‌شود. فعالیت متقلبانه ممکن است موجودی را نگه دارد.",
+  "termsPrivacy": "حریم خصوصی",
+  "termsPrivacyBody": "موقعیت هنگام آنلاین بودن، تاریخچه سفر و اطلاعات تماس را برای ارائه خدمت جمع می‌کنیم. شماره مسافر در سفر فعال ممکن است مخفی شود. کنترل‌ها را در حریم خصوصی و امنیت پروفایل ببینید.",
+  "termsConductSuspension": "رفتار و تعلیق",
+  "termsConductSuspensionBody": "آزار، تبعیض، رانندگی ناایمن یا شکایت مکرر می‌تواند به تعلیق موقت یا حذف دائمی منجر شود.",
+  "termsSupport": "پشتیبانی",
+  "termsSupportBody": "برای اختلاف، گزارش ایمنی یا کمک حساب از پشتیبانی داخل برنامه یا support@rawana.af استفاده کنید. به مسائل ایمنی فوری سریع پاسخ می‌دهیم.",
+  "noCancellationFee": "بدون هزینه لغو",
+  "cancellationFeeAmount": "هزینه لغو: {amount}",
+  "@cancellationFeeAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelSearchTitle": "این درخواست لغو شود؟",
+  "cancelSearchBody": "می‌توانید فوراً سفر دیگری درخواست کنید. تا وقتی راننده پیدا نشده هزینه‌ای نیست.",
+  "collectCashAmount": "{amount} نقد بگیرید",
+  "@collectCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashCollected": "نقد دریافت شد",
+  "openInGoogleMaps": "باز کردن در گوگل‌مپ",
+  "tooFarContinueAnyway": "شما {distance} متر از پین فاصله دارید. ادامه می‌دهید؟",
+  "@tooFarContinueAnyway": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "continueAnyway": "ادامه بده",
+  "payDriverCashAmount": "{amount} نقد به راننده بپردازید",
+  "@payDriverCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashSelectedInfo": "نقدی · افغانی — در مقصد به راننده بپردازید",
+  "cashFare": "کرایه نقدی",
+  "rideType": "نوع سفر",
+  "selectRideType": "کدام نوع سفر را می‌پذیرید؟",
+  "fareBreakdown": "جزئیات کرایه",
+  "baseFare": "کرایه پایه",
+  "distanceFare": "فاصله · {km} کیلومتر",
+  "@distanceFare": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "timeFare": "زمان · {minutes} دقیقه",
+  "@timeFare": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "taxLabel": "مالیات",
+  "totalCash": "مجموع نقدی",
+  "cancelGraceSeconds": "تا {seconds} ثانیه پس از پذیرش راننده رایگان لغو می‌شود.",
+  "@cancelGraceSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "maxEmergencyContacts": "حداکثر ۳ مخاطب اضطراری می‌توانید ذخیره کنید.",
+  "maxContactsReached": "حداکثر ۳ مخاطب اضطراری ثبت شده است.",
+  "useThisLocation": "استفاده از این مکان",
+  "chooseSavedPlace": "انتخاب مکان",
+  "vehicleYear": "سال موتر",
+  "vehicleColour": "رنگ موتر",
+  "openInWaze": "باز کردن در ویز",
+  "chooseMapsApp": "باز کردن در نقشه",
+  "findingAnotherDriver": "راننده قبلی لغو کرد. راننده دیگری پیدا می‌کنیم.",
+  "filterFrom": "از تاریخ",
+  "filterTo": "تا تاریخ",
+  "clearFilters": "پاک کردن فیلترها",
+  "accountBlocked": "این حساب مسدود است و نمی‌تواند سفر رزرو کند.",
+  "editName": "ویرایش نام",
+  "promoCode": "کد تخفیف",
+  "applyPromo": "اعمال",
+  "promoApplied": "تخفیف اعمال شد",
+  "promoInvalid": "این کد تخفیف معتبر نیست.",
+  "promoExpired": "مهلت این کد تخفیف تمام شده است.",
+  "discount": "تخفیف",
+  "writeAReview": "نظر بنویسید (اختیاری)",
+  "ratingCommentHint": "سفر چطور بود؟",
+  "tripReceipt": "رسید سفر",
+  "viewReceipt": "مشاهده رسید",
+  "maintenanceTitle": "به‌زودی برمی‌گردیم",
+  "forceUpdateTitle": "به‌روزرسانی لازم است",
+  "forceUpdateBody": "برای ادامه، روانا را به‌روزرسانی کنید.",
+  "updateApp": "به‌روزرسانی برنامه",
+  "exportMyData": "دانلود داده‌های من",
+  "deleteAccount": "حذف حساب",
+  "deleteAccountConfirm": "این حساب حذف شود؟ این کار قابل بازگشت نیست.",
+  "deleteAccountWarning": "پروفایل و مکان‌های ذخیره‌شده حذف می‌شوند. سوابق سفر برای دلایل قانونی نگه داشته می‌شود.",
+  "accountDeleted": "حساب شما حذف شد.",
+  "dataExported": "فایل داده‌های شما آماده است.",
+  "sos": "اضطراری",
+  "sosConfirm": "موقعیت فعلی به مخاطبان اضطراری ارسال شود؟",
+  "sosSent": "هشدار اضطراری ارسال شد.",
+  "sosFailed": "ارسال اضطراری ممکن نشد. سفر را هم‌رسانی کنید.",
+  "sosNoContacts": "ابتدا یک مخاطب اضطراری اضافه کنید.",
+  "sendSos": "ارسال اضطراری",
+  "yourTickets": "درخواست‌های شما",
+  "noTickets": "هنوز درخواست پشتیبانی ندارید",
+  "reply": "پاسخ",
+  "sendReply": "ارسال پاسخ",
+  "recentRatings": "امتیازهای اخیر",
+  "noRatingsYet": "هنوز نظر کتبی ندارید",
+  "lowRatingAlert": "امتیاز شما از حد آستانه کمتر است. روی سفرهای ایمن و به‌موقع تمرکز کنید.",
+  "highCancelAlert": "نرخ لغو شما بالاست. قبول کردن سفرهای بیشتر از حساب شما محافظت می‌کند.",
+  "typicalDriverRating": "میانگین رانندگان نزدیک {rating}",
+  "@typicalDriverRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "tooManyCancellations": "به سقف لغو امروز رسیده‌اید. فردا دوباره تلاش کنید.",
+  "markAllRead": "خوانده شد",
+  "emergencyContactsCount": "{count} از {max} مخاطب",
+  "@emergencyContactsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "loadMore": "بارگذاری بیشتر",
+  "payoutMethod": "روش برداشت",
+  "payoutAccount": "شماره حساب",
+  "savePayoutDetails": "ذخیره جزئیات برداشت",
+  "payoutDetailsSaved": "جزئیات برداشت ذخیره شد",
+  "tooFarFromPickup": "شما {distance} متر از محل سوار شدن فاصله دارید. برای تأیید رسیدن، به فاصله {required} متر نزدیک شوید.",
+  "@tooFarFromPickup": {
+    "placeholders": {
+      "distance": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "tooFarFromDropoff": "شما {distance} متر از مقصد فاصله دارید. برای پایان سفر، به فاصله {required} متر نزدیک شوید.",
+  "@tooFarFromDropoff": {
+    "placeholders": {
+      "distance": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "rideCancelledByPassenger": "مسافر این سفر را لغو کرد.",
+  "rideCancelledBySupport": "این سفر توسط پشتیبانی روانه لغو شد.",
+  "rideCancelledByDriver": "راننده لغو کرد. در حال یافتن راننده دیگری برای شما هستیم.",
+  "rideCancelledNoDrivers": "راننده‌ای برای این سفر در دسترس نبود.",
+  "rideCancelledGeneric": "این سفر لغو شد.",
+  "rateLastTripTitle": "سفر آخر شما چطور بود؟",
+  "rateLastTripBody": "سفر خود به {destination} را امتیاز دهید تا کیفیت راننده‌ها را بالا نگه داریم.",
+  "@rateLastTripBody": {
+    "placeholders": {
+      "destination": { "type": "String" }
+    }
+  },
+  "rateNow": "امتیاز دهید",
+  "resumingActiveTrip": "شما یک سفر در حال انجام دارید. به آن بازمی‌گردید.",
+  "youKeep": "سهم شما",
+  "commissionOwedToRawana": "کمیسیون قابل پرداخت به روانه",
+  "outstandingFeeCollected": "هزینه لغو دریافت‌شده برای روانه",
+  "totalCashToCollect": "مجموع نقد قابل دریافت",
+  "amountOwedToRawana": "بدهی شما به روانه",
+  "creditFromRawana": "طلب شما از روانه",
+  "balanceSettled": "تسویه شده",
+  "balanceSettledBody": "در حال حاضر کمیسیونی برای پرداخت ندارید.",
+  "debtLimitLabel": "سقف {amount}",
+  "@debtLimitLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "debtLimitReachedTitle": "برای ادامه رانندگی، بدهی خود را تسویه کنید",
+  "debtLimitReachedBody": "شما {owed} بدهکار هستید. رانندگانی که از سقف {limit} عبور کنند تا ثبت پرداخت توسط مالی نمی‌توانند آنلاین شوند.",
+  "@debtLimitReachedBody": { "placeholders": { "owed": { "type": "String" }, "limit": { "type": "String" } } },
+  "howToSettle": "روش پرداخت به روانه",
+  "walletCashFirstExplainer": "شما همه کرایه‌ها را نقد نگه می‌دارید. کمیسیون روانه به حساب شما در اینجا اضافه می‌شود و با بخش مالی تسویه می‌کنید.",
+  "outstandingFeeIncluded": "شامل {amount} هزینه لغو پرداخت‌نشده از سفر قبلی",
+  "@outstandingFeeIncluded": { "placeholders": { "amount": { "type": "String" } } },
+  "cancellationFeeChargedNextRide": "هزینه لغو {amount} به سفر بعدی شما اضافه خواهد شد.",
+  "@cancellationFeeChargedNextRide": { "placeholders": { "amount": { "type": "String" } } },
+  "txCommission": "کمیسیون",
+  "txSettlement": "پرداخت به روانه",
+  "txCancellationFee": "جبران هزینه لغو",
+  "txFeeCollected": "هزینه لغو دریافت‌شده",
+  "txPayout": "برداشت",
+  "txAdjustment": "تعدیل",
+  "txCashCollected": "کرایه نقدی (نزد شما)"
+}

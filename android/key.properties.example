@@ -1,0 +1,4 @@
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEYSTORE_PASSWORD
+keyAlias=rawana
+storeFile=C:\\Users\\Najib\\Desktop\\RawanaKeys\\rawana-upload.keystore

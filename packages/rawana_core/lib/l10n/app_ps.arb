@@ -1,0 +1,1275 @@
+{
+  "@@locale": "ps",
+  "appName": "روانا",
+  "appTitlePassenger": "روانا مسافر",
+  "appTitleDriver": "روانا چلوونکی",
+  "appVersionFooter": "روانا · نسخه ۱.۰",
+  "rawanaDriver": "روانا چلوونکی",
+  "rawanaDriverVersion": "روانا چلوونکی  نسخه ۱.۰",
+  "rawanaDriverRole": "د روانا چلوونکی",
+  "splashTagline": "آرام سفرونه، په ټول کابل کې",
+  "splashLoading": "ستاسو سفر بارېږي…",
+  "driverBadge": "چلوونکی",
+  "riderBadge": "مسافر",
+  "preparingDashboard": "ستاسو ډشبورډ چمتو کېږي",
+  "cancel": "لغوه",
+  "confirm": "تایید",
+  "next": "بل",
+  "skip": "پرېښودل",
+  "back": "شاته",
+  "edit": "سمول",
+  "retry": "بیا هڅه",
+  "tryAgain": "بیا هڅه وکړئ",
+  "continueAction": "ادامه",
+  "add": "زیاتول",
+  "save": "ساتل",
+  "submit": "لېږل",
+  "details": "تفصیل",
+  "map": "نقشه",
+  "selected": "ټاکل شوی",
+  "notSet": "نه دی ټاکل شوی",
+  "other": "نور",
+  "orDivider": "یا",
+  "loading": "بارېږي…",
+  "connecting": "نښلول کېږي…",
+  "submitting": "لېږل کېږي…",
+  "checking": "چک کېږي…",
+  "requesting": "غوښتنه کېږي…",
+  "confirming": "تایید کېږي...",
+  "signingIn": "ننوتل کېږي…",
+  "somethingWentWrong": "ستونزه رامنځته شوه",
+  "errorWithDetail": "تېروتنه: {error}",
+  "@errorWithDetail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "getStarted": "پیل کړئ",
+  "whereTo": "چیرته ځئ؟",
+  "confirmRide": "سفر تایید کړئ",
+  "findingDriver": "چلوونکی په لټه کې…",
+  "findingYourDriver": "ستاسو چلوونکی لټول کېږي",
+  "driverArriving": "چلوونکی رارسېږي",
+  "tripStarted": "په لاره کې",
+  "tripCompleted": "سفر بشپړ شو",
+  "payCash": "نغدي {amount} ورکړئ",
+  "@payCash": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "currencyAfn": "افغانۍ",
+  "sendCode": "کوډ ولیږئ",
+  "verifyOtp": "تایید",
+  "resendCode": "بیا ولیږئ",
+  "goOnline": "آنلاین شئ",
+  "goOffline": "آفلاین شئ",
+  "accept": "منل",
+  "reject": "رد",
+  "decline": "ردول",
+  "cancelRide": "سفر لغوه کړئ",
+  "earnings": "عاید",
+  "wallet": "بټوه",
+  "history": "تاریخچه",
+  "profile": "پروفایل",
+  "logout": "وتل",
+  "logOut": "وتل",
+  "signOut": "له حسابه وتل",
+  "noConnection": "انټرنیټ نشته",
+  "reconnecting": "بیا نښلول…",
+  "youAreOfflineReconnect": "تاسو آفلاین یاست — د دوام لپاره وصل شئ",
+  "language": "ژبه",
+  "chooseYourLanguage": "خپله ژبه وټاکئ",
+  "languageChangeHint": "دا هر وخت له تنظیماتو بدلولی شئ.",
+  "languageEnglish": "English",
+  "languageDari": "دري",
+  "languagePashto": "پښتو",
+  "languageEnglishMeta": "کيڼ نه ښي · لاتین",
+  "languageDariMeta": "ښي نه کيڼ · دري",
+  "languagePashtoMeta": "ښي نه کيڼ · پښتو",
+  "onboardingSlide1Title": "سفر په ثانیو کې ونیسئ",
+  "onboardingSlide1Body": "خپل منزل وټاکئ او تایید یې کړئ — نږدې چلوونکی به په لاره وي.",
+  "onboardingSlide2Title": "هر کیلومتر تعقیب کړئ",
+  "onboardingSlide2Body": "خپل چلوونکی په ژوندۍ نقشه کې وګورئ او د سفر حالت له خپلوانو سره شریک کړئ.",
+  "onboardingSlide3Title": "نغدي تادیه ساده شوه",
+  "onboardingSlide3Body": "په منزل کې چلوونکي ته په افغانۍ (AFN) ورکړئ. کارت ته اړتیا نشته.",
+  "continueWithEmail": "د ایمیل سره ادامه",
+  "continueWithPhone": "د تلیفون سره ادامه",
+  "authTermsFooter": "په دوام سره زموږ شرایط او د محرمیت تګلاره منئ.",
+  "agreeTermsConduct": "په دوام سره زموږ شرایط او د چلوونکو د چلند اصول منئ.",
+  "createAccount": "حساب جوړول",
+  "welcomeBack": "بیرته ښه راغلاست",
+  "welcomeBackCaptain": "بیرته ښه راغلاست، کپتان",
+  "signUpSubtitle": "یو څو معلومات او تاسو د سفر لپاره چمتو یاست.",
+  "signInSubtitle": "ننوزئ ترڅو سفر ته دوام ورکړئ.",
+  "emailLabel": "ایمیل",
+  "emailOptional": "ایمیل (اختیاري)",
+  "fullName": "بشپړ نوم",
+  "fullNameRequired": "بشپړ نوم *",
+  "phoneNumberRequired": "د تلیفون شمېره *",
+  "afPhonePrefix": "🇦🇫 +93",
+  "phoneHint": "70 123 4567",
+  "passwordLabel": "پاسورډ",
+  "signIn": "ننوتل",
+  "alreadyHaveAccount": "حساب لرئ؟ ننوزئ",
+  "newHereCreateAccount": "نوی یاست؟ حساب جوړ کړئ",
+  "phoneOtpComingSoon": "د تلیفون کوډ به په اصلي نسخه کې فعال شي.",
+  "authEntryHeadline": "راځئ تاسو\nوخوځوو.",
+  "authEntrySubtitle": "ننوزئ او په کابل کې په ثانیو کې سفر ونیسئ.",
+  "authValueFastTitle": "چټک نیول",
+  "authValueFastBody": "نږدې چلوونکی په یوه دقیقه کې ومومئ.",
+  "authValueTrustedTitle": "باوري چلوونکي",
+  "authValueTrustedBody": "هر چلوونکی تایید او درجه بندي شوی دی.",
+  "authValuePayTitle": "په افغانۍ نغدي ورکړئ",
+  "authValuePayBody": "کارت ته اړتیا نشته — د سفر په پای کې ورکړئ.",
+  "driveWithRawana": "د روانا سره\nموټر چلوئ.",
+  "signInEmailToTest": "د چلوونکي تجربه ازمویلو لپاره په ایمیل ننوزئ.",
+  "earnOnYourSchedule": "په خپل مهال عاید وکړئ. تایید شئ، سفرونه واخلئ، پیسې واخلئ.",
+  "earnFlexibly": "انعطاف منونکی عاید",
+  "goOnlineWhenever": "هر وخت چې غواړئ آنلاین شئ.",
+  "dailyPayouts": "ورځني تادیات",
+  "trackEveryFare": "هر کرایه په خپله بټوه کې تعقیب کړئ.",
+  "driverSupport": "د چلوونکي ملاتړ",
+  "supportTeam247": "یوه ډله چې شپه او ورځ ستاسو مل وي.",
+  "becomeADriver": "چلوونکی شئ",
+  "createDriverAccountInAMinute": "خپل د چلوونکي حساب په یوه دقیقه کې جوړ کړئ.",
+  "signInToGoOnline": "د آنلاین کېدو لپاره ننوزئ.",
+  "createDriverAccount": "د چلوونکي حساب جوړول",
+  "alreadyADriverSignIn": "دمخه چلوونکی یاست؟ ننوزئ",
+  "newDriverCreateAccount": "نوی چلوونکی؟ حساب جوړ کړئ",
+  "enterYourPhone": "خپل تلیفون ولیکئ",
+  "phoneVerifyHint": "یو ۶ عددي کوډ درلېږو ترڅو تایید شي چې تاسو یاست.",
+  "phoneKeepsAccountSecure": "دا ستاسو د چلوونکي حساب د خوندي ساتلو لپاره کاروو.",
+  "otpChannelSms": "ایس‌ام‌اس",
+  "otpChannelWhatsApp": "واټساپ",
+  "otpSessionExpired": "ناسته پای ته ورسېده. شاته لاړ شئ او نوی کوډ وغواړئ.",
+  "verificationCode": "د تایید کوډ",
+  "otpEnterCodeVia": "هغه ۶ عددي کوډ وليکئ چې له {channel} مو درلېږلی.",
+  "@otpEnterCodeVia": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "otpEnterCodeViaTo": "هغه ۶ عددي کوډ وليکئ چې له {channel} مو {phone} ته لېږلی.",
+  "@otpEnterCodeViaTo": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "resendCodeInSeconds": "کوډ به په {seconds} ثانیو کې بیا واستول شي",
+  "@resendCodeInSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "verificationEmailSent": "د تایید ایمیل ولېږل شو. خپل انباکس وګورئ.",
+  "emailNotVerifiedYet": "ایمیل لا نه دی تایید شوی. انباکس وګورئ او بیا هڅه وکړئ.",
+  "checkYourInbox": "خپل انباکس وګورئ",
+  "weSentVerificationLinkTo": "موږ د تایید لینک ",
+  "yourEmailFallback": "ستاسو ایمیل",
+  "tapLinkThenContinue": " ته ولېږه. لینک کېکاږئ او بیا دلته د دوام لپاره راشئ.",
+  "tapLinkThenContinueOnboarding": " ته ولېږه. لینک کېکاږئ او بیا دلته د نوم لیکنې د دوام لپاره راشئ.",
+  "checkSpamTip": "لارښوونه: که نه وینئ نو سپیم یا پروموشن فولډر وګورئ.",
+  "iHaveVerifiedContinue": "ما تایید کړ — ادامه",
+  "resendVerificationEmail": "د تایید ایمیل بیا ولېږئ",
+  "backToSignIn": "بېرته ننوتلو ته",
+  "quickDemoAccess": "چټک ازمایښتي لاسرسی",
+  "demoLoginNeedsSupabase": "د ازمایښتي ننوتلو لپاره سوپابیس اړین دی.",
+  "demoLoginFailed": "ازمایښتي ننوتل ناکام شول.",
+  "authSupabaseNotConfigured": "ننوتل نه دي تنظیم شوي. له ملاتړ سره اړیکه ونیسئ.",
+  "authInvalidCredentials": "ایمیل یا پاسورډ ناسم دی. بیا هڅه وکړئ.",
+  "authEmailNotVerified": "مخکې له ننوتلو خپل ایمیل تایید کړئ.",
+  "authEmailAlreadyExists": "دا ایمیل دمخه ثبت دی. پر ځای یې ننوزئ.",
+  "authRateLimit": "ډېرې هڅې. یوه دقیقه انتظار وکړئ او بیا هڅه وکړئ.",
+  "authDatabaseSignupFailed": "د سرور د تېروتنې له امله حساب جوړ نه شو. لږ وروسته بیا هڅه وکړئ.",
+  "authWeakPassword": "پاسورډ کمزوری دی. لږ تر لږه ۸ توري د حروفو او شمېرو سره وکاروئ.",
+  "authInvalidEmail": "سم ایمیل پته وليکئ.",
+  "authInvalidPhone": "سمه افغانۍ تلیفون شمېره وليکئ (۹ عدد، لکه 70 123 4567).",
+  "authInvalidOtp": "کوډ ناسم یا ختم شوی دی. نوی کوډ وغواړئ.",
+  "authWhatsAppUnavailable": "د واټساپ ننوتل اوس شتون نلري.",
+  "authGenericError": "ستونزه رامنځته شوه. بیا هڅه وکړئ.",
+  "completeYourProfile": "خپل پروفایل بشپړ کړئ",
+  "almostThere": "نږدې بشپړ شو!",
+  "profileSetupSubtitle": "خپل نوم او تلیفون ولیکئ ترڅو چلوونکی درسره اړیکه ونیسي.",
+  "photoUploadFailed": "د عکس پورته کول ناکام شول: {error}",
+  "@photoUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "driverRegistration": "د چلوونکي نوم لیکنه",
+  "yourDetails": "ستاسو معلومات",
+  "needNameAndPhoneBeforeDocs": "مخکې له اسنادو پورته کولو نوم او تلیفون اړین دي.",
+  "continueToDocuments": "اسنادو ته ادامه",
+  "gettingYourLocation": "ستاسو موقعیت اخیستل کېږي…",
+  "gettingLocation": "موقعیت اخیستل کېږي…",
+  "currentLocation": "اوسنی موقعیت",
+  "locationUnavailable": "موقعیت شتون نلري",
+  "waitingForLocation": "ستاسو موقعیت ته انتظار…",
+  "myLocation": "زما موقعیت",
+  "helloName": "سلام، {name}",
+  "@helloName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingNameFallback": "ملګریه",
+  "navRide": "سفر",
+  "help": "مرسته",
+  "viewSearch": "لټون وګورئ",
+  "viewRide": "سفر وګورئ",
+  "searchDestination": "منزل ولټوئ",
+  "quickHome": "کور",
+  "quickWork": "کار",
+  "quickSaved": "ساتل شوي",
+  "gpsLocked": "جی‌پی‌اس قفل شو",
+  "gpsAcquiring": "ترلاسه کېږي",
+  "gpsBlocked": "جی‌پی‌اس بند دی",
+  "pickupLabel": "پورته کېدل",
+  "destinationLabel": "منزل",
+  "currentLabel": "اوسنی",
+  "driverOnTheWay": "چلوونکی په لاره دی",
+  "driverIsArriving": "چلوونکی رارسیږي",
+  "onTripToDestination": "منزل ته په سفر کې",
+  "rideInProgress": "سفر روان دی",
+  "noSavedAddressTitle": "د {label} پته نشته",
+  "@noSavedAddressTitle": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "noSavedAddressBody": "لومړی یوه ساتل شوې پته د «{label}» نوم سره اضافه کړئ.",
+  "@noSavedAddressBody": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "addAddress": "پته زیاته کړئ",
+  "invalidSavedAddressCoords": "د ساتل شوې پتې همغږي ناسمې دي",
+  "kabulFallbackPickup": "کابل (سم پورته کېدل په نقشه کې وټاکئ)",
+  "locationUnavailableEnableGps": "موقعیت نشته. جی‌پی‌اس فعال کړئ یا په نقشه کې پورته کېدل وټاکئ.",
+  "choosePickupFirst": "لومړی د پورته کېدو ځای وټاکئ",
+  "choosePickupFirstShort": "لومړی پورته کېدل وټاکئ",
+  "couldNotSelectPlace": "ځای و نه ټاکل شو. بیا هڅه وکړئ.",
+  "selectedPickup": "ټاکل شوی پورته کېدل",
+  "selectedDestination": "ټاکل شوی منزل",
+  "enableLocationToBook": "د سفر نیولو لپاره موقعیت فعال کړئ",
+  "planYourTrip": "خپل سفر پلان کړئ",
+  "fromLabel": "له",
+  "toLabel": "ته",
+  "popularPlaces": "مشهور ځایونه",
+  "suggestions": "وړاندیزونه",
+  "editPickup": "پورته کېدل سمول",
+  "searchPickupLocation": "د پورته کېدو ځای ولټوئ",
+  "useCurrentLocation": "اوسنی موقعیت وکاروئ",
+  "chooseOnMap": "په نقشه کې وټاکئ",
+  "movePinToPickup": "پن د سم پورته کېدو ځای ته یوسئ",
+  "startTyping": "لیکل پیل کړئ",
+  "weWillSuggestPlaces": "موږ به نږدې ځایونه درته وړاندیز کړو",
+  "dropPinDestination": "پن هلته کېږدئ چې تلل غواړئ",
+  "moveMapToChoose": "نقشه حرکت کړئ ترڅو ځای وټاکئ",
+  "choosePickup": "پورته کېدل وټاکئ",
+  "chooseDestination": "منزل وټاکئ",
+  "useThisPickup": "دا پورته کېدل وکاروئ",
+  "useThisDestination": "دا منزل وکاروئ",
+  "tapOrDragMap": "نقشه کېکاږئ یا یې وباسئ، بیا تایید کړئ.",
+  "failedToLoadRideTypes": "د سفر ډولونه پورته نه شول: {error}",
+  "@failedToLoadRideTypes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noRideTypesAvailable": "د سفر ډول نشته",
+  "pickupConfirmed": "پورته کېدل تایید شول",
+  "pickup": "پورته کېدل",
+  "destination": "منزل",
+  "dropoff": "کوزېدل",
+  "chooseYourRide": "خپل سفر وټاکئ",
+  "etaMinToDestination": "تر منزل شاوخوا {minutes} دقیقې",
+  "@etaMinToDestination": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "payment": "تادیه",
+  "cashAfn": "نغدي · افغانۍ",
+  "paymentMethodConfirmed": "د تادیې طریقه تایید شوه",
+  "tapToConfirmPayment": "د سفر په پای کې د تادیې لپاره کېکاږئ",
+  "requestRideWithFare": "{name} وغواړئ · {fare}",
+  "@requestRideWithFare": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "fare": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPaymentToContinue": "د دوام لپاره تادیه تایید کړئ",
+  "missingTripDetails": "د سفر تفصیل نشتې",
+  "noDriversAvailable": "اوس چلوونکی نشته. بیا هڅه وکړئ.",
+  "connectingToNearbyDrivers": "تاسو نږدې چلوونکو سره نښلوو — معمولاً په یوه دقیقه کې.",
+  "retryOrCancelBelow": "لاندې بیا هڅه یا لغوه کولی شئ.",
+  "cancelRequest": "غوښتنه لغوه کړئ",
+  "followingLiveRouteHint": "ژوندۍ لاره تعقیبېږي. د تفصیل لپاره ↓ کېکاږئ.",
+  "couldNotOpenWhatsAppCall": "د واټساپ زنګ پرانیستل نه شو",
+  "couldNotOpenWhatsAppMessages": "د واټساپ پیغامونه پرانیستل نه شول",
+  "cancelThisRide": "دا سفر لغوه شي؟",
+  "cancelRideWarning": "چلوونکی به خبر شي. پرله‌پسې لغوه کېدای شي فیس ولري.",
+  "keepRide": "سفر وساتئ",
+  "shareTripIntro": "زه د روانا په سفر کې یم.",
+  "shareDriver": "چلوونکی: {name}",
+  "@shareDriver": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareVehicle": "موټر: {vehicle}",
+  "@shareVehicle": {
+    "placeholders": {
+      "vehicle": {
+        "type": "String"
+      }
+    }
+  },
+  "sharePlate": "پلیټ: {plate}",
+  "@sharePlate": {
+    "placeholders": {
+      "plate": {
+        "type": "String"
+      }
+    }
+  },
+  "shareFrom": "له: {address}",
+  "@shareFrom": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTo": "ته: {address}",
+  "@shareTo": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCurrentLocation": "اوسنی موقعیت: {url}",
+  "@shareCurrentLocation": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "shareTripSubject": "زما د روانا سفر",
+  "driverConfirmedHeadingPickup": "چلوونکی تایید شو — پورته کېدو ته روان دی",
+  "driverIsAtPickup": "چلوونکی ستاسو د پورته کېدو په ځای دی",
+  "backToHome": "کور ته شاته",
+  "you": "تاسو",
+  "yourDriver": "ستاسو چلوونکی",
+  "followingYourTrip": "ستاسو سفر تعقیبېږي",
+  "driverEnRouteToPickup": "چلوونکی پورته کېدو ته په لاره دی",
+  "safety": "خوندیتوب",
+  "driverLiveLocation": "د چلوونکي ژوندی موقعیت",
+  "yourPickupSpot": "ستاسو د پورته کېدو ځای",
+  "hintFollowLiveRoute": "لاره د چلوونکي په خوځښت تازه کېږي. د ژوندي تعقیب لپاره نیویګیشن پیل کړئ.",
+  "hintWatchDriverApproach": "خپل چلوونکی په نقشه کې وګورئ. اټکل وخت په خپل سر تازه کېږي.",
+  "followTripRoute": "د سفر لاره تعقیب کړئ",
+  "followDriverToPickup": "چلوونکی تر پورته کېدو تعقیب کړئ",
+  "call": "زنګ",
+  "message": "پیغام",
+  "shareTrip": "سفر شریک کړئ",
+  "driverArrivedNotice": "ستاسو چلوونکی د پورته کېدو په ځای دی.",
+  "youHaveArrived": "تاسو ورسېدلئ",
+  "thanksForRiding": "د روانا سره د سفر لپاره مننه.",
+  "payYourDriver": "خپل چلوونکي ته ورکړئ",
+  "howWasYourTrip": "سفر څنګه و؟",
+  "feedbackHelpsDrivers": "ستاسو نظر چلوونکو ته د ښه کېدو مرسته کوي.",
+  "ratingTagCleanCar": "پاک موټر",
+  "ratingTagSafeDriving": "خوندي چلول",
+  "ratingTagFriendlyDriver": "مهربان چلوونکی",
+  "ratingTagOnTime": "پر وخت",
+  "ratingTagGoodNavigation": "ښه لارښوونه",
+  "submitRating": "درجه ولېږئ",
+  "skipRating": "درجه پرېږدئ",
+  "reportAnIssue": "ستونزه راپور کړئ",
+  "ratingFailed": "درجه بندي ناکامه شوه: {error}",
+  "@ratingFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tripTitleWithId": "سفر · {id}",
+  "@tripTitleWithId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tripSummary": "د سفر لنډیز",
+  "totalFare": "ټول کرایه",
+  "driverLabel": "چلوونکی",
+  "whatsAppDriver": "چلوونکي ته واټساپ",
+  "whatsAppCallDriver": "چلوونکي ته د واټساپ زنګ",
+  "rideHistory": "د سفرونو تاریخچه",
+  "failedToLoadHistory": "تاریخچه پورته نه شوه: {error}",
+  "@failedToLoadHistory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noTripsYet": "تر اوسه سفر نشته",
+  "pastRidesHint": "ستاسو پخواني سفرونه به دلته ښکاره شي.",
+  "fromAddress": "له {address}",
+  "@fromAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "statusSearching": "لټون",
+  "statusAccepted": "ومنل شو",
+  "statusDriverArriving": "چلوونکی رارسیږي",
+  "statusTripStarted": "سفر پیل شو",
+  "statusCompleted": "بشپړ شو",
+  "statusCancelled": "لغوه شو",
+  "completed": "بشپړ",
+  "account": "حساب",
+  "failedToLoadProfile": "پروفایل پورته نه شو: {error}",
+  "@failedToLoadProfile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerFallbackName": "مسافر",
+  "tripsStat": "سفرونه",
+  "ratingStat": "درجه",
+  "memberStat": "غړی",
+  "memberNew": "نوی",
+  "preferences": "غوره توبونه",
+  "savedAddresses": "ساتل شوې پتې",
+  "notifications": "خبرتیاوې",
+  "safetyAndSupport": "خوندیتوب او ملاتړ",
+  "emergencyContacts": "د بیړني اړیکې",
+  "helpCentre": "د مرستې مرکز",
+  "enableLocationToSaveAddress": "د دې پتې ساتلو لپاره موقعیت فعال کړئ",
+  "saveANewAddress": "نوې پته وساتئ",
+  "usesCurrentGps": "د همغږۍ لپاره ستاسو اوسنی جی‌پی‌اس کاروي.",
+  "addressLabel": "نوم",
+  "addressLabelHint": "کور، کار، جم…",
+  "addressField": "پته",
+  "saveAddress": "پته وساتئ",
+  "failedToLoadAddresses": "پتې پورته نه شوې: {error}",
+  "@failedToLoadAddresses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noSavedAddresses": "ساتل شوې پته نشته",
+  "savedAddressesEmptyHint": "کور، کار او نور ځایونه وساتئ\nترڅو په یوه ټپ سفر ونیسئ.",
+  "noNotificationsYet": "تر اوسه خبرتیا نشته",
+  "notificationsEmptyHint": "د سفر تازه معلومات او وړاندیزونه به دلته ښکاره شي\nکله چې خبرتیاوې فعالې وي.",
+  "needAHand": "مرستې ته اړتیا لرئ؟",
+  "helpTeam247": "زموږ ډله شپه او ورځ د مرستې لپاره ده.",
+  "commonQuestions": "عامې پوښتنې",
+  "faqBookTitle": "سفر څنګه ونیسم؟",
+  "faqBookBody": "اپ خلاص کړئ، «چیرته ځئ؟» کېکاږئ، منزل وټاکئ، ډول وټاکئ او تایید کړئ. نږدې چلوونکی به په لاره وي.",
+  "faqPayTitle": "څنګه ورکړم؟",
+  "faqPayBody": "د سفر په پای کې چلوونکي ته په افغانۍ نغدي ورکړئ.",
+  "reportSafetyOrTripIssue": "د خوندیتوب یا سفر ستونزه راپور کړئ",
+  "addEmergencyContact": "بیړنۍ اړیکه زیاته کړئ",
+  "name": "نوم",
+  "phone": "تلیفون",
+  "saveContact": "اړیکه وساتئ",
+  "failedToLoadContacts": "اړیکې پورته نه شوې: {error}",
+  "@failedToLoadContacts": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noContactsYet": "تر اوسه اړیکه نشته",
+  "emergencyContactsEmptyHint": "تر ۳ باوري اړیکو پورې زیاتې کړئ.\nپه بیړني حالاتو کې به خبر شي.",
+  "navigate": "لارښوونه",
+  "estimatedFare": "اټکل شوی کرایه",
+  "minutesShort": "دقیقې",
+  "secondsShort": "ثانیې",
+  "distanceKm": "{km} کیلومتره",
+  "@distanceKm": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceMeters": "{meters} متره",
+  "@distanceMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "String"
+      }
+    }
+  },
+  "etaMinutes": "{minutes} دقیقې",
+  "@etaMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "routeDistance": "د لارې واټن",
+  "whatsApp": "واټساپ",
+  "endNavigation": "نیویګیشن پای",
+  "navigating": "لارښوونه کېږي",
+  "followingSelectedRoute": "ټاکل شوې لاره تعقیبېږي",
+  "routes": "لارې",
+  "routeShortest": "لنډه",
+  "routeFastest": "چټکه",
+  "routeChipDurationDistance": "{minutes}د · {km}کم",
+  "@routeChipDurationDistance": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      },
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "nearbyDriver": "نږدې چلوونکی",
+  "driver": "چلوونکی",
+  "passenger": "مسافر",
+  "activeRide": "فعال سفر",
+  "continueOnHighlightedRoute": "په په نښه شوې لاره ادامه ورکړئ",
+  "startNavigation": "نیویګیشن پیل کړئ",
+  "issueWithTrip": "د سفر ستونزه #{id}",
+  "@issueWithTrip": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "reportValidation": "موضوع او لږ تر لږه ۱۰ توري تفصیل ولیکئ.",
+  "reportSubmitted": "راپور ولېږل شو. زموږ ډله به تعقیب کړي.",
+  "failedToSubmit": "لېږل ناکام شول: {error}",
+  "@failedToSubmit": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "tripShortId": "سفر {id}",
+  "@tripShortId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "category": "کټګوري",
+  "subject": "موضوع",
+  "whatHappened": "څه وشول؟",
+  "safetyReportPriority": "د خوندیتوب راپورونه لومړیتوب لري. که په سمدستي خطر کې یاست له سیمه‌ییزو بیړنیو خدماتو سره اړیکه ونیسئ.",
+  "submitReport": "راپور ولېږئ",
+  "supportBilling": "بل / زیات اخیستل",
+  "supportDriverBehaviour": "د چلوونکي چلند",
+  "supportSafetyConcern": "د خوندیتوب اندیښنه",
+  "supportTechnical": "د اپ / تخنیکي ستونزه",
+  "supportOther": "نور",
+  "supportFarePayment": "د کرایې / تادیې ستونزه",
+  "supportPassengerBehaviour": "د مسافر چلند",
+  "docDriverLicence": "د چلولو جواز",
+  "docVehicleRegistration": "د موټر ثبت",
+  "docNationalId": "تذکره",
+  "docProfilePhoto": "د پروفایل انځور",
+  "docVehicleInfo": "د موټر معلومات",
+  "supabaseRequiredForUpload": "د سند پورته کولو لپاره سوپابیس اړین دی",
+  "documentUploaded": "سند پورته شو",
+  "uploadFailed": "پورته کول ناکام شول: {error}",
+  "@uploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseUploadAllDocuments": "ټول اړین اسناد پورته کړئ",
+  "enterVehicleMakeModelPlate": "د موټر جوړونکی، ماډل او پلیټ ولیکئ",
+  "pleaseUploadDocumentFirst": "لومړی سند پورته کړئ",
+  "stepOfTotal": "پړاو {current} له {total}",
+  "@stepOfTotal": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "takeClearPhotoOf": "د خپل {document} یو روښانه او څرګند انځور واخلئ.",
+  "@takeClearPhotoOf": {
+    "placeholders": {
+      "document": {
+        "type": "String"
+      }
+    }
+  },
+  "tellUsAboutVehicle": "د هغه موټر په اړه ووایاست چې چلوئ یې.",
+  "submitForReview": "د کتنې لپاره ولېږئ",
+  "captureDocument": "سند واخلئ",
+  "looksGoodCanRetake": "ښه ښکاري — که اړتیا وي بیا یې واخلئ.",
+  "jpgPngKeptPrivate": "JPG یا PNG، پټ او خوندي ساتل کېږي.",
+  "retakePhoto": "انځور بیا واخلئ",
+  "takePhoto": "انځور واخلئ",
+  "vehicleMakeExample": "د موټر جوړونکی (لکه ټویوټا)",
+  "vehicleModelExample": "ماډل (لکه کورولا)",
+  "plateNumber": "د پلیټ شمېره",
+  "couldNotCheckStatus": "حالت و نه کتل شو",
+  "applicationNotApproved": "غوښتنه ونه منل شوه",
+  "applicationUnderReview": "غوښتنه تر کتنې لاندې ده",
+  "documentsCouldNotBeVerified": "ستاسو اسناد تایید نه شول. وګورئ او بیا یې ولېږئ.",
+  "verifyingDocuments24to48": "ستاسو اسناد چک کېږي. معمولاً ۲۴–۴۸ ساعتونه وخت نیسي. کله چې حساب تایید شي خبر به شئ.",
+  "documentsSubmitted": "اسناد ولېږل شول",
+  "reviewFailedResubmit": "کتنه ناکامه — بیا لېږل اړین دي",
+  "backgroundVehicleVerification": "د شالید او موټر تایید",
+  "welcomeOnboard": "ښه راغلاست",
+  "resubmitDocuments": "اسناد بیا ولېږئ",
+  "refreshStatus": "حالت تازه کړئ",
+  "mustBeApprovedToGoOnline": "مخکې له آنلاین کېدو باید حساب تایید شي",
+  "enableLocationToGoOnline": "د آنلاین کېدو او د سفر غوښتنو لپاره موقعیت فعال کړئ.",
+  "couldNotGoOnline": "آنلاین نه شوئ. تایید او اتصال وګورئ.",
+  "rideCancelled": "سفر لغوه شو",
+  "headToPickup": "پورته کېدو ته لاړ شئ",
+  "navigateToPickup": "پورته کېدو ته لارښوونه",
+  "atPickup": "په پورته کېدو کې",
+  "continuePickup": "پورته کېدو ته ادامه",
+  "tripInProgress": "سفر روان دی",
+  "continueTrip": "سفر ته ادامه",
+  "activeTrip": "فعال سفر",
+  "viewTrip": "سفر وګورئ",
+  "verifiedDriver": "تایید شوی چلوونکی",
+  "youAreOffline": "تاسو آفلاین یاست",
+  "youAreOnline": "تاسو آنلاین یاست",
+  "switchOnlineToReceiveRides": "د سفرونو ترلاسه کولو لپاره آنلاین شئ",
+  "todaysEarnings": "د نن عاید",
+  "lastSession": "تېره ناسته",
+  "trips": "سفرونه",
+  "gross": "ټول",
+  "rating": "درجه",
+  "receivingRides": "سفرونه ترلاسه کېږي",
+  "tapToStart": "د پیل لپاره کېکاږئ",
+  "acceptFailed": "منل ناکام شول: {error}",
+  "@acceptFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "newRideRequest": "د نوي سفر غوښتنه",
+  "respondNowTimeRunningOut": "اوس ځواب ورکړئ — وخت ختمېږي",
+  "reviewRouteAndAccept": "لاره وګورئ او ژر یې ومنئ",
+  "acceptRide": "سفر ومنئ",
+  "minEta": "اټکل دقیقې",
+  "distance": "واټن",
+  "passengerWillBeNotifiedTripEnds": "مسافر به خبر شي او سفر به پای ته ورسي.",
+  "rideCancelledFee": "سفر لغوه شو. فیس: {amount}",
+  "@rideCancelledFee": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelFailed": "لغوه ناکامه شوه: {error}",
+  "@cancelFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backToDashboard": "ډشبورډ ته شاته",
+  "namePickup": "د {name} پورته کېدل",
+  "@namePickup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerPickup": "د مسافر پورته کېدل",
+  "whatsAppPassenger": "مسافر ته واټساپ",
+  "whatsAppCallPassenger": "مسافر ته د واټساپ زنګ",
+  "headingToPickup": "پورته کېدو ته روان",
+  "waitingAtPickupMarker": "د پورته کېدو په نښه کې انتظار",
+  "passengerPickupLocation": "د مسافر د پورته کېدو ځای",
+  "inAppNavigationStarted": "په اپ کې نیویګیشن پیل شو.",
+  "iveArrivedAtPickup": "پورته کېدو ته ورسېدم",
+  "youAreAtPickupLocation": "تاسو د مسافر د پورته کېدو په ځای یاست.",
+  "tapStartNavigation": "د لارې تعقیب لپاره نیویګیشن پیل کړئ.",
+  "samePickupLocation": "تاسو او مسافر په یوه ځای کې یاست.",
+  "tripStartedFollowRoute": "سفر پیل شو. لاره تر منزل تعقیب کړئ.",
+  "completeThisTrip": "دا سفر بشپړ شي؟",
+  "onlyCompleteAfterDestination": "یوازې وروسته له دې چې مسافر منزل ته ورسیږي بشپړ یې کړئ.",
+  "keepDriving": "چلولو ته دوام ورکړئ",
+  "completeTrip": "سفر بشپړ کړئ",
+  "onlyCancelIfCannotContinue": "یوازې که خوندي دوام نشئ کولی لغوه کړئ. مسافر به خبر شي.",
+  "waitingForPassenger": "مسافر ته انتظار",
+  "dropoffWithAddress": "کوزېدل: {address}",
+  "@dropoffWithAddress": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "atPickupStartWhenOnboard": "په پورته کېدو کې — کله چې مسافر کېني سفر پیل کړئ",
+  "yourCurrentLocation": "ستاسو اوسنی موقعیت",
+  "mayCancelWithoutFeeNoShow": "که مسافر رانغی کولای شئ پرته له فیس لغوه کړئ.",
+  "startTripOnceOnboard": "کله چې مسافر په موټر کې شي سفر پیل کړئ.",
+  "navigateToDropoff": "کوزېدو ته لارښوونه",
+  "cancelRideNoFee": "سفر لغوه کړئ (بې فیس)",
+  "goToPickup": "پورته کېدو ته لاړ شئ",
+  "startTrip": "سفر پیل کړئ",
+  "tripStartedKeepDriving": "سفر پیل شو — چلولو ته دوام ورکړئ",
+  "statusLabel": "حالت: {status}",
+  "@statusLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "tagPolite": "مؤدب",
+  "tagOnTimeAtPickup": "په پورته کېدو پر وخت",
+  "tagClearDirections": "روښانه لارښوونه",
+  "tagRespectful": "درناوی",
+  "tagEasyPickup": "اسانه پورته کېدل",
+  "couldNotUpdateAvailability": "شتون تازه نه شو",
+  "greatJob": "ډېر ښه!",
+  "tripCompletedFareBreakdown": "سفر بشپړ شو. دا ستاسو د کرایې جزئیات دي.",
+  "rateYourPassenger": "خپل مسافر درجه کړئ",
+  "feedbackKeepsRawanaSafe": "ستاسو نظر روانا خوندي او باوري ساتي.",
+  "openToNewRequests": "تاسو د نویو سفرونو لپاره خلاص یاست",
+  "goOnlineToReceiveRequests": "د نویو غوښتنو لپاره آنلاین شئ",
+  "youEarned": "ستاسو عاید",
+  "grossFare": "ټول کرایه",
+  "rawanaFeePercent": "د روانا فیس ({percent}٪)",
+  "@rawanaFeePercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "yourEarnings": "ستاسو عاید",
+  "today": "نن",
+  "thisWeek": "دا اونۍ",
+  "thisMonth": "دا میاشت",
+  "couldNotLoadEarnings": "عاید پورته نه شو",
+  "platformFee": "د پلیټفارم فیس",
+  "avgPerTrip": "منځنی / سفر",
+  "netEarnings": "خالص عاید",
+  "noTripsYetPeriod": "په {period} کې تر اوسه سفر نشته",
+  "@noTripsYetPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsCompletedOne": "{count} سفر بشپړ شو",
+  "@tripsCompletedOne": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "tripsCompletedOther": "{count} سفرونه بشپړ شول",
+  "@tripsCompletedOther": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "howEarningsWork": "عاید څنګه کار کوي",
+  "earningsExplainer": "ټول کرایه هغه دی چې مسافر ورکړی. د پلیټفارم فیس په خپل سر کمېږي او خالص عاید ستاسو بټوې ته ځي.",
+  "activitySnapshot": "د فعالیت انځور",
+  "completeTripsToSeeActivity": "د فعالیت د لیدو لپاره سفرونه بشپړ کړئ.",
+  "couldNotLoadWallet": "بټوه پورته نه شوه",
+  "recentTransactions": "وروستي راکړې ورکړې",
+  "couldNotLoadTransactions": "راکړې ورکړې پورته نه شوې",
+  "requestPayoutQuestion": "تادیه وغواړئ؟",
+  "willTransferToPayoutAccount": "موږ به {amount} له بټوې ولېږدوو. روانا تادیه پروسس کوي — په اپ کې بانکي حساب اړین نه دی.",
+  "@willTransferToPayoutAccount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payoutRequested": "تادیه وغوښتل شوه",
+  "availableBalance": "شته بیلانس",
+  "pendingAmount": "په انتظار {amount}",
+  "@pendingAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "requestPayout": "تادیه وغواړئ",
+  "noFundsYet": "تر اوسه پیسې نشته",
+  "noTransactionsYet": "تر اوسه راکړه ورکړه نشته",
+  "earningsPayoutsWillShowHere": "عاید او تادیات به دلته ښکاره شي.",
+  "transaction": "راکړه ورکړه",
+  "tripHistory": "د سفرونو تاریخچه",
+  "couldNotLoadTripHistory": "د سفر تاریخچه پورته نه شوه",
+  "totalEarned": "ټول عاید",
+  "allTrips": "ټول سفرونه",
+  "unknownDestination": "نامعلوم منزل",
+  "unknownPickup": "نامعلوم پورته کېدل",
+  "pickupUnknown": "پورته کېدل نامعلوم",
+  "fromPickup": "له {pickup}",
+  "@fromPickup": {
+    "placeholders": {
+      "pickup": {
+        "type": "String"
+      }
+    }
+  },
+  "completedCancelledRidesAppearHere": "ستاسو بشپړ او لغوه سفرونه به دلته ښکاره شي.",
+  "failedToLoadTrip": "سفر پورته نه شو: {error}",
+  "@failedToLoadTrip": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMin": "{n} دقیقې",
+  "@durationMin": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "openRouteInMaps": "لاره په نقشه کې پرانیزئ",
+  "profileUpdated": "پروفایل تازه شو",
+  "signOutQuestion": "ووزئ؟",
+  "signOutNeedSignBackIn": "د سفر غوښتنو لپاره باید بیا ننوزئ.",
+  "couldNotLoadProfile": "پروفایل پورته نه شو",
+  "driverFallbackName": "چلوونکی",
+  "vehicle": "موټر",
+  "makeAndModel": "جوړونکی او ماډل",
+  "quickActions": "چټک کړنې",
+  "myDocuments": "زما اسناد",
+  "viewUploadedPapers": "پورته شوي اسناد وګورئ",
+  "privacyAndSecurity": "محرمیت او امنیت",
+  "manageAccountSafety": "د حساب خوندیتوب اداره کړئ",
+  "personalDetails": "شخصي معلومات",
+  "vehicleMake": "د موټر جوړونکی",
+  "vehicleModel": "د موټر ماډل",
+  "saveChanges": "بدلونونه وساتئ",
+  "couldNotLoadDocuments": "اسناد پورته نه شول",
+  "documentsVerified": "ستاسو اسناد تایید شوي دي.",
+  "documentsAwaitingReview": "اسناد ولېږل شول — د ادمین کتنې ته انتظار.",
+  "uploadDocsToStartEarning": "د عاید پیل لپاره اسناد پورته کړئ.",
+  "noDocumentsYet": "تر اوسه سند نشته",
+  "uploadLicenceRegId": "د تایید لپاره جواز، ثبت او تذکره پورته کړئ.",
+  "uploadDocuments": "اسناد پورته کړئ",
+  "submittedFiles": "لېږل شوي فایلونه",
+  "updateDocuments": "اسناد تازه کړئ",
+  "documentNotUploaded": "{label} — نه دی پورته شوی",
+  "@documentNotUploaded": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "passwordMinEightChars": "پاسورډ باید لږ تر لږه ۸ توري وي",
+  "passwordsDoNotMatch": "پاسورډونه سره نه دي",
+  "passwordUpdated": "پاسورډ تازه شو",
+  "requestAccountDeletion": "د حساب حذف غوښتنه",
+  "accountProtectedNeverSharePassword": "ستاسو حساب په خوندي ننوتلو ساتل کېږي. پاسورډ له چا سره مه شریکوه.",
+  "signInSection": "ننوتل",
+  "notLinked": "نه دی تړل شوی",
+  "verified": "تایید شوی",
+  "unverified": "نه تایید شوی",
+  "changePassword": "پاسورډ بدل کړئ",
+  "newPassword": "نوی پاسورډ",
+  "confirmPassword": "پاسورډ تایید کړئ",
+  "updatePassword": "پاسورډ تازه کړئ",
+  "policies": "تګلارې",
+  "termsAndPolicies": "شرایط او تګلارې",
+  "howRawanaOperates": "روانا څنګه کار کوي",
+  "driverGuidelines": "د چلوونکي لارښوونې",
+  "bestPracticesOnPlatform": "په پلیټفارم کې غوره کړنې",
+  "teamWillProcessRequest": "زموږ ډله به ستاسو غوښتنه پروسس کړي",
+  "supportEmailFallback": "ایمیل: support@rawana.af",
+  "support": "ملاتړ",
+  "getHelp": "مرسته واخلئ",
+  "reportATripIssue": "د سفر ستونزه راپور کړئ",
+  "lostItemWrongFareRoute": "ورک شی، ناسم کرایه، د لارې ستونزه",
+  "reportASafetyConcern": "د خوندیتوب اندیښنه راپور کړئ",
+  "tellUsUnsafeBehaviour": "د ناامن چلند په اړه ووایاست",
+  "contactAdmin": "له ادمین سره اړیکه",
+  "emailOurSupportTeam": "زموږ ملاتړ ټیم ته ایمیل",
+  "resources": "سرچینې",
+  "bestPracticesKeepRatingHigh": "د لوړې درجې ساتلو غوره لارې",
+  "myReports": "زما راپورونه",
+  "couldNotLoadReports": "راپورونه پورته نه شول: {error}",
+  "@couldNotLoadReports": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noSupportReportsYet": "تر اوسه راپور نشته. که مرستې ته اړتیا لرئ پورتنۍ اختیارونه وکاروئ.",
+  "supportTicket": "د ملاتړ ټکټ",
+  "ticketStatusOpen": "خلاص",
+  "weHaveYourBack": "موږ ستاسو مل یو",
+  "getHelp247": "شپه او ورځ له زموږ ډلې مرسته واخلئ.",
+  "couldNotLoadTrips": "سفرونه پورته نه شول",
+  "completeRideThenReport": "لومړی یو سفر بشپړ کړئ، بیا دلته راپور ورکړئ.",
+  "selectTripNeedHelp": "هغه سفر وټاکئ چې مرستې ته اړتیا لري",
+  "generalIssueNoTrip": "عمومي ستونزه (بې سفر)",
+  "notificationsEmptyMessage": "د سفر غوښتنې، د تادیې تازه معلومات او خبرتیاوې\nبه دلته ښکاره شي.",
+  "performance": "فعالیت",
+  "couldNotLoadPerformance": "فعالیت پورته نه شوه",
+  "serviceMetrics": "د خدمت شاخصونه",
+  "acceptanceRate": "د منلو کچه",
+  "cancellationRate": "د لغوه کچه",
+  "totalTrips": "ټول سفرونه",
+  "onlineTime": "آنلاین وخت",
+  "hoursShort": "{h} ساعت",
+  "@hoursShort": {
+    "placeholders": {
+      "h": {
+        "type": "String"
+      }
+    }
+  },
+  "hoursMinutesShort": "{h}س {m}د",
+  "@hoursMinutesShort": {
+    "placeholders": {
+      "h": {
+        "type": "String"
+      },
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "averageRiderRating": "د مسافر منځنۍ درجه",
+  "higherAcceptanceLowerCancelTip": "لوړه منل او کمه لغوه تاسو ته نورې غوښتنې درکوي.",
+  "cancelReasonNotAtPickup": "مسافر په پورته کېدو کې نه دی",
+  "cancelReasonWrongPickup": "ناسم د پورته کېدو ځای",
+  "cancelReasonSafety": "د خوندیتوب اندیښنه",
+  "cancelReasonVehicle": "د موټر ستونزه",
+  "cancelReasonEmergency": "شخصي بیړنی حالت",
+  "cancelReasonNoShow": "مسافر رانغی",
+  "noFeePassengerNoShow": "بې فیس لغوه — مسافر د انتظار وروسته رانغی.",
+  "cancellationFeeMayApply": "که اوس لغوه کړئ کېدای شي فیس ولګېږي.",
+  "reason": "لامل",
+  "waitingPeriodEndedNoFee": "د انتظار وخت پای ته ورسېد. که مسافر رانغی پرته له فیس لغوه کولی شئ.",
+  "freeWaitRemaining": "وړیا انتظار: {time} پاتې",
+  "@freeWaitRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "passengerNoShowWindow": "د مسافر د نه راتګ موده",
+  "cancelWithoutFeeIn": "په {time} کې پرته له فیس لغوه کړئ",
+  "@cancelWithoutFeeIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "arrived": "ورسېد",
+  "trip": "سفر",
+  "done": "تمام",
+  "accountNotRegisteredAsDriver": "دا حساب د چلوونکي په توګه نه دی ثبت. په چلوونکي حساب ننوزئ.",
+  "sessionExpiredSignInAgain": "ناسته پای ته ورسېده. ووزئ او بیا ننوزئ.",
+  "driverProfileNotFound": "د چلوونکي پروفایل ونه موندل شو. لومړی اسناد پورته کړئ.",
+  "cannotReachRawanaServer": "د روانا سرور ته لاسرسی نشته. اتصال وګورئ او بیا هڅه وکړئ.",
+  "couldNotLoadDriverProfile": "د چلوونکي پروفایل پورته نه شو.",
+  "driverGuideProfessionalTitle": "مسلکي اوسئ",
+  "driverGuideProfessionalBody": "له مسافرو سره په ادب سلام وکړئ، موټر پاک وساتئ او د ترافیک قوانین مراعات کړئ. ارامه او درناوی چلند د پنځه ستورو چټکه لار ده.",
+  "driverGuideAcceptTitle": "سفرونه ژر ومنئ",
+  "driverGuideAcceptBody": "لوړه منل نورې غوښتنې درکوي. یوازې کله چې چمتو یاست آنلاین شئ. که ردوي یې نو ژر یې وکړئ ترڅو مسافر بل چلوونکی ومومي.",
+  "driverGuideNavigateTitle": "سمه لارښوونه وکړئ",
+  "driverGuideNavigateBody": "په اپ کې لاره د پورته او کوزېدو لپاره وکاروئ. مخکې له پیل منزل له مسافر سره تایید کړئ. که پته مبهمه وي له اپ څخه زنګ یا پیغام وکړئ.",
+  "driverGuideSafetyTitle": "خوندیتوب لومړی",
+  "driverGuideSafetyBody": "ستړی یا د نشې په حال کې مه چلوئ. د خوندیتوب اندیښنې سمدستي له ملاتړ راپور کړئ. په بیړني حالت کې لومړی له سیمه‌ییزو چارواکو سره اړیکه ونیسئ بیا روانا خبر کړئ.",
+  "driverGuideFaresTitle": "کرایه او تادیه",
+  "driverGuideFaresBody": "کرایه له واټن، وخت او زون نرخ څخه په خپل سر حسابېږي. له مسافر اضافي پیسې مه غواړئ مگر په اپ کې توافق شوی وي. عاید د هر بشپړ سفر وروسته په بټوه کې ښکاره کېږي.",
+  "driverGuideCancellationsTitle": "لغوه کول",
+  "driverGuideCancellationsBody": "له منلو وروسته له لغوه ډډه وکړئ. پرله‌پسې لغوه ستاسو درجه ښکته کوي او راتلونکې غوښتنې کمولی شي. یوازې اړتیا کې لغوه کړئ او روښانه لامل ولیکئ.",
+  "termsDriverAgreement": "د چلوونکي تړون",
+  "termsDriverAgreementBody": "د روانا چلوونکي په کارولو تاسو منئ چې خدمات د پلیټفارم قوانینو، سیمه‌ییزو مقرراتو او د نوم لیکنې اسنادو سره سم وړاندې کړئ.",
+  "termsAccountVerification": "حساب او تایید",
+  "termsAccountVerificationBody": "باید جواز، د موټر ثبت او پېژندپاڼه باوري او تازه وساتئ. روانا کېدای شي هغه حسابونه وځنډوي چې اسناد یې ختم یا جعلي وي.",
+  "termsEarningsPayouts": "عاید او تادیات",
+  "termsEarningsPayoutsBody": "کرایه د روانا کمیشن وروسته ستاسو بټوې ته ځي. د تادیې غوښتنې د مالي ټیم د مهالویش سره پروسس کېږي. درغلي کېدای شي بیلانس وځنډوي.",
+  "termsPrivacy": "محرمیت",
+  "termsPrivacyBody": "موږ موقعیت په آنلاین وخت، د سفر تاریخچه او اړیکې د خدمت لپاره راټولوو. د مسافر شمېره په فعال سفر کې کېدای شي پټه شي. کنټرولونه په پروفایل کې د محرمیت او امنیت برخه کې وګورئ.",
+  "termsConductSuspension": "چلند او ځنډول",
+  "termsConductSuspensionBody": "ځورونه، توپیر، ناامن چلول یا پرله‌پسې شکایتونه کېدای شي لنډمهاله ځنډ یا دایمي لرې کېدو لامل شي.",
+  "termsSupport": "ملاتړ",
+  "termsSupportBody": "د شخړو، د خوندیتوب راپورونو یا د حساب مرستې لپاره په اپ کې ملاتړ یا support@rawana.af وکاروئ. موږ هڅه کوو بیړنیو خوندیتوب مسلو ته ژر ځواب ورکړو.",
+  "noCancellationFee": "د لغوه فیس نشته",
+  "cancellationFeeAmount": "د لغوه فیس: {amount}",
+  "@cancellationFeeAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cancelSearchTitle": "دا غوښتنه لغوه شي؟",
+  "cancelSearchBody": "سمدستي بل سفر غوښتلی شئ. تر هغه چې چلوونکی نه وي موندل شوی فیس نشته.",
+  "collectCashAmount": "{amount} نغدي واخلئ",
+  "@collectCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashCollected": "نغدي واخیستل شول",
+  "openInGoogleMaps": "په ګوګل نقشو کې پرانیزئ",
+  "tooFarContinueAnyway": "تاسو د پین څخه {distance} متره لرې یاست. بیا هم دوام ورکړئ؟",
+  "@tooFarContinueAnyway": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "continueAnyway": "بیا هم دوام",
+  "payDriverCashAmount": "خپل چلوونکي ته {amount} نغدي ورکړئ",
+  "@payDriverCashAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "cashSelectedInfo": "نغدي · افغانۍ — په منزل کې چلوونکي ته ورکړئ",
+  "cashFare": "نغدې کرایه",
+  "rideType": "د سفر ډول",
+  "selectRideType": "کوم ډول سفرونه باید ترلاسه کړئ؟",
+  "fareBreakdown": "د کرایې جزئیات",
+  "baseFare": "بنسټیزه کرایه",
+  "distanceFare": "واټن · {km} کیلومتره",
+  "@distanceFare": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "timeFare": "وخت · {minutes} دقیقې",
+  "@timeFare": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "taxLabel": "مالیه",
+  "totalCash": "ټول نغدي",
+  "cancelGraceSeconds": "د چلوونکي له منلو وروسته لومړۍ {seconds} ثانیې وړیا لغوه کېږي.",
+  "@cancelGraceSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "maxEmergencyContacts": "تر ۳ بیړنیو اړیکو پورې ساتلی شئ.",
+  "maxContactsReached": "د ۳ بیړنیو اړیکو حد پوره شو.",
+  "useThisLocation": "دا ځای وکاروئ",
+  "chooseSavedPlace": "ځای وټاکئ",
+  "vehicleYear": "د موټر کال",
+  "vehicleColour": "د موټر رنګ",
+  "openInWaze": "په ویز کې پرانیزئ",
+  "chooseMapsApp": "په نقشه کې پرانیزئ",
+  "findingAnotherDriver": "پخوانی چلوونکی لغوه کړ. بل چلوونکی درته مومو.",
+  "filterFrom": "له نېټې",
+  "filterTo": "تر نېټې",
+  "clearFilters": "فلټرونه پاک کړئ",
+  "accountBlocked": "دا حساب بند دی او سفر نشی نیولی.",
+  "editName": "نوم سمول",
+  "promoCode": "د تخفیف کوډ",
+  "applyPromo": "پلي کړئ",
+  "promoApplied": "تخفیف وکارېد",
+  "promoInvalid": "دا د تخفیف کوډ ناسم دی.",
+  "promoExpired": "د دې تخفیف کوډ موده پای ته رسېدلې.",
+  "discount": "تخفیف",
+  "writeAReview": "نظر ولیکئ (اختیاري)",
+  "ratingCommentHint": "سفر څنګه و؟",
+  "tripReceipt": "د سفر رسید",
+  "viewReceipt": "رسید وګورئ",
+  "maintenanceTitle": "ژر به بیرته راشو",
+  "forceUpdateTitle": "تازه کول اړین دي",
+  "forceUpdateBody": "د دوام لپاره روانا تازه کړئ.",
+  "updateApp": "اپ تازه کړئ",
+  "exportMyData": "زما معلومات ډاونلوډ کړئ",
+  "deleteAccount": "حساب ړنګ کړئ",
+  "deleteAccountConfirm": "دا حساب ړنګ شي؟ دا کار نه شي بیرته کېدای.",
+  "deleteAccountWarning": "ستاسو پروفایل او خوندي ځایونه به لرې شي. د سفر ریکارډونه د قانون لپاره پاتې کېږي.",
+  "accountDeleted": "ستاسو حساب ړنګ شو.",
+  "dataExported": "ستاسو د معلوماتو فایل چمتو دی.",
+  "sos": "بیړنی",
+  "sosConfirm": "ستاسو اوسنی ځای بیړنیو اړیکو ته واستول شي؟",
+  "sosSent": "بیړنی خبرتیا ولېږل شوه.",
+  "sosFailed": "بیړنی پیغام ونه شو. خپل سفر شریک کړئ.",
+  "sosNoContacts": "لومړی یوه بیړنۍ اړیکه اضافه کړئ.",
+  "sendSos": "بیړنی ولېږئ",
+  "yourTickets": "ستاسو ټکټونه",
+  "noTickets": "تر اوسه ملاتړ ټکټ نشته",
+  "reply": "ځواب",
+  "sendReply": "ځواب ولېږئ",
+  "recentRatings": "وروستي امتیازونه",
+  "noRatingsYet": "تر اوسه لیکلي امتیاز نشته",
+  "lowRatingAlert": "ستاسو امتیاز له حد څخه ښکته دی. پر خوندي او پر وخت سفرونو تمرکز وکړئ.",
+  "highCancelAlert": "ستاسو د لغوه کچه لوړه ده. ډېر سفرونه منل ستاسو حساب ساتي.",
+  "typicalDriverRating": "نږدې چلوونکي منځنی {rating}",
+  "@typicalDriverRating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "tooManyCancellations": "د نن د لغوه حد ته رسېدلي یاست. سبا بیا هڅه وکړئ.",
+  "markAllRead": "لوستل شوی",
+  "emergencyContactsCount": "{count} له {max} اړیکو",
+  "@emergencyContactsCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "loadMore": "نور راوړئ",
+  "payoutMethod": "د تادیې لاره",
+  "payoutAccount": "د حساب شمېره",
+  "savePayoutDetails": "د تادیې جزئیات خوندي کړئ",
+  "payoutDetailsSaved": "د تادیې جزئیات خوندي شول",
+  "tooFarFromPickup": "تاسو د پورته کېدو ځای څخه {distance} متره لرې یاست. د رسېدو تصدیق لپاره {required} مترو ته نږدې شئ.",
+  "@tooFarFromPickup": {
+    "placeholders": {
+      "distance": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "tooFarFromDropoff": "تاسو د منزل څخه {distance} متره لرې یاست. د سفر بشپړولو لپاره {required} مترو ته نږدې شئ.",
+  "@tooFarFromDropoff": {
+    "placeholders": {
+      "distance": { "type": "String" },
+      "required": { "type": "String" }
+    }
+  },
+  "rideCancelledByPassenger": "مسافر دا سفر لغوه کړ.",
+  "rideCancelledBySupport": "دا سفر د روانه ملاتړ لخوا لغوه شو.",
+  "rideCancelledByDriver": "چلوونکي لغوه کړ. موږ تاسو ته بل چلوونکی لټوو.",
+  "rideCancelledNoDrivers": "د دې سفر لپاره هیڅ چلوونکی شتون نه درلود.",
+  "rideCancelledGeneric": "دا سفر لغوه شو.",
+  "rateLastTripTitle": "ستاسو وروستی سفر څنګه و؟",
+  "rateLastTripBody": "خپل سفر ته {destination} درجه ورکړئ ترڅو چلوونکي غوره وساتو.",
+  "@rateLastTripBody": {
+    "placeholders": {
+      "destination": { "type": "String" }
+    }
+  },
+  "rateNow": "اوس درجه ورکړئ",
+  "resumingActiveTrip": "تاسو لا دمخه یو روان سفر لرئ. بېرته هغه ته درسره ځو.",
+  "youKeep": "ستاسو برخه",
+  "commissionOwedToRawana": "روانه ته د ورکړې وړ کمیسیون",
+  "outstandingFeeCollected": "د روانه لپاره راټول شوې د لغوه فیس",
+  "totalCashToCollect": "د راټولولو ټول نغدي",
+  "amountOwedToRawana": "تاسو روانه ته پور لرئ",
+  "creditFromRawana": "روانه تاسو ته پور لري",
+  "balanceSettled": "تصفیه شوی",
+  "balanceSettledBody": "اوس مهال د ورکړې لپاره کمیسیون نه لرئ.",
+  "debtLimitLabel": "حد {amount}",
+  "@debtLimitLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "debtLimitReachedTitle": "د چلولو دوام لپاره خپل حساب تصفیه کړئ",
+  "debtLimitReachedBody": "تاسو {owed} پور لرئ. هغه چلوونکي چې د {limit} حد څخه تېر شي، تر هغه آنلاین نشي کېدلای چې مالي څانګه تادیه ثبت کړي.",
+  "@debtLimitReachedBody": { "placeholders": { "owed": { "type": "String" }, "limit": { "type": "String" } } },
+  "howToSettle": "روانه ته د تادیې لاره",
+  "walletCashFirstExplainer": "تاسو هر کرایه نغدي ساتئ. د روانه کمیسیون دلته ستاسو حساب ته زیاتېږي او تاسو یې د مالي څانګې سره تصفیه کوئ.",
+  "outstandingFeeIncluded": "د پخواني سفر {amount} نه تادیه شوې د لغوه فیس شامل دی",
+  "@outstandingFeeIncluded": { "placeholders": { "amount": { "type": "String" } } },
+  "cancellationFeeChargedNextRide": "د {amount} لغوه فیس ستاسو راتلونکي سفر ته زیات کېږي.",
+  "@cancellationFeeChargedNextRide": { "placeholders": { "amount": { "type": "String" } } },
+  "txCommission": "کمیسیون",
+  "txSettlement": "روانه ته تادیه",
+  "txCancellationFee": "د لغوه فیس تاوان",
+  "txFeeCollected": "راټول شوې د لغوه فیس",
+  "txPayout": "ایستل",
+  "txAdjustment": "سمون",
+  "txCashCollected": "نغدي کرایه (ستاسو سره)"
+}
