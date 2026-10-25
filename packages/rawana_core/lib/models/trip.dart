@@ -1,6 +1,8 @@
 import '../utils/geo_parse.dart';
 
 enum TripStatus {
+  /// Pre-booked ride waiting for its dispatch window. Not a live trip.
+  scheduled,
   searching,
   accepted,
   driverArriving,
@@ -9,6 +11,7 @@ enum TripStatus {
   cancelled;
 
   static TripStatus fromString(String value) => switch (value) {
+    'scheduled' => TripStatus.scheduled,
     'searching' => TripStatus.searching,
     'accepted' => TripStatus.accepted,
     'driver_arriving' => TripStatus.driverArriving,
@@ -19,6 +22,7 @@ enum TripStatus {
   };
 
   String get apiValue => switch (this) {
+    TripStatus.scheduled => 'scheduled',
     TripStatus.searching => 'searching',
     TripStatus.accepted => 'accepted',
     TripStatus.driverArriving => 'driver_arriving',
@@ -125,6 +129,12 @@ class Trip {
   /// `passenger` | `driver` | `admin` once the trip is cancelled.
   final String? cancelledBy;
   final String? cancellationReason;
+  /// Pickup time of a pre-booked ride (kept after it dispatches).
+  final DateTime? scheduledAt;
+  /// When a driver committed to a scheduled ride.
+  final DateTime? reservedAt;
+  /// Driver marketplace only: distance from the driver to the pickup.
+  final int? distanceToPickupMeters;
 
   const Trip({
     required this.id,
@@ -163,7 +173,15 @@ class Trip {
     this.routeSnapshotUrl,
     this.cancelledBy,
     this.cancellationReason,
+    this.scheduledAt,
+    this.reservedAt,
+    this.distanceToPickupMeters,
   });
+
+  bool get isScheduledRide => scheduledAt != null;
+
+  /// A scheduled ride that a driver has already committed to.
+  bool get hasReservedDriver => status == TripStatus.scheduled && driverId != null;
 
   /// True when the system closed the search because nobody accepted.
   bool get cancelledForNoDrivers =>
@@ -264,6 +282,9 @@ class Trip {
       routeSnapshotUrl: json['route_snapshot_url'] as String?,
       cancelledBy: json['cancelled_by'] as String?,
       cancellationReason: json['cancellation_reason'] as String?,
+      scheduledAt: DateTime.tryParse(json['scheduled_at'] as String? ?? ''),
+      reservedAt: DateTime.tryParse(json['reserved_at'] as String? ?? ''),
+      distanceToPickupMeters: (json['distance_to_pickup_meters'] as num?)?.round(),
     );
   }
 }
@@ -319,6 +340,10 @@ class TripBookingDraft {
   final String dropoffAddress;
   final String? rideTypeId;
   final String? promoCode;
+  /// Null books a ride now; otherwise the pickup time of a scheduled ride.
+  final DateTime? scheduledAt;
+  /// Distance of the alternative route picked on the map; null = recommended.
+  final double? routeDistanceKm;
 
   const TripBookingDraft({
     required this.pickupLat,
@@ -329,6 +354,8 @@ class TripBookingDraft {
     required this.dropoffAddress,
     this.rideTypeId,
     this.promoCode,
+    this.scheduledAt,
+    this.routeDistanceKm,
   });
 
   TripBookingDraft copyWith({
@@ -340,6 +367,10 @@ class TripBookingDraft {
     String? dropoffAddress,
     String? rideTypeId,
     String? promoCode,
+    DateTime? scheduledAt,
+    bool clearScheduledAt = false,
+    double? routeDistanceKm,
+    bool clearRoute = false,
   }) => TripBookingDraft(
     pickupLat: pickupLat ?? this.pickupLat,
     pickupLng: pickupLng ?? this.pickupLng,
@@ -349,6 +380,9 @@ class TripBookingDraft {
     dropoffAddress: dropoffAddress ?? this.dropoffAddress,
     rideTypeId: rideTypeId ?? this.rideTypeId,
     promoCode: promoCode ?? this.promoCode,
+    scheduledAt: clearScheduledAt ? null : scheduledAt ?? this.scheduledAt,
+    routeDistanceKm:
+        clearRoute ? null : routeDistanceKm ?? this.routeDistanceKm,
   );
 }
 

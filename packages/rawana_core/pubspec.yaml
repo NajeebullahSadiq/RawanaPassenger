@@ -39,3 +39,16 @@ flutter:
   assets:
     - assets/logo.svg
     - assets/app_icon.png
+  fonts:
+    - family: Bahij Zar
+      fonts:
+        - asset: fonts/BahijZar-Regular.ttf
+          weight: 400
+        - asset: fonts/BahijZar-Regular.ttf
+          weight: 500
+        - asset: fonts/BahijZar-Bold.ttf
+          weight: 600
+        - asset: fonts/BahijZar-Bold.ttf
+          weight: 700
+        - asset: fonts/BahijZar-Bold.ttf
+          weight: 800

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
 import '../providers/trip_providers.dart';
-import '../providers/live_location_providers.dart';
 import '../providers/nearby_drivers_provider.dart';
 
 class SearchingScreen extends ConsumerStatefulWidget {
@@ -21,13 +20,14 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
   String? _error;
   bool _userCancelled = false;
   bool _cancelling = false;
+  double _sheetHeight = 340;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 2600),
     )..repeat();
     _startSearch();
   }
@@ -62,7 +62,7 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     }
     if (trip.status == TripStatus.cancelled) {
       if (_userCancelled) {
-        ref.read(activeTripProvider.notifier).clearLocalTripState();
+        ref.read(activeTripProvider.notifier).tryClearLocalTripState();
         context.go('/home');
         return;
       }
@@ -76,19 +76,28 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
   }
 
   Future<void> _waitForMatch(String tripId) async {
-    await ref.read(activeTripProvider.notifier).pollUntilAccepted(tripId);
-    if (!mounted || _userCancelled) return;
-    await ref.read(activeTripProvider.notifier).refresh();
-    if (!mounted || _userCancelled) return;
-    final trip = ref.read(activeTripProvider).valueOrNull;
-    if (trip == null || trip.status == TripStatus.cancelled) {
-      setState(() => _error = context.l10n.noDriversAvailable);
-      return;
+    // The search window is an admin setting and may outlast one polling round,
+    // so keep polling until the server moves the trip out of `searching`.
+    while (true) {
+      await ref.read(activeTripProvider.notifier).pollUntilAccepted(tripId);
+      if (!mounted || _userCancelled) return;
+      await ref.read(activeTripProvider.notifier).refresh();
+      if (!mounted || _userCancelled) return;
+      final trip = ref.read(activeTripProvider).valueOrNull;
+      if (trip == null || trip.status == TripStatus.cancelled) {
+        if (trip != null) {
+          _leaveForStatus(trip);
+        } else {
+          setState(() => _error = context.l10n.noDriversAvailable);
+        }
+        return;
+      }
+      if (trip.id != tripId) return;
+      if (trip.status != TripStatus.searching) {
+        _leaveForStatus(trip);
+        return;
+      }
     }
-    if (trip.status == TripStatus.searching) {
-      return;
-    }
-    _leaveForStatus(trip);
   }
 
   Future<void> _tryAgain() async {
@@ -102,16 +111,19 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
               reason: 'Passenger cancelled',
             );
       }
-      ref.read(activeTripProvider.notifier).clearLocalTripState(keepDraft: true);
-      if (mounted) context.go('/ride-selection');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.cancelFailed('$e'))),
+          SnackBar(content: Text(context.l10n.cancelFailed(apiErrorMessage(e)))),
         );
       }
-    } finally {
       if (mounted) setState(() => _cancelling = false);
+      return;
+    }
+    ref.read(activeTripProvider.notifier).tryClearLocalTripState(keepDraft: true);
+    if (mounted) {
+      setState(() => _cancelling = false);
+      context.go('/ride-selection');
     }
   }
 
@@ -153,18 +165,19 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
             .read(tripServiceProvider)
             .cancelRide(tripId, reason: 'Passenger cancelled');
       }
-      _userCancelled = true;
-      ref.read(activeTripProvider.notifier).clearLocalTripState();
-      if (mounted) context.go('/home');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.cancelFailed('$e'))),
+          SnackBar(content: Text(context.l10n.cancelFailed(apiErrorMessage(e)))),
         );
       }
+      return;
     } finally {
       if (mounted) setState(() => _cancelling = false);
     }
+    _userCancelled = true;
+    ref.read(activeTripProvider.notifier).tryClearLocalTripState();
+    if (mounted) context.go('/home');
   }
 
   @override
@@ -173,19 +186,22 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<Trip?>>(activeTripProvider, (_, next) {
       final trip = next.valueOrNull;
       if (!mounted || _userCancelled || trip == null) return;
       if (trip.status != TripStatus.searching) {
-        _leaveForStatus(trip);
+        Future.microtask(() {
+          if (!mounted || _userCancelled) return;
+          _leaveForStatus(trip);
+        });
       }
     });
     final draft = ref.watch(bookingDraftProvider);
     final trip = ref.watch(activeTripProvider).valueOrNull;
     final nearbyDrivers = ref.watch(nearbyDriversProvider);
-    final liveLoc = ref.watch(passengerLiveLocationProvider);
     final rideTypes = ref.watch(rideTypesProvider).valueOrNull ?? const [];
     final selectedType = rideTypes.cast<RideType?>().firstWhere(
       (type) => type?.id == draft?.rideTypeId,
@@ -194,29 +210,19 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     final vehicleKind = VehicleKind.fromIconName(selectedType?.iconName);
     final pickupLat = draft?.pickupLat ?? trip?.pickupLat;
     final pickupLng = draft?.pickupLng ?? trip?.pickupLng;
-    final dropoffLat = draft?.dropoffLat ?? trip?.dropoffLat;
-    final dropoffLng = draft?.dropoffLng ?? trip?.dropoffLng;
-    final dropoffAddress = draft?.dropoffAddress ?? trip?.dropoffAddress;
-    final markers = withCurrentLocationMarker(
-      pickupLat != null &&
-              pickupLng != null &&
-              dropoffLat != null &&
-              dropoffLng != null
-          ? buildBookingMapMarkers(
-              pickupLat: pickupLat,
-              pickupLng: pickupLng,
-              dropoffLat: dropoffLat,
-              dropoffLng: dropoffLng,
-              nearbyDrivers: nearbyDrivers,
-              vehicleKind: vehicleKind,
-              l10n: context.l10n,
-            )
-          : const <RawanaMapMarker>[],
-      lat: liveLoc?.lat ?? pickupLat,
-      lng: liveLoc?.lng ?? pickupLng,
-    );
-    final centerLat = pickupLat;
-    final centerLng = pickupLng;
+    final pickupAddress = draft?.pickupAddress ?? trip?.pickupAddress ?? '';
+    final dropoffAddress = draft?.dropoffAddress ?? trip?.dropoffAddress ?? '';
+    final markers = <RawanaMapMarker>[
+      ...buildNearbyDriverMarkers(nearbyDrivers, vehicleKind: vehicleKind),
+      if (pickupLat != null && pickupLng != null)
+        RawanaMapMarker.pickup(lat: pickupLat, lng: pickupLng, l10n: context.l10n),
+    ];
+    final hasError = _error != null;
+    final title = _error ??
+        ((trip?.rematchCount ?? 0) > 0
+            ? context.l10n.findingAnotherDriver
+            : context.l10n.findingYourDriver);
+    final fare = trip?.cashToCollect;
 
     return PopScope(
       canPop: false,
@@ -224,257 +230,236 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
         if (!didPop) _cancel();
       },
       child: Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (pickupLat != null &&
-              pickupLng != null &&
-              dropoffLat != null &&
-              dropoffLng != null)
-            Positioned.fill(
-              child: TripRouteMap(
-                key: ValueKey('search_${trip?.id ?? draft?.rideTypeId ?? 'draft'}'),
-                mapsService: ref.read(mapsServiceProvider),
-                originLat: pickupLat,
-                originLng: pickupLng,
-                destLat: dropoffLat,
-                destLng: dropoffLng,
-                zoom: 14,
-                markers: markers,
-                showRouteSelector: true,
-                routeSelectorBottomInset: 280,
-              ),
-            )
-          else
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
             Positioned.fill(
               child: RawanaMap(
-                zoom: 14,
-                centerLat: centerLat,
-                centerLng: centerLng,
+                zoom: 15.5,
+                centerLat: pickupLat,
+                centerLng: pickupLng,
                 markers: markers,
+                gesturesEnabled: false,
+                mapPadding: EdgeInsets.only(bottom: _sheetHeight),
               ),
             ),
-          // Dim only the bottom sheet area so the route line stays visible.
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 320,
-            child: IgnorePointer(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withValues(alpha: 0),
-                      Colors.white.withValues(alpha: 0.55),
-                    ],
+            // Radar pulse sits on the pickup: the map centres the pickup in the
+            // area above the sheet, and this overlay uses the same area.
+            if (!hasError && pickupLat != null)
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: _sheetHeight,
+                child: IgnorePointer(
+                  child: Center(
+                    child: RepaintBoundary(
+                      child: _PickupPulse(animation: _controller),
+                    ),
+                  ),
+                ),
+              ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Align(
+                  alignment: AlignmentDirectional.topStart,
+                  child: RawanaCircleIconButton(
+                    icon: LucideIcons.arrowLeft,
+                    onPressed: _cancel,
                   ),
                 ),
               ),
             ),
-          ),
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: Row(
-                    children: [
-                      RawanaCircleIconButton(
-                        icon: LucideIcons.arrowLeft,
-                        onPressed: _cancel,
-                      ),
-                      const Spacer(),
-                      const Spacer(),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, _) {
-                    return Stack(
-                      alignment: Alignment.center,
-                      children:
-                          List.generate(3, (i) {
-                            final progress = (_controller.value + i / 3) % 1.0;
-                            return Opacity(
-                              opacity: (1 - progress).clamp(0.0, 1.0),
-                              child: Container(
-                                width: 72 + progress * 160,
-                                height: 72 + progress * 160,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: RawanaColors.primary.withValues(
-                                      alpha: 0.45 * (1 - progress),
-                                    ),
-                                    width: 2.5,
-                                  ),
-                                ),
-                              ),
-                            );
-                          })..add(
-                            Container(
-                              width: 84,
-                              height: 84,
-                              decoration: BoxDecoration(
-                                gradient: RawanaColors.primaryGradient,
-                                shape: BoxShape.circle,
-                                boxShadow: RawanaShadows.ctaGlow,
-                              ),
-                              child: const Icon(
-                                      LucideIcons.car,
-                                      size: 32,
-                                      color: Colors.white,
-                                    ),
-                            ),
-                          ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 32),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Text(
-                    _error ??
-                        ((trip?.rematchCount ?? 0) > 0
-                            ? context.l10n.findingAnotherDriver
-                            : context.l10n.findingYourDriver),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.8,
-                      height: 1.15,
-                      color: _error != null
-                          ? RawanaColors.error
-                          : RawanaColors.onSurface,
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: MeasureSize(
+                onChange: (size) {
+                  if (!mounted || (size.height - _sheetHeight).abs() < 1) return;
+                  setState(() => _sheetHeight = size.height);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(RawanaSpacing.radiusXl),
                     ),
+                    boxShadow: RawanaShadows.sheet,
                   ),
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    _error == null
-                        ? context.l10n.connectingToNearbyDrivers
-                        : context.l10n.retryOrCancelBelow,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: RawanaColors.onSurfaceMuted,
-                      fontSize: 15,
-                      height: 1.5,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: RawanaPrimaryButton(
-                      label: context.l10n.tryAgain,
-                      icon: LucideIcons.refreshCcw,
-                      onPressed: _cancelling ? null : _tryAgain,
-                    ),
-                  ),
-                ],
-                const Spacer(),
-                if (dropoffAddress != null && dropoffAddress.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: RawanaSurfaceCard(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                      borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-                      child: Row(
+                  child: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  RawanaColors.primary.withValues(alpha: 0.14),
-                                  RawanaColors.primaryBright.withValues(alpha: 0.08),
-                                ],
+                          const RawanaSheetHandle(),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            child: Text(
+                              title,
+                              key: ValueKey(title),
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                                color: hasError
+                                    ? RawanaColors.error
+                                    : RawanaColors.onSurface,
                               ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              LucideIcons.mapPin,
-                              color: RawanaColors.primary,
-                              size: 18,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          const SizedBox(height: 4),
+                          Text(
+                            hasError
+                                ? context.l10n.retryOrCancelBelow
+                                : context.l10n.lookingForDriversNearby,
+                            style: const TextStyle(
+                              color: RawanaColors.onSurfaceMuted,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          if (!hasError)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: const LinearProgressIndicator(
+                                minHeight: 4,
+                                color: RawanaColors.primary,
+                                backgroundColor: RawanaColors.surfaceAlt,
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          if (pickupAddress.isNotEmpty || dropoffAddress.isNotEmpty)
+                            TripRouteAddresses(
+                              pickupAddress: pickupAddress,
+                              dropoffAddress: dropoffAddress,
+                              dense: true,
+                            ),
+                          if (fare != null && fare > 0) ...[
+                            const SizedBox(height: 12),
+                            Row(
                               children: [
+                                const Icon(
+                                  LucideIcons.banknote,
+                                  size: 18,
+                                  color: RawanaColors.success,
+                                ),
+                                const SizedBox(width: 8),
                                 Text(
-                                  context.l10n.destinationLabel,
+                                  context.l10n.cashFare,
                                   style: const TextStyle(
                                     color: RawanaColors.onSurfaceMuted,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 1.2,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                const Spacer(),
                                 Text(
-                                  dropoffAddress,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                  formatTripFare(fare),
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ],
+                            ),
+                          ],
+                          const SizedBox(height: 16),
+                          if (hasError) ...[
+                            RawanaPrimaryButton(
+                              label: context.l10n.tryAgain,
+                              icon: LucideIcons.refreshCcw,
+                              onPressed: _cancelling ? null : _tryAgain,
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                          OutlinedButton.icon(
+                            onPressed: _cancelling ? null : _cancel,
+                            icon: const Icon(LucideIcons.x, size: 18),
+                            label: Text(context.l10n.cancelRequest),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(48),
+                              foregroundColor: RawanaColors.error,
+                              side: BorderSide(
+                                color: RawanaColors.error.withValues(alpha: 0.4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            context.l10n.noCancellationFee,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: RawanaColors.onSurfaceMuted,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Column(
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: _cancelling ? null : _cancel,
-                        icon: const Icon(LucideIcons.x, size: 18),
-                        label: Text(context.l10n.cancelRequest),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: RawanaColors.error,
-                          side: BorderSide(
-                            color: RawanaColors.error.withValues(alpha: 0.4),
-                          ),
-                          backgroundColor: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        context.l10n.noCancellationFee,
-                        style: const TextStyle(
-                          color: RawanaColors.onSurfaceMuted,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Uber-style radar: soft rings that ease out from the pickup point.
+class _PickupPulse extends StatelessWidget {
+  const _PickupPulse({required this.animation});
+
+  final Animation<double> animation;
+
+  static const _size = 240.0;
+  static const _rings = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: _size,
+      height: _size,
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, _) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              for (var i = 0; i < _rings; i++)
+                _ring((animation.value + i / _rings) % 1.0),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _ring(double t) {
+    final eased = Curves.easeOutCubic.transform(t);
+    final opacity = (1 - Curves.easeIn.transform(t)).clamp(0.0, 1.0);
+    return Opacity(
+      opacity: opacity,
+      child: Transform.scale(
+        scale: 0.12 + eased * 0.88,
+        child: Container(
+          width: _size,
+          height: _size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: RawanaColors.primary.withValues(alpha: 0.16),
+            border: Border.all(
+              color: RawanaColors.primary.withValues(alpha: 0.45),
+              width: 1.5,
             ),
           ),
-        ],
+        ),
       ),
-    ),
     );
   }
 }

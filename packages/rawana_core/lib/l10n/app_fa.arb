@@ -1221,15 +1221,23 @@
   "tooFarFromPickup": "شما {distance} متر از محل سوار شدن فاصله دارید. برای تأیید رسیدن، به فاصله {required} متر نزدیک شوید.",
   "@tooFarFromPickup": {
     "placeholders": {
-      "distance": { "type": "String" },
-      "required": { "type": "String" }
+      "distance": {
+        "type": "String"
+      },
+      "required": {
+        "type": "String"
+      }
     }
   },
   "tooFarFromDropoff": "شما {distance} متر از مقصد فاصله دارید. برای پایان سفر، به فاصله {required} متر نزدیک شوید.",
   "@tooFarFromDropoff": {
     "placeholders": {
-      "distance": { "type": "String" },
-      "required": { "type": "String" }
+      "distance": {
+        "type": "String"
+      },
+      "required": {
+        "type": "String"
+      }
     }
   },
   "rideCancelledByPassenger": "مسافر این سفر را لغو کرد.",
@@ -1241,7 +1249,9 @@
   "rateLastTripBody": "سفر خود به {destination} را امتیاز دهید تا کیفیت راننده‌ها را بالا نگه داریم.",
   "@rateLastTripBody": {
     "placeholders": {
-      "destination": { "type": "String" }
+      "destination": {
+        "type": "String"
+      }
     }
   },
   "rateNow": "امتیاز دهید",
@@ -1255,21 +1265,174 @@
   "balanceSettled": "تسویه شده",
   "balanceSettledBody": "در حال حاضر کمیسیونی برای پرداخت ندارید.",
   "debtLimitLabel": "سقف {amount}",
-  "@debtLimitLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "@debtLimitLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "debtLimitReachedTitle": "برای ادامه رانندگی، بدهی خود را تسویه کنید",
   "debtLimitReachedBody": "شما {owed} بدهکار هستید. رانندگانی که از سقف {limit} عبور کنند تا ثبت پرداخت توسط مالی نمی‌توانند آنلاین شوند.",
-  "@debtLimitReachedBody": { "placeholders": { "owed": { "type": "String" }, "limit": { "type": "String" } } },
+  "@debtLimitReachedBody": {
+    "placeholders": {
+      "owed": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
   "howToSettle": "روش پرداخت به روانه",
   "walletCashFirstExplainer": "شما همه کرایه‌ها را نقد نگه می‌دارید. کمیسیون روانه به حساب شما در اینجا اضافه می‌شود و با بخش مالی تسویه می‌کنید.",
   "outstandingFeeIncluded": "شامل {amount} هزینه لغو پرداخت‌نشده از سفر قبلی",
-  "@outstandingFeeIncluded": { "placeholders": { "amount": { "type": "String" } } },
+  "@outstandingFeeIncluded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "cancellationFeeChargedNextRide": "هزینه لغو {amount} به سفر بعدی شما اضافه خواهد شد.",
-  "@cancellationFeeChargedNextRide": { "placeholders": { "amount": { "type": "String" } } },
+  "@cancellationFeeChargedNextRide": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "txCommission": "کمیسیون",
   "txSettlement": "پرداخت به روانه",
   "txCancellationFee": "جبران هزینه لغو",
   "txFeeCollected": "هزینه لغو دریافت‌شده",
   "txPayout": "برداشت",
   "txAdjustment": "تعدیل",
-  "txCashCollected": "کرایه نقدی (نزد شما)"
+  "txCashCollected": "کرایه نقدی (نزد شما)",
+  "chat": "گفتگو",
+  "chatWithName": "گفتگو با {name}",
+  "chatHint": "پیام خود را بنویسید…",
+  "chatEmpty": "هنوز پیامی نیست. برای هماهنگی محل سوار شدن یک پیام کوتاه بفرستید.",
+  "chatLoadFailed": "پیام‌ها بارگذاری نشد",
+  "chatClosed": "گفتگوی این سفر بسته شده است",
+  "chatSendFailed": "ارسال نشد · برای تلاش دوباره بزنید",
+  "chatQuickOnMyWay": "در راه هستم",
+  "chatQuickArrived": "رسیدم",
+  "chatQuickFewMinutes": "چند دقیقه دیگر می‌رسم",
+  "chatQuickWaiting": "در محل سوار شدن منتظرم",
+  "chatQuickComing": "همین حالا می‌آیم",
+  "newMessageFrom": "پیام جدید از {name}",
+  "openChat": "باز کردن",
+  "recenter": "مرکز نقشه",
+  "showTripDetails": "نمایش جزئیات سفر",
+  "hideTripDetails": "پنهان کردن جزئیات",
+  "lookingForDriversNearby": "در حال جستجوی راننده در نزدیکی محل سوار شدن شما",
+  "changeLabel": "تغییر",
+  "pickupSpotHint": "نقشه را حرکت دهید تا محل دقیق سوار شدن را تعیین کنید",
+  "movingMap": "در حال حرکت…",
+  "couldNotLoadFares": "قیمت‌ها بارگذاری نشد. اتصال خود را بررسی کرده و دوباره تلاش کنید.",
+  "tripTooShort": "مبدا و مقصد خیلی نزدیک هستند. مقصد دیگری انتخاب کنید.",
+  "statusScheduled": "زمان‌بندی‌شده",
+  "pickupNow": "اکنون",
+  "pickupLater": "بعداً",
+  "pickupTime": "زمان سوار شدن",
+  "choosePickupTime": "زمان سوار شدن را انتخاب کنید",
+  "scheduledFor": "زمان‌بندی‌شده برای {time}",
+  "@scheduledFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleRideWithFare": "رزرو {rideType} · {fare}",
+  "@scheduleRideWithFare": {
+    "placeholders": {
+      "rideType": {
+        "type": "String"
+      },
+      "fare": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduling": "در حال رزرو…",
+  "rideScheduledTitle": "سفر رزرو شد",
+  "rideScheduledBody": "سفر شما برای {time} رزرو شد. پیش از زمان سوار شدن، راننده شما را تأیید می‌کنیم.",
+  "@rideScheduledBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledRides": "سفرهای رزروشده",
+  "noScheduledRides": "سفر پیش رو ندارید",
+  "noScheduledRidesHint": "سفری را از قبل رزرو کنید تا اینجا نمایش داده شود.",
+  "scheduleRideCta": "رزرو سفر برای بعد",
+  "scheduleRideCtaHint": "از قبل رزرو کنید و کرایه را ثابت نگه دارید",
+  "driverConfirmed": "راننده تأیید شد",
+  "driverAssignedBeforePickup": "پیش از زمان سوار شدن راننده تعیین می‌شود",
+  "cancelScheduledRideTitle": "این سفر رزروشده لغو شود؟",
+  "freeCancelUntil": "لغو رایگان تا {time}.",
+  "@freeCancelUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledCancelFee": "راننده شما تأیید شده است، بنابراین هزینه لغو {fee} اعمال می‌شود.",
+  "@scheduledCancelFee": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledRideCancelled": "سفر رزروشده لغو شد",
+  "scheduledTooSoon": "این زمان خیلی نزدیک است. لطفاً زمان دیرتری انتخاب کنید.",
+  "scheduledTooFar": "این زمان خیلی دور است.",
+  "scheduledLimitReached": "شما به حداکثر تعداد سفرهای رزروشده رسیده‌اید.",
+  "scheduledOverlap": "شما در همین حدود زمانی یک سفر رزروشده دارید.",
+  "priceLockedNote": "کرایه هنگام رزرو ثابت می‌شود.",
+  "scheduledRideBadge": "سفر رزروشده",
+  "availableReservations": "موجود",
+  "myReservations": "رزروهای من",
+  "reserveRide": "رزرو",
+  "rideReserved": "سفر رزرو شد. پیش از زمان سوار شدن به شما یادآوری می‌کنیم.",
+  "releaseReservation": "رها کردن",
+  "releaseReservationTitle": "این رزرو رها شود؟",
+  "releaseReservationBody": "این سفر به رانندگان دیگر داده می‌شود. رها کردن نزدیک به زمان سوار شدن، اعتبار شما را کاهش می‌دهد.",
+  "reservationReleased": "رزرو رها شد",
+  "noAvailableReservations": "در حال حاضر سفر رزروشده‌ای در نزدیکی نیست",
+  "noMyReservations": "سفر رزروشده‌ای ندارید",
+  "reservationConflict": "شما در همین حدود زمانی یک سفر رزروشده دارید.",
+  "reservationUnavailable": "این سفر دیگر موجود نیست.",
+  "kmAway": "{km} کیلومتر فاصله",
+  "@kmAway": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "stayOnlineForReservation": "پیش از زمان سوار شدن آنلاین بمانید تا سفر به شما سپرده شود.",
+  "nextReservationAt": "رزرو بعدی · {time}",
+  "@nextReservationAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPickup": "تأیید محل سوار شدن",
+  "confirmPickupTitle": "محل دقیق سوار شدن را تأیید کنید",
+  "confirmPickupHint": "نقشه را بکشید تا سنجاق دقیقاً جایی باشد که راننده باید شما را ببیند.",
+  "pickupMovedCheckPrice": "محل سوار شدن تغییر کرد. قیمت جدید را بررسی کنید و دوباره درخواست دهید.",
+  "savedPlacesHeader": "مکان‌های ذخیره‌شده",
+  "recentPlacesHeader": "اخیر",
+  "fareChangedTitle": "قیمت به‌روز شد",
+  "fareChangedBody": "قیمت این سفر از {oldPrice} به {newPrice} افزایش یافت. با قیمت جدید درخواست می‌کنید؟",
+  "requestAtPrice": "درخواست با {price}"
 }

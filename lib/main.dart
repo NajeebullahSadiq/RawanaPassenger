@@ -13,6 +13,7 @@ Future<void> main() async {
   // available to AppConfig getters during bootstrap.
   await RawanaEnv.load();
   final savedLocale = await LocaleStorage.load();
+  RawanaLocale.apply(savedLocale);
   await ensureGoogleMapsScriptLoaded(AppConfig.googleMapsWebApiKey);
   await initializeFirebaseApp(options: DefaultFirebaseOptions.currentPlatform);
   if (AppConfig.hasSupabase) {
@@ -37,6 +38,7 @@ class PassengerApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final isRtl = LocaleStorage.isRtl(locale);
     final l10n = lookupAppLocalizations(locale);
+    final textDirection = RawanaLocale.textDirectionOf(locale);
 
     return AppBootstrap(
       child: MaterialApp.router(
@@ -45,11 +47,16 @@ class PassengerApp extends ConsumerWidget {
         theme: RawanaTheme.light(isRtl: isRtl),
         locale: locale,
         supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        builder: (context, child) => Directionality(
-          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-          child: child ?? const SizedBox.shrink(),
-        ),
+        localizationsDelegates: RawanaLocale.delegates,
+        localeResolutionCallback: (device, supported) =>
+            RawanaLocale.resolutionCallback(locale, device, supported),
+        builder: (context, child) {
+          RawanaLocale.apply(locale);
+          return Directionality(
+            textDirection: textDirection,
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
         routerConfig: appRouter,
       ),
     );

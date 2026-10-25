@@ -33,6 +33,13 @@ class RawanaMap extends StatelessWidget {
     this.followHeading,
     this.onTap,
     this.onCameraMove,
+    this.onCameraIdle,
+    this.cameraResetRevision = 0,
+    this.mapPadding = EdgeInsets.zero,
+    this.gesturesEnabled = true,
+    this.showCompass = true,
+    this.compassBottom,
+    this.compassTop,
   });
 
   final double zoom;
@@ -57,6 +64,15 @@ class RawanaMap extends StatelessWidget {
   final double? followHeading;
   final ValueChanged<LatLng>? onTap;
   final ValueChanged<LatLng>? onCameraMove;
+  final VoidCallback? onCameraIdle;
+  final int cameraResetRevision;
+  final EdgeInsets mapPadding;
+  final bool gesturesEnabled;
+  final bool showCompass;
+  final double? compassBottom;
+
+  /// When set, the compass sits this far from the top instead.
+  final double? compassTop;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +101,13 @@ class RawanaMap extends StatelessWidget {
       followHeading: followHeading,
       onTap: onTap,
       onCameraMove: onCameraMove,
+      onCameraIdle: onCameraIdle,
+      cameraResetRevision: cameraResetRevision,
+      mapPadding: mapPadding,
+      gesturesEnabled: gesturesEnabled,
+      showCompass: showCompass,
+      compassBottom: compassBottom,
+      compassTop: compassTop,
     ),
     );
   }

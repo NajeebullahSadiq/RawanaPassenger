@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n_extensions.dart';
+
 /// Google Maps-style “Re-center” pill for live maps.
 class MapRecenterButton extends StatelessWidget {
   const MapRecenterButton({super.key, required this.onPressed});
@@ -24,14 +26,14 @@ class MapRecenterButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: const Color(0xFFD0D5DD)),
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.navigation_rounded, size: 18, color: _teal),
-              SizedBox(width: 8),
+              const Icon(Icons.navigation_rounded, size: 18, color: _teal),
+              const SizedBox(width: 8),
               Text(
-                'Re-center',
-                style: TextStyle(
+                context.l10n.recenter,
+                style: const TextStyle(
                   color: _teal,
                   fontWeight: FontWeight.w800,
                   fontSize: 14,

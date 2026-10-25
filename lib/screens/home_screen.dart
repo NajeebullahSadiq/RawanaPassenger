@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
 import '../providers/app_providers.dart';
@@ -10,6 +11,7 @@ import '../providers/profile_providers.dart';
 import '../providers/trip_providers.dart';
 import '../providers/live_location_providers.dart';
 import '../providers/nearby_drivers_provider.dart';
+import '../widgets/schedule_pickup_sheet.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +26,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   double? _pickupLng;
   bool _locationError = false;
   int _recenterRevision = 0;
+  Timer? _scheduledPoll;
 
   @override
   void initState() {
@@ -31,31 +34,83 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(passengerLiveLocationProvider.notifier).refresh();
       ref.read(activeTripProvider.notifier).refresh();
+      ref.invalidate(scheduledRidesProvider);
       final loc = ref.read(passengerLiveLocationProvider);
       if (loc != null) {
         unawaited(_syncPickupFromCoords(loc.lat, loc.lng));
       }
     });
+    _scheduledPoll = Timer.periodic(
+      const Duration(seconds: 30),
+      (_) => _pollScheduledRides(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scheduledPoll?.cancel();
+    super.dispose();
+  }
+
+  /// Push is the primary signal, but if it is missed the home screen still
+  /// picks up a reservation that has been dispatched into a live trip.
+  void _pollScheduledRides() {
+    if (!mounted) return;
+    final upcoming = ref.read(scheduledRidesProvider).valueOrNull;
+    if (upcoming == null || upcoming.isEmpty) return;
+    final next = upcoming.first.scheduledAt;
+    if (next == null ||
+        next.difference(DateTime.now()) > const Duration(minutes: 35)) {
+      return;
+    }
+    ref.invalidate(scheduledRidesProvider);
+    ref.read(activeTripProvider.notifier).refresh();
+  }
+
+  void _startBooking({DateTime? scheduledAt}) {
+    ref.read(scheduledPickupProvider.notifier).state = scheduledAt;
+    context.push('/destination');
+  }
+
+  Future<void> _scheduleRide() async {
+    final choice = await showPickupTimeSheet(
+      context,
+      initial: earliestScheduledPickup(),
+    );
+    if (choice == null || !mounted) return;
+    _startBooking(scheduledAt: choice.at);
   }
 
   Future<void> _syncPickupFromCoords(double lat, double lng) async {
     if (!mounted) return;
-    if (_pickupLat == lat &&
-        _pickupLng == lng &&
+    // GPS jitters every few seconds; only re-resolve after a real move so the
+    // map and pickup address stay put.
+    if (_pickupLat != null &&
+        _pickupLng != null &&
         !_locationError &&
-        _pickupAddress.isNotEmpty) {
+        _pickupAddress.isNotEmpty &&
+        const Distance().as(
+              LengthUnit.Meter,
+              LatLng(_pickupLat!, _pickupLng!),
+              LatLng(lat, lng),
+            ) <
+            30) {
       return;
     }
-    final place = await ref
-        .read(mapsServiceProvider)
-        .reverseGeocode(lat, lng);
+    var address = '';
+    try {
+      final place =
+          await ref.read(mapsServiceProvider).reverseGeocode(lat, lng);
+      address = place.address;
+    } catch (_) {
+      // Coordinates are still bookable without a street name.
+    }
     if (!mounted) return;
     setState(() {
       _pickupLat = lat;
       _pickupLng = lng;
-      _pickupAddress = place.address.isNotEmpty
-          ? place.address
-          : context.l10n.currentLocation;
+      _pickupAddress =
+          address.isNotEmpty ? address : context.l10n.currentLocation;
       _locationError = false;
     });
     ref.read(homeMapPickupProvider.notifier).state = (
@@ -136,6 +191,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         );
         return;
       }
+      ref.read(scheduledPickupProvider.notifier).state = null;
       ref.read(bookingDraftProvider.notifier).state = TripBookingDraft(
         pickupLat: _pickupLat!,
         pickupLng: _pickupLng!,
@@ -147,7 +203,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (mounted) context.push('/ride-selection');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
       }
     }
   }
@@ -205,6 +262,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final liveTrip =
         activeTrip != null && activeTrip.status.isActive ? activeTrip : null;
     final pendingRating = ref.watch(pendingRatingProvider).valueOrNull;
+    final upcomingRides =
+        ref.watch(scheduledRidesProvider).valueOrNull ?? const <Trip>[];
+    final nextScheduled =
+        liveTrip == null && upcomingRides.isNotEmpty ? upcomingRides.first : null;
     final nearbyDrivers = ref.watch(nearbyDriversProvider);
 
     ref.listen(passengerLiveLocationProvider, (prev, next) {
@@ -241,6 +302,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             zoomControlsEnabled: false,
             recenterRevision: _recenterRevision,
             markers: markers,
+            compassBottom: liveTrip != null ? 340 : 280,
           ),
           // Top safe-area area: greeting + avatar
           SafeArea(
@@ -352,6 +414,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       onDismiss: () => ref
                           .read(dismissedRatingPromptsProvider.notifier)
                           .update((s) => {...s, pendingRating.id}),
+                    ),
+                  if (nextScheduled != null)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: pendingRating != null ? 10 : 0,
+                        bottom: 10,
+                      ),
+                      child: _UpcomingRideCard(
+                        trip: nextScheduled,
+                        extraCount: upcomingRides.length - 1,
+                        onTap: () => context.push('/scheduled-rides'),
+                      ),
                     ),
                   bannersAsync.when(
                     data: (banners) {
@@ -536,7 +610,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 12),
           GestureDetector(
-            onTap: isOffline ? null : () => context.push('/destination'),
+            onTap: isOffline ? null : () => _startBooking(),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: BoxDecoration(
@@ -625,6 +699,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   onTap: () => context.push('/saved-addresses'),
                 ),
               ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _QuickAction(
+                  icon: LucideIcons.calendarClock,
+                  label: context.l10n.pickupLater,
+                  onTap: isOffline ? () {} : _scheduleRide,
+                ),
+              ),
             ],
           ),
         ],
@@ -634,6 +716,112 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 enum _GpsPillState { acquiring, locked, blocked }
+
+class _UpcomingRideCard extends StatelessWidget {
+  const _UpcomingRideCard({
+    required this.trip,
+    required this.extraCount,
+    required this.onTap,
+  });
+
+  final Trip trip;
+  final int extraCount;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final confirmed = trip.hasReservedDriver;
+    final when = trip.scheduledAt != null
+        ? formatScheduledTime(context, trip.scheduledAt!)
+        : '';
+    return RawanaSurfaceCard(
+      padding: EdgeInsets.zero,
+      shadows: RawanaShadows.floating,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: RawanaColors.primary.withValues(alpha: 0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  LucideIcons.calendarClock,
+                  color: RawanaColors.primary,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.scheduledFor(when),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      confirmed
+                          ? context.l10n.driverConfirmed
+                          : trip.dropoffAddress,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: confirmed
+                            ? RawanaColors.success
+                            : RawanaColors.onSurfaceMuted,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (extraCount > 0)
+                Container(
+                  margin: const EdgeInsetsDirectional.only(end: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: RawanaColors.primary.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(
+                      RawanaSpacing.radiusPill,
+                    ),
+                  ),
+                  child: Text(
+                    '+$extraCount',
+                    style: const TextStyle(
+                      color: RawanaColors.primary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              const Icon(
+                LucideIcons.chevronRight,
+                size: 18,
+                color: RawanaColors.onSurfaceFaint,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _RateLastTripCard extends StatelessWidget {
   const _RateLastTripCard({

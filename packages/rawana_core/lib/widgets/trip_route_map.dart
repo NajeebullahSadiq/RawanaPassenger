@@ -36,6 +36,7 @@ class TripRouteMap extends StatefulWidget {
     this.navigationFollowIcon = Icons.local_taxi,
     this.routeSelectorBottomInset = 220,
     this.followHeading,
+    this.mapPadding = EdgeInsets.zero,
   });
 
   final MapsService mapsService;
@@ -61,15 +62,22 @@ class TripRouteMap extends StatefulWidget {
   final double routeSelectorBottomInset;
   final double? followHeading;
 
+  /// Area hidden behind the screen's overlays (trip sheet, banners).
+  final EdgeInsets mapPadding;
+
   @override
   State<TripRouteMap> createState() => TripRouteMapState();
 }
 
 class TripRouteMapState extends State<TripRouteMap> {
   /// Fits the camera to the current route (status changes, first load).
+  /// Explicit refits take the camera back even if the user panned away.
   void refitRoute() {
     if (!mounted) return;
-    setState(() => _fitRouteRevision++);
+    setState(() {
+      _cameraResetRevision++;
+      _fitRouteRevision++;
+    });
   }
 
   /// Zooms in on the live Driver or Passenger instead of the whole route.
@@ -93,6 +101,7 @@ class TripRouteMapState extends State<TripRouteMap> {
   double? _loadedDestLng;
   int _fitRouteRevision = 0;
   int _recenterRevision = 0;
+  int _cameraResetRevision = 0;
   int _lastMarkerHash = 0;
   int _webNavEpoch = 0;
   late final String _mapSessionId;
@@ -195,6 +204,9 @@ class TripRouteMapState extends State<TripRouteMap> {
   ) {
     final oldFollow = _followMarker(oldMarkers);
     final newFollow = _followMarker(newMarkers);
+    // Booking screens have no vehicle to follow; nearby-driver and GPS
+    // updates must not keep refitting the camera.
+    if (oldFollow == null && newFollow == null) return false;
     if (oldFollow == null || newFollow == null) return true;
     final meters = _distance.as(
       LengthUnit.Meter,
@@ -414,6 +426,7 @@ class TripRouteMapState extends State<TripRouteMap> {
       _encodedPolyline = selectedRoute.polyline;
       _steps = selectedRoute.steps;
       _polyline = _decodeRoute(selectedRoute);
+      _cameraResetRevision++;
       _fitRouteRevision++;
     });
     widget.onRouteLoaded?.call(_directionsFor(selectedRoute, _routes));
@@ -457,6 +470,9 @@ class TripRouteMapState extends State<TripRouteMap> {
         usableHeading(widget.followHeading) ??
         usableHeading(follow?.heading);
     final navZoom = widget.navigationMode ? 17.0 : widget.zoom;
+    final controlsBottom = widget.showRouteSelector && _routes.length > 1
+        ? widget.routeSelectorBottomInset + 56
+        : widget.routeSelectorBottomInset;
 
     return Stack(
       fit: StackFit.expand,
@@ -504,6 +520,10 @@ class TripRouteMapState extends State<TripRouteMap> {
                           widget.fitRouteBounds && !widget.navigationMode,
                       fitRouteRevision: _fitRouteRevision,
                       recenterRevision: _recenterRevision,
+                      cameraResetRevision: _cameraResetRevision,
+                      mapPadding: widget.mapPadding,
+                      compassBottom:
+                          controlsBottom + MediaQuery.paddingOf(context).bottom,
                       navigationMode: widget.navigationMode,
                       followLat: followLat,
                       followLng: followLng,
@@ -523,12 +543,14 @@ class TripRouteMapState extends State<TripRouteMap> {
         ),
         Positioned(
           left: 16,
-          bottom: widget.showRouteSelector && _routes.length > 1
-              ? widget.routeSelectorBottomInset + 56
-              : widget.routeSelectorBottomInset,
+          bottom: controlsBottom,
           child: SafeArea(
             top: false,
-            child: MapRecenterButton(onPressed: recenterOnCurrentLocation),
+            child: MapRecenterButton(
+              onPressed: widget.navigationMode || !widget.fitRouteBounds
+                  ? recenterOnCurrentLocation
+                  : refitRoute,
+            ),
           ),
         ),
         if (widget.showRouteSelector && _routes.length > 1)

@@ -2575,4 +2575,260 @@ class AppLocalizationsPs extends AppLocalizations {
 
   @override
   String get txCashCollected => 'نغدي کرایه (ستاسو سره)';
+
+  @override
+  String get chat => 'خبرې اترې';
+
+  @override
+  String chatWithName(String name) {
+    return 'له $name سره خبرې اترې';
+  }
+
+  @override
+  String get chatHint => 'خپل پیغام ولیکئ…';
+
+  @override
+  String get chatEmpty =>
+      'تر اوسه هېڅ پیغام نشته. د سورلۍ ځای د همغږۍ لپاره لنډ پیغام ولېږئ.';
+
+  @override
+  String get chatLoadFailed => 'پیغامونه پورته نشول';
+
+  @override
+  String get chatClosed => 'د دې سفر خبرې اترې بندې شوې';
+
+  @override
+  String get chatSendFailed => 'ونه لېږل شو · بیا هڅه کولو لپاره ټک وکړئ';
+
+  @override
+  String get chatQuickOnMyWay => 'په لاره کې یم';
+
+  @override
+  String get chatQuickArrived => 'ورسېدم';
+
+  @override
+  String get chatQuickFewMinutes => 'څو دقیقې وروسته رسېږم';
+
+  @override
+  String get chatQuickWaiting => 'د سورلۍ په ځای کې انتظار کوم';
+
+  @override
+  String get chatQuickComing => 'همدا اوس راځم';
+
+  @override
+  String newMessageFrom(String name) {
+    return 'له $name څخه نوی پیغام';
+  }
+
+  @override
+  String get openChat => 'پرانیستل';
+
+  @override
+  String get recenter => 'بېرته مرکز ته';
+
+  @override
+  String get showTripDetails => 'د سفر جزییات وښایاست';
+
+  @override
+  String get hideTripDetails => 'جزییات پټ کړئ';
+
+  @override
+  String get lookingForDriversNearby =>
+      'ستاسو د سورلۍ ځای ته نږدې چلوونکي لټول کېږي';
+
+  @override
+  String get changeLabel => 'بدلول';
+
+  @override
+  String get pickupSpotHint => 'نقشه وخوځوئ ترڅو د سورلۍ دقیق ځای وټاکئ';
+
+  @override
+  String get movingMap => 'خوځېږي…';
+
+  @override
+  String get couldNotLoadFares =>
+      'بیې پورته نه شوې. خپل اتصال وګورئ او بیا هڅه وکړئ.';
+
+  @override
+  String get tripTooShort =>
+      'د پورته کېدو ځای او منزل ډېر نږدې دي. بل منزل وټاکئ.';
+
+  @override
+  String get statusScheduled => 'مهال‌ویش شوی';
+
+  @override
+  String get pickupNow => 'اوس';
+
+  @override
+  String get pickupLater => 'وروسته';
+
+  @override
+  String get pickupTime => 'د سپرېدو وخت';
+
+  @override
+  String get choosePickupTime => 'د سپرېدو وخت وټاکئ';
+
+  @override
+  String scheduledFor(String time) {
+    return 'د $time لپاره ټاکل شوی';
+  }
+
+  @override
+  String scheduleRideWithFare(String rideType, String fare) {
+    return '$rideType ریزرو کړئ · $fare';
+  }
+
+  @override
+  String get scheduling => 'ریزرو کېږي…';
+
+  @override
+  String get rideScheduledTitle => 'سفر ریزرو شو';
+
+  @override
+  String rideScheduledBody(String time) {
+    return 'ستاسو سفر د $time لپاره ریزرو شو. د سپرېدو مخکې به ستاسو چلوونکی تایید کړو.';
+  }
+
+  @override
+  String get scheduledRides => 'ریزرو شوي سفرونه';
+
+  @override
+  String get noScheduledRides => 'راتلونکی سفر نشته';
+
+  @override
+  String get noScheduledRidesHint =>
+      'مخکې له مخکې سفر ریزرو کړئ، دلته به ښکاره شي.';
+
+  @override
+  String get scheduleRideCta => 'د وروسته لپاره سفر ریزرو کړئ';
+
+  @override
+  String get scheduleRideCtaHint => 'مخکې ریزرو کړئ او کرایه ثابته وساتئ';
+
+  @override
+  String get driverConfirmed => 'چلوونکی تایید شو';
+
+  @override
+  String get driverAssignedBeforePickup => 'د سپرېدو مخکې به چلوونکی وټاکل شي';
+
+  @override
+  String get cancelScheduledRideTitle => 'دا ریزرو شوی سفر لغوه شي؟';
+
+  @override
+  String freeCancelUntil(String time) {
+    return 'تر $time پورې وړیا لغوه کول.';
+  }
+
+  @override
+  String scheduledCancelFee(String fee) {
+    return 'ستاسو چلوونکی تایید شوی، نو د $fee د لغوه کولو فیس پلي کېږي.';
+  }
+
+  @override
+  String get scheduledRideCancelled => 'ریزرو شوی سفر لغوه شو';
+
+  @override
+  String get scheduledTooSoon =>
+      'دا وخت ډېر نږدې دی. مهرباني وکړئ وروسته وخت وټاکئ.';
+
+  @override
+  String get scheduledTooFar => 'دا وخت ډېر لرې دی.';
+
+  @override
+  String get scheduledLimitReached =>
+      'تاسو د ریزرو شویو سفرونو اعظمي شمېر ته رسېدلي یاست.';
+
+  @override
+  String get scheduledOverlap => 'تاسو د همدې وخت شاوخوا یو ریزرو شوی سفر لرئ.';
+
+  @override
+  String get priceLockedNote => 'کرایه د ریزرو پر وخت ثابتېږي.';
+
+  @override
+  String get scheduledRideBadge => 'ریزرو شوی سفر';
+
+  @override
+  String get availableReservations => 'شته';
+
+  @override
+  String get myReservations => 'زما ریزرو';
+
+  @override
+  String get reserveRide => 'ریزرو';
+
+  @override
+  String get rideReserved => 'سفر ریزرو شو. د سپرېدو مخکې به یادونه وکړو.';
+
+  @override
+  String get releaseReservation => 'پرېښودل';
+
+  @override
+  String get releaseReservationTitle => 'دا ریزرو پرېښودل شي؟';
+
+  @override
+  String get releaseReservationBody =>
+      'دا سفر نورو چلوونکو ته ورکول کېږي. د سپرېدو وخت ته نږدې پرېښودل ستاسو باور کموي.';
+
+  @override
+  String get reservationReleased => 'ریزرو پرېښودل شو';
+
+  @override
+  String get noAvailableReservations => 'اوس مهال نږدې ریزرو شوی سفر نشته';
+
+  @override
+  String get noMyReservations => 'تاسو ریزرو شوی سفر نه لرئ';
+
+  @override
+  String get reservationConflict =>
+      'تاسو د همدې وخت شاوخوا یو ریزرو شوی سفر لرئ.';
+
+  @override
+  String get reservationUnavailable => 'دا سفر نور شتون نه لري.';
+
+  @override
+  String kmAway(String km) {
+    return '$km کیلومتره لرې';
+  }
+
+  @override
+  String get stayOnlineForReservation =>
+      'د سپرېدو مخکې آنلاین پاتې شئ چې سفر تاسو ته وسپارل شي.';
+
+  @override
+  String nextReservationAt(String time) {
+    return 'بل ریزرو · $time';
+  }
+
+  @override
+  String get confirmPickup => 'د پورته کېدو ځای تایید کړئ';
+
+  @override
+  String get confirmPickupTitle => 'د پورته کېدو دقیق ځای تایید کړئ';
+
+  @override
+  String get confirmPickupHint =>
+      'نقشه کش کړئ څو پن دقیقاً هغه ځای وي چې چلوونکی باید تاسو سره وویني.';
+
+  @override
+  String get pickupMovedCheckPrice =>
+      'د پورته کېدو ځای بدل شو. نوې بیه وګورئ او بیا غوښتنه وکړئ.';
+
+  @override
+  String get savedPlacesHeader => 'خوندي شوي ځایونه';
+
+  @override
+  String get recentPlacesHeader => 'وروستي';
+
+  @override
+  String get fareChangedTitle => 'بیه تازه شوه';
+
+  @override
+  String fareChangedBody(String oldPrice, String newPrice) {
+    return 'د دې سفر بیه له $oldPrice څخه $newPrice ته لوړه شوه. په نوې بیه غوښتنه کوئ؟';
+  }
+
+  @override
+  String requestAtPrice(String price) {
+    return 'په $price غوښتنه';
+  }
 }

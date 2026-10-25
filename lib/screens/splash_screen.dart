@@ -88,6 +88,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           case TripStatus.completed:
             context.go('/trip-complete');
           case TripStatus.cancelled:
+          case TripStatus.scheduled:
             context.go('/home');
         }
       } else {

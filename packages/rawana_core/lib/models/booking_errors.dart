@@ -45,6 +45,18 @@ class ActiveTripExistsException implements Exception {
   final String? status;
 }
 
+/// Thrown by `TripService.requestRide` when the price went up since the quote
+/// (e.g. surge). Nothing was booked; ask the passenger to accept the new price.
+class FareChangedException implements Exception {
+  const FareChangedException({
+    required this.cashToCollect,
+    required this.expectedCash,
+  });
+
+  final int cashToCollect;
+  final int expectedCash;
+}
+
 /// Result of completing a ride under the cash-first model.
 class CompletedRide {
   const CompletedRide({
@@ -97,6 +109,7 @@ class CancellationPolicy {
     this.noShowWaitSeconds = 540,
     this.noShowSecondsRemaining = 540,
     this.fetchedAt,
+    this.freeCancelUntil,
   });
 
   final bool feeApplies;
@@ -115,6 +128,8 @@ class CancellationPolicy {
   final int noShowSecondsRemaining;
   /// Local time the policy was fetched — for client-side countdowns.
   final DateTime? fetchedAt;
+  /// Scheduled rides only: last moment the passenger can cancel for free.
+  final DateTime? freeCancelUntil;
 
   factory CancellationPolicy.fromJson(Map<String, dynamic> json) {
     final grace = (json['rider_wait_grace_seconds'] as num?)?.round() ?? 120;
@@ -134,6 +149,7 @@ class CancellationPolicy {
       noShowWaitSeconds: total,
       noShowSecondsRemaining: (json['no_show_seconds_remaining'] as num?)?.round() ?? total,
       fetchedAt: DateTime.now(),
+      freeCancelUntil: DateTime.tryParse(json['free_cancel_until'] as String? ?? ''),
     );
   }
 

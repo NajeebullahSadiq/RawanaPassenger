@@ -288,6 +288,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   onTap: () => context.push('/notifications'),
                 ),
                 _menuItem(
+                  icon: LucideIcons.calendarClock,
+                  title: context.l10n.scheduledRides,
+                  onTap: () => context.push('/scheduled-rides'),
+                ),
+                _menuItem(
                   icon: LucideIcons.clock,
                   title: context.l10n.rideHistory,
                   onTap: () => context.push('/history'),

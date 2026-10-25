@@ -88,13 +88,18 @@ final driverLocationProvider =
 class DriverLocationNotifier extends StateNotifier<DriverLocation?> {
   DriverLocationNotifier(this._ref) : super(null) {
     _ref.listen<AsyncValue<Trip?>>(activeTripProvider, (_, next) {
-      final trip = next.valueOrNull;
-      if (_shouldTrack(trip)) {
-        _startPolling();
-      } else {
-        _stopPolling();
-        state = null;
-      }
+      // Defer so we never read/write providers while activeTrip is notifying
+      // (that throws CircularDependencyError and surfaces as "cancel failed").
+      Future.microtask(() {
+        if (!mounted) return;
+        final trip = next.valueOrNull;
+        if (_shouldTrack(trip)) {
+          _startPolling();
+        } else {
+          _stopPolling();
+          if (mounted) state = null;
+        }
+      });
     }, fireImmediately: true);
   }
 

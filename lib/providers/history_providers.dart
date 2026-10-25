@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:rawana_core/rawana_core.dart';
 import 'trip_providers.dart';
 
@@ -33,6 +34,38 @@ final tripHistoryProvider = FutureProvider<({List<Trip> trips, int total})>((ref
         from: filter.from,
         to: filter.to,
       );
+});
+
+class RecentPlace {
+  const RecentPlace({required this.address, required this.lat, required this.lng});
+
+  final String address;
+  final double lat;
+  final double lng;
+}
+
+/// Distinct drop-offs from the passenger's latest completed trips.
+final recentPlacesProvider =
+    FutureProvider.autoDispose<List<RecentPlace>>((ref) async {
+  final history = await ref.read(passengerServiceProvider).getTripHistory();
+  const distance = Distance();
+  final places = <RecentPlace>[];
+  for (final trip in history.trips) {
+    if (trip.status != TripStatus.completed) continue;
+    final lat = trip.dropoffLat;
+    final lng = trip.dropoffLng;
+    final address = trip.dropoffAddress.trim();
+    if (lat == null || lng == null || address.isEmpty) continue;
+    final duplicate = places.any(
+      (p) =>
+          p.address.toLowerCase() == address.toLowerCase() ||
+          distance.as(LengthUnit.Meter, LatLng(p.lat, p.lng), LatLng(lat, lng)) < 75,
+    );
+    if (duplicate) continue;
+    places.add(RecentPlace(address: address, lat: lat, lng: lng));
+    if (places.length == 5) break;
+  }
+  return places;
 });
 
 final tripDetailProvider = FutureProvider.family<Trip, String>((ref, tripId) async {

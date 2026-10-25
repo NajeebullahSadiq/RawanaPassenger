@@ -19,11 +19,17 @@ String? apiErrorKey(Object error) {
   return key is String && key.isNotEmpty ? key : null;
 }
 
+/// Riverpod throws this when a listener reads the provider that is notifying.
+bool isProviderCycleError(Object error) {
+  return error.runtimeType.toString() == 'CircularDependencyError';
+}
+
 /// Human-readable fallback text for well-known backend `message_key`s.
 ///
 /// Screens should prefer localized strings when they have them; this keeps raw
 /// `DioException` dumps out of snackbars everywhere else.
 String apiErrorMessage(Object error, {String fallback = 'Something went wrong. Please try again.'}) {
+  if (isProviderCycleError(error)) return fallback;
   final key = apiErrorKey(error);
   switch (key) {
     case 'unauthorized':
@@ -92,6 +98,8 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       return 'Finish or cancel your active ride before deleting your account.';
     case 'unsettled_trip_exists':
       return 'Confirm the cash for your last trip before deleting your account.';
+    case 'confirm_failed':
+      return 'Could not confirm cash collection. Please try again.';
   }
   if (error is DioException) {
     switch (error.type) {

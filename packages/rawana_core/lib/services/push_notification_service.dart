@@ -8,7 +8,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../firebase/firebase_initializer.dart';
 import '../notifications/notification_router.dart';
 
-typedef PushMessageHandler = void Function(Map<String, dynamic> data);
+typedef PushMessageHandler =
+    void Function(Map<String, dynamic> data, {bool foreground});
 
 /// Optional push notifications — skips gracefully when Firebase is not configured.
 class PushNotificationService {
@@ -75,11 +76,11 @@ class PushNotificationService {
 
   void _handleForeground(RemoteMessage message) {
     _showLocal(message);
-    _dispatch(message.data);
+    _dispatch(message.data, foreground: true);
   }
 
-  void _dispatch(Map<String, dynamic> data) {
-    onMessage?.call(data);
+  void _dispatch(Map<String, dynamic> data, {bool foreground = false}) {
+    onMessage?.call(data, foreground: foreground);
   }
 
   Future<void> _showLocal(RemoteMessage message) async {
@@ -102,10 +103,16 @@ class PushNotificationService {
     );
   }
 
-  String? routeForData(Map<String, dynamic> data, {String role = 'passenger'}) {
+  /// Informational pushes (e.g. scheduled-ride reminders) only navigate when
+  /// tapped; arriving in the foreground must not pull the user off their screen.
+  String? routeForData(
+    Map<String, dynamic> data, {
+    String role = 'passenger',
+    bool foreground = false,
+  }) {
     final type = data['type'] as String?;
-    return type != null
-        ? NotificationRouter.routeForType(type, role: role)
-        : null;
+    if (type == null) return null;
+    if (foreground && NotificationRouter.isTapOnly(type)) return null;
+    return NotificationRouter.routeForType(type, role: role);
   }
 }

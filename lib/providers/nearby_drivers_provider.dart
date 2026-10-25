@@ -49,17 +49,20 @@ final nearbyDriversProvider =
 class NearbyDriversNotifier extends StateNotifier<List<NearbyDriver>> {
   NearbyDriversNotifier(this._ref) : super([]) {
     _ref.listen<MapPickupCenter?>(mapPickupCenterProvider, (prev, next) {
-      if (next == null) {
-        _stop();
-        if (mounted) state = [];
-        return;
-      }
-      if (prev?.lat == next.lat &&
-          prev?.lng == next.lng &&
-          prev?.rideTypeId == next.rideTypeId) {
-        return;
-      }
-      _start(next);
+      Future.microtask(() {
+        if (!mounted) return;
+        if (next == null) {
+          _stop();
+          if (mounted) state = [];
+          return;
+        }
+        if (prev?.lat == next.lat &&
+            prev?.lng == next.lng &&
+            prev?.rideTypeId == next.rideTypeId) {
+          return;
+        }
+        _start(next);
+      });
     }, fireImmediately: true);
   }
 

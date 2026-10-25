@@ -1,7 +1,7 @@
 name: passenger_app
 description: Rawana passenger ride-hailing app for Afghanistan
 publish_to: 'none'
-version: 0.1.1+2
+version: 0.1.3+4
 
 environment:
   sdk: ^3.11.0

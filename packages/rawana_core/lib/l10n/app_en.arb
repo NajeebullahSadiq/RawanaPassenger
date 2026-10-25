@@ -1221,15 +1221,23 @@
   "tooFarFromPickup": "You are {distance} m from the pickup point. Move within {required} m to confirm arrival.",
   "@tooFarFromPickup": {
     "placeholders": {
-      "distance": { "type": "String" },
-      "required": { "type": "String" }
+      "distance": {
+        "type": "String"
+      },
+      "required": {
+        "type": "String"
+      }
     }
   },
   "tooFarFromDropoff": "You are {distance} m from the drop-off point. Move within {required} m to complete the trip.",
   "@tooFarFromDropoff": {
     "placeholders": {
-      "distance": { "type": "String" },
-      "required": { "type": "String" }
+      "distance": {
+        "type": "String"
+      },
+      "required": {
+        "type": "String"
+      }
     }
   },
   "rideCancelledByPassenger": "The passenger cancelled this ride.",
@@ -1241,7 +1249,9 @@
   "rateLastTripBody": "Rate your trip to {destination} to help us keep drivers great.",
   "@rateLastTripBody": {
     "placeholders": {
-      "destination": { "type": "String" }
+      "destination": {
+        "type": "String"
+      }
     }
   },
   "rateNow": "Rate now",
@@ -1255,21 +1265,205 @@
   "balanceSettled": "All settled",
   "balanceSettledBody": "You have no commission to pay right now.",
   "debtLimitLabel": "Limit {amount}",
-  "@debtLimitLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "@debtLimitLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "debtLimitReachedTitle": "Settle your balance to keep driving",
   "debtLimitReachedBody": "You owe {owed}. Drivers over the {limit} limit cannot go online until finance records a payment.",
-  "@debtLimitReachedBody": { "placeholders": { "owed": { "type": "String" }, "limit": { "type": "String" } } },
+  "@debtLimitReachedBody": {
+    "placeholders": {
+      "owed": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
   "howToSettle": "How to pay Rawana",
   "walletCashFirstExplainer": "You keep every fare in cash. Rawana's commission is added to your balance here and you settle it with finance.",
   "outstandingFeeIncluded": "Includes {amount} unpaid cancellation fee from a previous ride",
-  "@outstandingFeeIncluded": { "placeholders": { "amount": { "type": "String" } } },
+  "@outstandingFeeIncluded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "cancellationFeeChargedNextRide": "A {amount} cancellation fee will be added to your next ride.",
-  "@cancellationFeeChargedNextRide": { "placeholders": { "amount": { "type": "String" } } },
+  "@cancellationFeeChargedNextRide": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "txCommission": "Commission",
   "txSettlement": "Payment to Rawana",
   "txCancellationFee": "Cancellation fee compensation",
   "txFeeCollected": "Cancellation fee collected",
   "txPayout": "Payout",
   "txAdjustment": "Adjustment",
-  "txCashCollected": "Cash fare (kept by you)"
+  "txCashCollected": "Cash fare (kept by you)",
+  "chat": "Chat",
+  "chatWithName": "Chat with {name}",
+  "@chatWithName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chatHint": "Type a message…",
+  "chatEmpty": "No messages yet. Send a quick message to coordinate the pickup.",
+  "chatLoadFailed": "Could not load messages",
+  "chatClosed": "Chat is closed for this trip",
+  "chatSendFailed": "Not sent · tap to retry",
+  "chatQuickOnMyWay": "I'm on my way",
+  "chatQuickArrived": "I've arrived",
+  "chatQuickFewMinutes": "Be there in a few minutes",
+  "chatQuickWaiting": "I'm waiting at the pickup point",
+  "chatQuickComing": "I'm coming now",
+  "newMessageFrom": "New message from {name}",
+  "@newMessageFrom": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "openChat": "Open",
+  "recenter": "Re-center",
+  "showTripDetails": "Show trip details",
+  "hideTripDetails": "Hide details",
+  "lookingForDriversNearby": "Looking for drivers near your pickup",
+  "changeLabel": "Change",
+  "pickupSpotHint": "Move the map to set your exact pickup spot",
+  "movingMap": "Moving…",
+  "couldNotLoadFares": "Could not load prices. Check your connection and try again.",
+  "tripTooShort": "Pickup and destination are too close. Choose a different destination.",
+  "statusScheduled": "Scheduled",
+  "pickupNow": "Now",
+  "pickupLater": "Later",
+  "pickupTime": "Pickup time",
+  "choosePickupTime": "Choose a pickup time",
+  "scheduledFor": "Scheduled for {time}",
+  "@scheduledFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleRideWithFare": "Schedule {rideType} · {fare}",
+  "@scheduleRideWithFare": {
+    "placeholders": {
+      "rideType": {
+        "type": "String"
+      },
+      "fare": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduling": "Scheduling…",
+  "rideScheduledTitle": "Ride scheduled",
+  "rideScheduledBody": "Your ride on {time} is booked. We'll confirm your driver before pickup.",
+  "@rideScheduledBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledRides": "Scheduled rides",
+  "noScheduledRides": "No upcoming rides",
+  "noScheduledRidesHint": "Book a ride in advance and it will appear here.",
+  "scheduleRideCta": "Schedule a ride",
+  "scheduleRideCtaHint": "Book ahead and lock in your price",
+  "driverConfirmed": "Driver confirmed",
+  "driverAssignedBeforePickup": "A driver will be assigned before pickup",
+  "cancelScheduledRideTitle": "Cancel this scheduled ride?",
+  "freeCancelUntil": "Free cancellation until {time}.",
+  "@freeCancelUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledCancelFee": "Your driver is already confirmed, so a {fee} cancellation fee applies.",
+  "@scheduledCancelFee": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledRideCancelled": "Scheduled ride cancelled",
+  "scheduledTooSoon": "That pickup time is too soon. Please choose a later time.",
+  "scheduledTooFar": "That pickup time is too far ahead.",
+  "scheduledLimitReached": "You already have the maximum number of upcoming rides.",
+  "scheduledOverlap": "You already have a ride booked around that time.",
+  "priceLockedNote": "Your price is locked in when you book.",
+  "scheduledRideBadge": "Scheduled ride",
+  "availableReservations": "Available",
+  "myReservations": "My reservations",
+  "reserveRide": "Reserve",
+  "rideReserved": "Ride reserved. We'll remind you before pickup.",
+  "releaseReservation": "Release",
+  "releaseReservationTitle": "Release this reservation?",
+  "releaseReservationBody": "The ride goes back to other drivers. Releasing close to pickup hurts your reliability.",
+  "reservationReleased": "Reservation released",
+  "noAvailableReservations": "No scheduled rides nearby right now",
+  "noMyReservations": "You have no reserved rides",
+  "reservationConflict": "You already have a reserved ride around that time.",
+  "reservationUnavailable": "This ride is no longer available.",
+  "kmAway": "{km} km away",
+  "@kmAway": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "stayOnlineForReservation": "Stay online before pickup so the ride is assigned to you.",
+  "nextReservationAt": "Next reservation · {time}",
+  "@nextReservationAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPickup": "Confirm pickup",
+  "confirmPickupTitle": "Confirm your pickup spot",
+  "confirmPickupHint": "Drag the map so the pin is exactly where your driver should meet you.",
+  "pickupMovedCheckPrice": "Pickup moved. Check the updated price, then request again.",
+  "savedPlacesHeader": "SAVED PLACES",
+  "recentPlacesHeader": "RECENT",
+  "fareChangedTitle": "Price updated",
+  "fareChangedBody": "The price for this ride went up from {oldPrice} to {newPrice} since you checked. Request at the new price?",
+  "@fareChangedBody": {
+    "placeholders": {
+      "oldPrice": {
+        "type": "String"
+      },
+      "newPrice": {
+        "type": "String"
+      }
+    }
+  },
+  "requestAtPrice": "Request for {price}",
+  "@requestAtPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  }
 }

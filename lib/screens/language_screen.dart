@@ -128,7 +128,7 @@ class _LangTile extends StatelessWidget {
               if (selected)
                 const Icon(LucideIcons.checkCircle2, color: RawanaColors.primary, size: 22)
               else
-                const Icon(LucideIcons.chevronRight, color: RawanaColors.onSurfaceFaint, size: 20),
+                const Icon(LucideIcons.chevronRightDir, color: RawanaColors.onSurfaceFaint, size: 20),
             ],
           ),
         ),

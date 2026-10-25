@@ -85,7 +85,7 @@ int? metersBetween(
 String proximityErrorMessage(BuildContext context, ProximityRequiredException error) {
   final l10n = context.l10n;
   final distance = '${error.distanceMeters ?? 0}';
-  final required = '${error.requiredMeters ?? (error.messageKey == 'too_far_from_dropoff' ? 300 : 200)}';
+  final required = '${error.requiredMeters ?? 300}';
   return error.messageKey == 'too_far_from_dropoff'
       ? l10n.tooFarFromDropoff(distance, required)
       : l10n.tooFarFromPickup(distance, required);

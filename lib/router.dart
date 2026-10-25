@@ -22,6 +22,7 @@ import 'screens/notifications_screen.dart';
 import 'screens/help_screen.dart';
 import 'screens/emergency_contacts_screen.dart';
 import 'screens/saved_addresses_screen.dart';
+import 'screens/scheduled_rides_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -79,6 +80,10 @@ final appRouter = GoRouter(
       builder: (_, _) => const NotificationsScreen(),
     ),
     GoRoute(path: '/help', builder: (_, _) => const HelpScreen()),
+    GoRoute(
+      path: '/scheduled-rides',
+      builder: (_, _) => const ScheduledRidesScreen(),
+    ),
     GoRoute(
       path: '/emergency-contacts',
       builder: (_, _) => const EmergencyContactsScreen(),

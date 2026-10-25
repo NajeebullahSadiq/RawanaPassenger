@@ -31,10 +31,15 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
   CancellationPolicy? _policy;
   DateTime _policyFetchedAt = DateTime.now();
   String? _policyTripKey;
+  late final TripChatUnreadPoller _chatPoller;
+  int _chatUnread = 0;
+  double _sheetHeight = 320;
 
   @override
   void initState() {
     super.initState();
+    _chatPoller = TripChatUnreadPoller(ref.read(tripChatServiceProvider))
+      ..unread.addListener(_onUnreadChanged);
     _pollTimer = Timer.periodic(const Duration(seconds: 4), (_) => _refresh());
     _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() {});
@@ -46,7 +51,54 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
   void dispose() {
     _pollTimer?.cancel();
     _clockTimer?.cancel();
+    _chatPoller.unread.removeListener(_onUnreadChanged);
+    _chatPoller.dispose();
     super.dispose();
+  }
+
+  void _onUnreadChanged() {
+    final next = _chatPoller.unread.value;
+    if (!mounted || next == _chatUnread) return;
+    final increased = next > _chatUnread;
+    setState(() => _chatUnread = next);
+    final trip = ref.read(activeTripProvider).valueOrNull;
+    if (!increased || trip == null) return;
+    final name = trip.driver?.name ?? context.l10n.yourDriver;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.newMessageFrom(name)),
+          action: SnackBarAction(
+            label: context.l10n.openChat,
+            onPressed: () => _openChat(trip),
+          ),
+        ),
+      );
+  }
+
+  Future<void> _openChat(Trip trip) async {
+    final driver = trip.driver;
+    _chatPoller.pause();
+    setState(() => _chatUnread = 0);
+    _chatPoller.clear();
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => TripChatScreen(
+          tripId: trip.id,
+          service: ref.read(tripChatServiceProvider),
+          myRole: 'passenger',
+          partyName: driver?.name ?? context.l10n.yourDriver,
+          partySubtitle: [
+            _driverSubtitle(driver),
+            driver?.plateNumber,
+          ].where((e) => e != null && e.isNotEmpty).join(' · '),
+          onCall: () => _contactDriver(trip.id, call: true),
+          onWhatsApp: () => _contactDriver(trip.id, call: false),
+        ),
+      ),
+    );
+    if (mounted) _chatPoller.resume();
   }
 
   Future<void> _refresh() async {
@@ -60,7 +112,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(passengerCancellationMessage(context.l10n, trip!))),
       );
-      ref.read(activeTripProvider.notifier).clearLocalTripState();
+      ref.read(activeTripProvider.notifier).tryClearLocalTripState();
       context.go('/home');
     } else if (trip?.driver != null && trip!.status != TripStatus.searching) {
       await _loadDriverPhone(trip.id);
@@ -166,7 +218,6 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       final result = await ref
           .read(tripServiceProvider)
           .cancelRide(tripId, reason: 'Passenger cancelled');
-      ref.read(activeTripProvider.notifier).clearLocalTripState();
       if (!mounted) return;
       if (result.cancellationFee > 0) {
         // Cash-first: the fee is collected on the next ride, so say so now.
@@ -181,7 +232,6 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
           ),
         );
       }
-      context.go('/home');
     } catch (e) {
       // Most likely the trip already moved on (e.g. driver started the ride);
       // resync so the screen reflects reality instead of a stale cancel button.
@@ -191,9 +241,12 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
           SnackBar(content: Text(apiErrorMessage(e))),
         );
       }
+      return;
     } finally {
       if (mounted) setState(() => _cancelling = false);
     }
+    ref.read(activeTripProvider.notifier).tryClearLocalTripState();
+    if (mounted) context.go('/home');
   }
 
   Future<void> _shareTrip(Trip trip, double? driverLat, double? driverLng) async {
@@ -330,6 +383,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          _chatPoller.track(trip.driver != null ? trip.id : null);
           final passengerLoc = ref.watch(passengerLiveLocationProvider);
           final passengerLat = passengerLoc?.lat ?? trip.pickupLat;
           final passengerLng = passengerLoc?.lng ?? trip.pickupLng;
@@ -392,6 +446,13 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
             });
           }
 
+          final topInset = MediaQuery.paddingOf(context).top;
+          final bottomInset = MediaQuery.paddingOf(context).bottom;
+          final mapPadding = EdgeInsets.only(
+            top: topInset + (driverConfirmed ? 150 : 70),
+            bottom: _sheetHeight + bottomInset + 16,
+          );
+
           return Stack(
             fit: StackFit.expand,
             children: [
@@ -412,7 +473,8 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
                     markers: markers,
                     showRouteSelector: true,
                     fitRouteBounds: true,
-                    routeSelectorBottomInset: 230,
+                    routeSelectorBottomInset: _sheetHeight + bottomInset + 28,
+                    mapPadding: mapPadding,
                     myLocationEnabled: true,
                     refreshOriginAfterMeters: tripStarted ? 80 : 50,
                     onGuidanceChanged: (g) {
@@ -439,6 +501,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
                     centerLng: centerLng,
                     markers: markers,
                     myLocationEnabled: true,
+                    mapPadding: mapPadding,
                   ),
                 ),
               SafeArea(
@@ -529,7 +592,12 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
                 bottom: 16,
                 child: SafeArea(
                   top: false,
-                  child: TripInfoSheet(
+                  child: MeasureSize(
+                    onChange: (size) {
+                      if (!mounted || (size.height - _sheetHeight).abs() < 1) return;
+                      setState(() => _sheetHeight = size.height);
+                    },
+                    child: TripInfoSheet(
                     statusLabel: status.label,
                     statusColor: status.color,
                     statusIcon: status.icon,
@@ -565,16 +633,24 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
                         ? () => _contactDriver(trip.id, call: true)
                         : null,
                     callLabel: context.l10n.call,
-                    onMessage: driver != null
+                    onChat: driver != null ? () => _openChat(trip) : null,
+                    chatUnread: _chatUnread,
+                    onWhatsApp: driver != null
                         ? () => _contactDriver(trip.id, call: false)
                         : null,
-                    messageLabel: context.l10n.message,
                     onShare: () => _shareTrip(trip, driverLat, driverLng),
                     shareLabel: context.l10n.shareTrip,
                     onCancel: canCancel && !_cancelling
                         ? () => _cancelTrip(trip.id)
                         : null,
                     cancelLoading: _cancelling,
+                    onExpandedChanged: (_) {
+                      // Re-fit once the new sheet height reaches the map padding.
+                      Future<void>.delayed(const Duration(milliseconds: 260), () {
+                        if (mounted) setState(() => _routeRefitToken++);
+                      });
+                    },
+                  ),
                   ),
                 ),
               ),

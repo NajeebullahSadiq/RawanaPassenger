@@ -27,6 +27,13 @@ class PassengerService {
     return Trip.fromJson(data);
   }
 
+  /// Upcoming pre-booked rides, soonest first.
+  Future<List<Trip>> getScheduledRides() async {
+    final data = await _api.get('/passengers/scheduled-rides');
+    final list = data['trips'] as List<dynamic>? ?? [];
+    return list.map((e) => Trip.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   /// Most recent completed trip that still has no rating from this passenger.
   Future<Trip?> getPendingRating() async {
     try {

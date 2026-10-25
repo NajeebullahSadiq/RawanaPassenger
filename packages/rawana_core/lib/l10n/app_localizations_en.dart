@@ -2599,4 +2599,261 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get txCashCollected => 'Cash fare (kept by you)';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String chatWithName(String name) {
+    return 'Chat with $name';
+  }
+
+  @override
+  String get chatHint => 'Type a message…';
+
+  @override
+  String get chatEmpty =>
+      'No messages yet. Send a quick message to coordinate the pickup.';
+
+  @override
+  String get chatLoadFailed => 'Could not load messages';
+
+  @override
+  String get chatClosed => 'Chat is closed for this trip';
+
+  @override
+  String get chatSendFailed => 'Not sent · tap to retry';
+
+  @override
+  String get chatQuickOnMyWay => 'I\'m on my way';
+
+  @override
+  String get chatQuickArrived => 'I\'ve arrived';
+
+  @override
+  String get chatQuickFewMinutes => 'Be there in a few minutes';
+
+  @override
+  String get chatQuickWaiting => 'I\'m waiting at the pickup point';
+
+  @override
+  String get chatQuickComing => 'I\'m coming now';
+
+  @override
+  String newMessageFrom(String name) {
+    return 'New message from $name';
+  }
+
+  @override
+  String get openChat => 'Open';
+
+  @override
+  String get recenter => 'Re-center';
+
+  @override
+  String get showTripDetails => 'Show trip details';
+
+  @override
+  String get hideTripDetails => 'Hide details';
+
+  @override
+  String get lookingForDriversNearby => 'Looking for drivers near your pickup';
+
+  @override
+  String get changeLabel => 'Change';
+
+  @override
+  String get pickupSpotHint => 'Move the map to set your exact pickup spot';
+
+  @override
+  String get movingMap => 'Moving…';
+
+  @override
+  String get couldNotLoadFares =>
+      'Could not load prices. Check your connection and try again.';
+
+  @override
+  String get tripTooShort =>
+      'Pickup and destination are too close. Choose a different destination.';
+
+  @override
+  String get statusScheduled => 'Scheduled';
+
+  @override
+  String get pickupNow => 'Now';
+
+  @override
+  String get pickupLater => 'Later';
+
+  @override
+  String get pickupTime => 'Pickup time';
+
+  @override
+  String get choosePickupTime => 'Choose a pickup time';
+
+  @override
+  String scheduledFor(String time) {
+    return 'Scheduled for $time';
+  }
+
+  @override
+  String scheduleRideWithFare(String rideType, String fare) {
+    return 'Schedule $rideType · $fare';
+  }
+
+  @override
+  String get scheduling => 'Scheduling…';
+
+  @override
+  String get rideScheduledTitle => 'Ride scheduled';
+
+  @override
+  String rideScheduledBody(String time) {
+    return 'Your ride on $time is booked. We\'ll confirm your driver before pickup.';
+  }
+
+  @override
+  String get scheduledRides => 'Scheduled rides';
+
+  @override
+  String get noScheduledRides => 'No upcoming rides';
+
+  @override
+  String get noScheduledRidesHint =>
+      'Book a ride in advance and it will appear here.';
+
+  @override
+  String get scheduleRideCta => 'Schedule a ride';
+
+  @override
+  String get scheduleRideCtaHint => 'Book ahead and lock in your price';
+
+  @override
+  String get driverConfirmed => 'Driver confirmed';
+
+  @override
+  String get driverAssignedBeforePickup =>
+      'A driver will be assigned before pickup';
+
+  @override
+  String get cancelScheduledRideTitle => 'Cancel this scheduled ride?';
+
+  @override
+  String freeCancelUntil(String time) {
+    return 'Free cancellation until $time.';
+  }
+
+  @override
+  String scheduledCancelFee(String fee) {
+    return 'Your driver is already confirmed, so a $fee cancellation fee applies.';
+  }
+
+  @override
+  String get scheduledRideCancelled => 'Scheduled ride cancelled';
+
+  @override
+  String get scheduledTooSoon =>
+      'That pickup time is too soon. Please choose a later time.';
+
+  @override
+  String get scheduledTooFar => 'That pickup time is too far ahead.';
+
+  @override
+  String get scheduledLimitReached =>
+      'You already have the maximum number of upcoming rides.';
+
+  @override
+  String get scheduledOverlap =>
+      'You already have a ride booked around that time.';
+
+  @override
+  String get priceLockedNote => 'Your price is locked in when you book.';
+
+  @override
+  String get scheduledRideBadge => 'Scheduled ride';
+
+  @override
+  String get availableReservations => 'Available';
+
+  @override
+  String get myReservations => 'My reservations';
+
+  @override
+  String get reserveRide => 'Reserve';
+
+  @override
+  String get rideReserved => 'Ride reserved. We\'ll remind you before pickup.';
+
+  @override
+  String get releaseReservation => 'Release';
+
+  @override
+  String get releaseReservationTitle => 'Release this reservation?';
+
+  @override
+  String get releaseReservationBody =>
+      'The ride goes back to other drivers. Releasing close to pickup hurts your reliability.';
+
+  @override
+  String get reservationReleased => 'Reservation released';
+
+  @override
+  String get noAvailableReservations => 'No scheduled rides nearby right now';
+
+  @override
+  String get noMyReservations => 'You have no reserved rides';
+
+  @override
+  String get reservationConflict =>
+      'You already have a reserved ride around that time.';
+
+  @override
+  String get reservationUnavailable => 'This ride is no longer available.';
+
+  @override
+  String kmAway(String km) {
+    return '$km km away';
+  }
+
+  @override
+  String get stayOnlineForReservation =>
+      'Stay online before pickup so the ride is assigned to you.';
+
+  @override
+  String nextReservationAt(String time) {
+    return 'Next reservation · $time';
+  }
+
+  @override
+  String get confirmPickup => 'Confirm pickup';
+
+  @override
+  String get confirmPickupTitle => 'Confirm your pickup spot';
+
+  @override
+  String get confirmPickupHint =>
+      'Drag the map so the pin is exactly where your driver should meet you.';
+
+  @override
+  String get pickupMovedCheckPrice =>
+      'Pickup moved. Check the updated price, then request again.';
+
+  @override
+  String get savedPlacesHeader => 'SAVED PLACES';
+
+  @override
+  String get recentPlacesHeader => 'RECENT';
+
+  @override
+  String get fareChangedTitle => 'Price updated';
+
+  @override
+  String fareChangedBody(String oldPrice, String newPrice) {
+    return 'The price for this ride went up from $oldPrice to $newPrice since you checked. Request at the new price?';
+  }
+
+  @override
+  String requestAtPrice(String price) {
+    return 'Request for $price';
+  }
 }

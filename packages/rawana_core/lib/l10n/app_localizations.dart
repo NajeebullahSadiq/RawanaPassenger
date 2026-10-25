@@ -4767,6 +4767,450 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cash fare (kept by you)'**
   String get txCashCollected;
+
+  /// No description provided for @chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// No description provided for @chatWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with {name}'**
+  String chatWithName(String name);
+
+  /// No description provided for @chatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message…'**
+  String get chatHint;
+
+  /// No description provided for @chatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Send a quick message to coordinate the pickup.'**
+  String get chatEmpty;
+
+  /// No description provided for @chatLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load messages'**
+  String get chatLoadFailed;
+
+  /// No description provided for @chatClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat is closed for this trip'**
+  String get chatClosed;
+
+  /// No description provided for @chatSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent · tap to retry'**
+  String get chatSendFailed;
+
+  /// No description provided for @chatQuickOnMyWay.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m on my way'**
+  String get chatQuickOnMyWay;
+
+  /// No description provided for @chatQuickArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve arrived'**
+  String get chatQuickArrived;
+
+  /// No description provided for @chatQuickFewMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Be there in a few minutes'**
+  String get chatQuickFewMinutes;
+
+  /// No description provided for @chatQuickWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m waiting at the pickup point'**
+  String get chatQuickWaiting;
+
+  /// No description provided for @chatQuickComing.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m coming now'**
+  String get chatQuickComing;
+
+  /// No description provided for @newMessageFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'New message from {name}'**
+  String newMessageFrom(String name);
+
+  /// No description provided for @openChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get openChat;
+
+  /// No description provided for @recenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-center'**
+  String get recenter;
+
+  /// No description provided for @showTripDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Show trip details'**
+  String get showTripDetails;
+
+  /// No description provided for @hideTripDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide details'**
+  String get hideTripDetails;
+
+  /// No description provided for @lookingForDriversNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for drivers near your pickup'**
+  String get lookingForDriversNearby;
+
+  /// No description provided for @changeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeLabel;
+
+  /// No description provided for @pickupSpotHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map to set your exact pickup spot'**
+  String get pickupSpotHint;
+
+  /// No description provided for @movingMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving…'**
+  String get movingMap;
+
+  /// No description provided for @couldNotLoadFares.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load prices. Check your connection and try again.'**
+  String get couldNotLoadFares;
+
+  /// No description provided for @tripTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup and destination are too close. Choose a different destination.'**
+  String get tripTooShort;
+
+  /// No description provided for @statusScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get statusScheduled;
+
+  /// No description provided for @pickupNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get pickupNow;
+
+  /// No description provided for @pickupLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get pickupLater;
+
+  /// No description provided for @pickupTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup time'**
+  String get pickupTime;
+
+  /// No description provided for @choosePickupTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a pickup time'**
+  String get choosePickupTime;
+
+  /// No description provided for @scheduledFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled for {time}'**
+  String scheduledFor(String time);
+
+  /// No description provided for @scheduleRideWithFare.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule {rideType} · {fare}'**
+  String scheduleRideWithFare(String rideType, String fare);
+
+  /// No description provided for @scheduling.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduling…'**
+  String get scheduling;
+
+  /// No description provided for @rideScheduledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride scheduled'**
+  String get rideScheduledTitle;
+
+  /// No description provided for @rideScheduledBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ride on {time} is booked. We\'ll confirm your driver before pickup.'**
+  String rideScheduledBody(String time);
+
+  /// No description provided for @scheduledRides.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled rides'**
+  String get scheduledRides;
+
+  /// No description provided for @noScheduledRides.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming rides'**
+  String get noScheduledRides;
+
+  /// No description provided for @noScheduledRidesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Book a ride in advance and it will appear here.'**
+  String get noScheduledRidesHint;
+
+  /// No description provided for @scheduleRideCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule a ride'**
+  String get scheduleRideCta;
+
+  /// No description provided for @scheduleRideCtaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Book ahead and lock in your price'**
+  String get scheduleRideCtaHint;
+
+  /// No description provided for @driverConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver confirmed'**
+  String get driverConfirmed;
+
+  /// No description provided for @driverAssignedBeforePickup.
+  ///
+  /// In en, this message translates to:
+  /// **'A driver will be assigned before pickup'**
+  String get driverAssignedBeforePickup;
+
+  /// No description provided for @cancelScheduledRideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this scheduled ride?'**
+  String get cancelScheduledRideTitle;
+
+  /// No description provided for @freeCancelUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Free cancellation until {time}.'**
+  String freeCancelUntil(String time);
+
+  /// No description provided for @scheduledCancelFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Your driver is already confirmed, so a {fee} cancellation fee applies.'**
+  String scheduledCancelFee(String fee);
+
+  /// No description provided for @scheduledRideCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled ride cancelled'**
+  String get scheduledRideCancelled;
+
+  /// No description provided for @scheduledTooSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'That pickup time is too soon. Please choose a later time.'**
+  String get scheduledTooSoon;
+
+  /// No description provided for @scheduledTooFar.
+  ///
+  /// In en, this message translates to:
+  /// **'That pickup time is too far ahead.'**
+  String get scheduledTooFar;
+
+  /// No description provided for @scheduledLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have the maximum number of upcoming rides.'**
+  String get scheduledLimitReached;
+
+  /// No description provided for @scheduledOverlap.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a ride booked around that time.'**
+  String get scheduledOverlap;
+
+  /// No description provided for @priceLockedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your price is locked in when you book.'**
+  String get priceLockedNote;
+
+  /// No description provided for @scheduledRideBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled ride'**
+  String get scheduledRideBadge;
+
+  /// No description provided for @availableReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availableReservations;
+
+  /// No description provided for @myReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'My reservations'**
+  String get myReservations;
+
+  /// No description provided for @reserveRide.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve'**
+  String get reserveRide;
+
+  /// No description provided for @rideReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride reserved. We\'ll remind you before pickup.'**
+  String get rideReserved;
+
+  /// No description provided for @releaseReservation.
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get releaseReservation;
+
+  /// No description provided for @releaseReservationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Release this reservation?'**
+  String get releaseReservationTitle;
+
+  /// No description provided for @releaseReservationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The ride goes back to other drivers. Releasing close to pickup hurts your reliability.'**
+  String get releaseReservationBody;
+
+  /// No description provided for @reservationReleased.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation released'**
+  String get reservationReleased;
+
+  /// No description provided for @noAvailableReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'No scheduled rides nearby right now'**
+  String get noAvailableReservations;
+
+  /// No description provided for @noMyReservations.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no reserved rides'**
+  String get noMyReservations;
+
+  /// No description provided for @reservationConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'You already have a reserved ride around that time.'**
+  String get reservationConflict;
+
+  /// No description provided for @reservationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This ride is no longer available.'**
+  String get reservationUnavailable;
+
+  /// No description provided for @kmAway.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km away'**
+  String kmAway(String km);
+
+  /// No description provided for @stayOnlineForReservation.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay online before pickup so the ride is assigned to you.'**
+  String get stayOnlineForReservation;
+
+  /// No description provided for @nextReservationAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Next reservation · {time}'**
+  String nextReservationAt(String time);
+
+  /// No description provided for @confirmPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm pickup'**
+  String get confirmPickup;
+
+  /// No description provided for @confirmPickupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your pickup spot'**
+  String get confirmPickupTitle;
+
+  /// No description provided for @confirmPickupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the map so the pin is exactly where your driver should meet you.'**
+  String get confirmPickupHint;
+
+  /// No description provided for @pickupMovedCheckPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup moved. Check the updated price, then request again.'**
+  String get pickupMovedCheckPrice;
+
+  /// No description provided for @savedPlacesHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVED PLACES'**
+  String get savedPlacesHeader;
+
+  /// No description provided for @recentPlacesHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'RECENT'**
+  String get recentPlacesHeader;
+
+  /// No description provided for @fareChangedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price updated'**
+  String get fareChangedTitle;
+
+  /// No description provided for @fareChangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The price for this ride went up from {oldPrice} to {newPrice} since you checked. Request at the new price?'**
+  String fareChangedBody(String oldPrice, String newPrice);
+
+  /// No description provided for @requestAtPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Request for {price}'**
+  String requestAtPrice(String price);
 }
 
 class _AppLocalizationsDelegate

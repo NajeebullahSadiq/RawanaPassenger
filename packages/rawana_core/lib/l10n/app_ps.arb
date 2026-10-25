@@ -1221,15 +1221,23 @@
   "tooFarFromPickup": "تاسو د پورته کېدو ځای څخه {distance} متره لرې یاست. د رسېدو تصدیق لپاره {required} مترو ته نږدې شئ.",
   "@tooFarFromPickup": {
     "placeholders": {
-      "distance": { "type": "String" },
-      "required": { "type": "String" }
+      "distance": {
+        "type": "String"
+      },
+      "required": {
+        "type": "String"
+      }
     }
   },
   "tooFarFromDropoff": "تاسو د منزل څخه {distance} متره لرې یاست. د سفر بشپړولو لپاره {required} مترو ته نږدې شئ.",
   "@tooFarFromDropoff": {
     "placeholders": {
-      "distance": { "type": "String" },
-      "required": { "type": "String" }
+      "distance": {
+        "type": "String"
+      },
+      "required": {
+        "type": "String"
+      }
     }
   },
   "rideCancelledByPassenger": "مسافر دا سفر لغوه کړ.",
@@ -1241,7 +1249,9 @@
   "rateLastTripBody": "خپل سفر ته {destination} درجه ورکړئ ترڅو چلوونکي غوره وساتو.",
   "@rateLastTripBody": {
     "placeholders": {
-      "destination": { "type": "String" }
+      "destination": {
+        "type": "String"
+      }
     }
   },
   "rateNow": "اوس درجه ورکړئ",
@@ -1255,21 +1265,174 @@
   "balanceSettled": "تصفیه شوی",
   "balanceSettledBody": "اوس مهال د ورکړې لپاره کمیسیون نه لرئ.",
   "debtLimitLabel": "حد {amount}",
-  "@debtLimitLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "@debtLimitLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "debtLimitReachedTitle": "د چلولو دوام لپاره خپل حساب تصفیه کړئ",
   "debtLimitReachedBody": "تاسو {owed} پور لرئ. هغه چلوونکي چې د {limit} حد څخه تېر شي، تر هغه آنلاین نشي کېدلای چې مالي څانګه تادیه ثبت کړي.",
-  "@debtLimitReachedBody": { "placeholders": { "owed": { "type": "String" }, "limit": { "type": "String" } } },
+  "@debtLimitReachedBody": {
+    "placeholders": {
+      "owed": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
   "howToSettle": "روانه ته د تادیې لاره",
   "walletCashFirstExplainer": "تاسو هر کرایه نغدي ساتئ. د روانه کمیسیون دلته ستاسو حساب ته زیاتېږي او تاسو یې د مالي څانګې سره تصفیه کوئ.",
   "outstandingFeeIncluded": "د پخواني سفر {amount} نه تادیه شوې د لغوه فیس شامل دی",
-  "@outstandingFeeIncluded": { "placeholders": { "amount": { "type": "String" } } },
+  "@outstandingFeeIncluded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "cancellationFeeChargedNextRide": "د {amount} لغوه فیس ستاسو راتلونکي سفر ته زیات کېږي.",
-  "@cancellationFeeChargedNextRide": { "placeholders": { "amount": { "type": "String" } } },
+  "@cancellationFeeChargedNextRide": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "txCommission": "کمیسیون",
   "txSettlement": "روانه ته تادیه",
   "txCancellationFee": "د لغوه فیس تاوان",
   "txFeeCollected": "راټول شوې د لغوه فیس",
   "txPayout": "ایستل",
   "txAdjustment": "سمون",
-  "txCashCollected": "نغدي کرایه (ستاسو سره)"
+  "txCashCollected": "نغدي کرایه (ستاسو سره)",
+  "chat": "خبرې اترې",
+  "chatWithName": "له {name} سره خبرې اترې",
+  "chatHint": "خپل پیغام ولیکئ…",
+  "chatEmpty": "تر اوسه هېڅ پیغام نشته. د سورلۍ ځای د همغږۍ لپاره لنډ پیغام ولېږئ.",
+  "chatLoadFailed": "پیغامونه پورته نشول",
+  "chatClosed": "د دې سفر خبرې اترې بندې شوې",
+  "chatSendFailed": "ونه لېږل شو · بیا هڅه کولو لپاره ټک وکړئ",
+  "chatQuickOnMyWay": "په لاره کې یم",
+  "chatQuickArrived": "ورسېدم",
+  "chatQuickFewMinutes": "څو دقیقې وروسته رسېږم",
+  "chatQuickWaiting": "د سورلۍ په ځای کې انتظار کوم",
+  "chatQuickComing": "همدا اوس راځم",
+  "newMessageFrom": "له {name} څخه نوی پیغام",
+  "openChat": "پرانیستل",
+  "recenter": "بېرته مرکز ته",
+  "showTripDetails": "د سفر جزییات وښایاست",
+  "hideTripDetails": "جزییات پټ کړئ",
+  "lookingForDriversNearby": "ستاسو د سورلۍ ځای ته نږدې چلوونکي لټول کېږي",
+  "changeLabel": "بدلول",
+  "pickupSpotHint": "نقشه وخوځوئ ترڅو د سورلۍ دقیق ځای وټاکئ",
+  "movingMap": "خوځېږي…",
+  "couldNotLoadFares": "بیې پورته نه شوې. خپل اتصال وګورئ او بیا هڅه وکړئ.",
+  "tripTooShort": "د پورته کېدو ځای او منزل ډېر نږدې دي. بل منزل وټاکئ.",
+  "statusScheduled": "مهال‌ویش شوی",
+  "pickupNow": "اوس",
+  "pickupLater": "وروسته",
+  "pickupTime": "د سپرېدو وخت",
+  "choosePickupTime": "د سپرېدو وخت وټاکئ",
+  "scheduledFor": "د {time} لپاره ټاکل شوی",
+  "@scheduledFor": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleRideWithFare": "{rideType} ریزرو کړئ · {fare}",
+  "@scheduleRideWithFare": {
+    "placeholders": {
+      "rideType": {
+        "type": "String"
+      },
+      "fare": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduling": "ریزرو کېږي…",
+  "rideScheduledTitle": "سفر ریزرو شو",
+  "rideScheduledBody": "ستاسو سفر د {time} لپاره ریزرو شو. د سپرېدو مخکې به ستاسو چلوونکی تایید کړو.",
+  "@rideScheduledBody": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledRides": "ریزرو شوي سفرونه",
+  "noScheduledRides": "راتلونکی سفر نشته",
+  "noScheduledRidesHint": "مخکې له مخکې سفر ریزرو کړئ، دلته به ښکاره شي.",
+  "scheduleRideCta": "د وروسته لپاره سفر ریزرو کړئ",
+  "scheduleRideCtaHint": "مخکې ریزرو کړئ او کرایه ثابته وساتئ",
+  "driverConfirmed": "چلوونکی تایید شو",
+  "driverAssignedBeforePickup": "د سپرېدو مخکې به چلوونکی وټاکل شي",
+  "cancelScheduledRideTitle": "دا ریزرو شوی سفر لغوه شي؟",
+  "freeCancelUntil": "تر {time} پورې وړیا لغوه کول.",
+  "@freeCancelUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledCancelFee": "ستاسو چلوونکی تایید شوی، نو د {fee} د لغوه کولو فیس پلي کېږي.",
+  "@scheduledCancelFee": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduledRideCancelled": "ریزرو شوی سفر لغوه شو",
+  "scheduledTooSoon": "دا وخت ډېر نږدې دی. مهرباني وکړئ وروسته وخت وټاکئ.",
+  "scheduledTooFar": "دا وخت ډېر لرې دی.",
+  "scheduledLimitReached": "تاسو د ریزرو شویو سفرونو اعظمي شمېر ته رسېدلي یاست.",
+  "scheduledOverlap": "تاسو د همدې وخت شاوخوا یو ریزرو شوی سفر لرئ.",
+  "priceLockedNote": "کرایه د ریزرو پر وخت ثابتېږي.",
+  "scheduledRideBadge": "ریزرو شوی سفر",
+  "availableReservations": "شته",
+  "myReservations": "زما ریزرو",
+  "reserveRide": "ریزرو",
+  "rideReserved": "سفر ریزرو شو. د سپرېدو مخکې به یادونه وکړو.",
+  "releaseReservation": "پرېښودل",
+  "releaseReservationTitle": "دا ریزرو پرېښودل شي؟",
+  "releaseReservationBody": "دا سفر نورو چلوونکو ته ورکول کېږي. د سپرېدو وخت ته نږدې پرېښودل ستاسو باور کموي.",
+  "reservationReleased": "ریزرو پرېښودل شو",
+  "noAvailableReservations": "اوس مهال نږدې ریزرو شوی سفر نشته",
+  "noMyReservations": "تاسو ریزرو شوی سفر نه لرئ",
+  "reservationConflict": "تاسو د همدې وخت شاوخوا یو ریزرو شوی سفر لرئ.",
+  "reservationUnavailable": "دا سفر نور شتون نه لري.",
+  "kmAway": "{km} کیلومتره لرې",
+  "@kmAway": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "stayOnlineForReservation": "د سپرېدو مخکې آنلاین پاتې شئ چې سفر تاسو ته وسپارل شي.",
+  "nextReservationAt": "بل ریزرو · {time}",
+  "@nextReservationAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmPickup": "د پورته کېدو ځای تایید کړئ",
+  "confirmPickupTitle": "د پورته کېدو دقیق ځای تایید کړئ",
+  "confirmPickupHint": "نقشه کش کړئ څو پن دقیقاً هغه ځای وي چې چلوونکی باید تاسو سره وویني.",
+  "pickupMovedCheckPrice": "د پورته کېدو ځای بدل شو. نوې بیه وګورئ او بیا غوښتنه وکړئ.",
+  "savedPlacesHeader": "خوندي شوي ځایونه",
+  "recentPlacesHeader": "وروستي",
+  "fareChangedTitle": "بیه تازه شوه",
+  "fareChangedBody": "د دې سفر بیه له {oldPrice} څخه {newPrice} ته لوړه شوه. په نوې بیه غوښتنه کوئ؟",
+  "requestAtPrice": "په {price} غوښتنه"
 }

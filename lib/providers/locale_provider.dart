@@ -7,6 +7,7 @@ class LocaleController extends StateNotifier<Locale> {
 
   Future<void> setLocale(Locale locale) async {
     state = LocaleStorage.resolve(locale.languageCode);
+    RawanaLocale.apply(state);
     await LocaleStorage.save(state);
   }
 

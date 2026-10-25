@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
-import '../providers/trip_providers.dart';
+import '../providers/history_providers.dart';
 import '../providers/live_location_providers.dart';
+import '../providers/profile_providers.dart';
+import '../providers/trip_providers.dart';
 
 class DestinationSearchScreen extends ConsumerStatefulWidget {
   const DestinationSearchScreen({super.key});
@@ -27,6 +29,14 @@ class _DestinationSearchScreenState
   Timer? _debounce;
   bool _loading = false;
 
+  /// Set once the passenger picks a pickup themselves; GPS updates must not
+  /// replace it afterwards.
+  bool _pickupChosenByUser = false;
+  int _searchToken = 0;
+
+  /// Guards against a double tap pushing ride selection twice.
+  bool _selecting = false;
+
   @override
   void initState() {
     super.initState();
@@ -34,16 +44,32 @@ class _DestinationSearchScreenState
       ref.read(passengerLiveLocationProvider.notifier).refresh();
       final loc = ref.read(passengerLiveLocationProvider);
       if (loc != null) {
-        unawaited(_applyPickup(loc.lat, loc.lng));
+        unawaited(_applyGpsPickup(loc.lat, loc.lng));
       }
     });
     _destController.addListener(_onSearchChanged);
   }
 
-  Future<void> _applyPickup(double lat, double lng) async {
+  /// Uses GPS as the default pickup only until one is set.
+  Future<void> _applyGpsPickup(double lat, double lng) async {
+    if (_pickupChosenByUser || _pickupLat != null) return;
+    await _applyPickup(lat, lng, fromGps: true);
+  }
+
+  void _setUserPickup(double lat, double lng, String address) {
+    setState(() {
+      _pickupChosenByUser = true;
+      _pickupLat = lat;
+      _pickupLng = lng;
+      _pickupAddress = address;
+    });
+  }
+
+  Future<void> _applyPickup(double lat, double lng, {bool fromGps = false}) async {
     try {
       final place = await ref.read(mapsServiceProvider).reverseGeocode(lat, lng);
       if (!mounted) return;
+      if (fromGps && _pickupChosenByUser) return;
       setState(() {
         _pickupLat = lat;
         _pickupLng = lng;
@@ -52,7 +78,7 @@ class _DestinationSearchScreenState
             : context.l10n.currentLocation;
       });
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || (fromGps && _pickupChosenByUser)) return;
       setState(() {
         _pickupLat = lat;
         _pickupLng = lng;
@@ -91,11 +117,15 @@ class _DestinationSearchScreenState
 
   void _onSearchChanged() {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () async {
+    _debounce = Timer(const Duration(milliseconds: 350), () async {
       if (!mounted) return;
       final q = _destController.text.trim();
+      final token = ++_searchToken;
       if (q.length < 2) {
-        setState(() => _suggestions = []);
+        setState(() {
+          _suggestions = [];
+          _loading = false;
+        });
         return;
       }
       setState(() => _loading = true);
@@ -103,16 +133,39 @@ class _DestinationSearchScreenState
         final results = await ref
             .read(mapsServiceProvider)
             .autocomplete(q, lat: _pickupLat, lng: _pickupLng);
-        if (mounted) setState(() => _suggestions = results);
+        if (mounted && token == _searchToken) setState(() => _suggestions = results);
       } catch (_) {
-        if (mounted) setState(() => _suggestions = []);
+        if (mounted && token == _searchToken) setState(() => _suggestions = []);
       } finally {
-        if (mounted) setState(() => _loading = false);
+        if (mounted && token == _searchToken) setState(() => _loading = false);
       }
     });
   }
 
-  Future<void> _selectDestination(PlaceSuggestion suggestion) async {
+  Future<void> _selectDestination(PlaceSuggestion suggestion) =>
+      _goToRideSelection(() async {
+        final details =
+            await ref.read(mapsServiceProvider).getPlace(suggestion.placeId);
+        return PlaceDetails(
+          address: details.address.isNotEmpty
+              ? details.address
+              : suggestion.description,
+          lat: details.lat,
+          lng: details.lng,
+        );
+      });
+
+  /// Saved and recent places already carry coordinates.
+  Future<void> _selectKnownPlace(String address, double lat, double lng) =>
+      _goToRideSelection(
+        () async => PlaceDetails(address: address, lat: lat, lng: lng),
+      );
+
+  Future<void> _goToRideSelection(
+    Future<PlaceDetails> Function() resolveDestination,
+  ) async {
+    if (_selecting) return;
+    setState(() => _selecting = true);
     try {
       await _ensurePickupReady();
       if (!mounted) return;
@@ -122,25 +175,24 @@ class _DestinationSearchScreenState
         );
         return;
       }
-      final details =
-          await ref.read(mapsServiceProvider).getPlace(suggestion.placeId);
+      final destination = await resolveDestination();
       if (!mounted) return;
       ref.read(bookingDraftProvider.notifier).state = TripBookingDraft(
         pickupLat: _pickupLat!,
         pickupLng: _pickupLng!,
         pickupAddress: _pickupAddress,
-        dropoffLat: details.lat,
-        dropoffLng: details.lng,
-        dropoffAddress: details.address.isNotEmpty
-            ? details.address
-            : suggestion.description,
+        dropoffLat: destination.lat,
+        dropoffLng: destination.lng,
+        dropoffAddress: destination.address,
       );
-      context.push('/ride-selection');
+      await context.push('/ride-selection');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(context.l10n.couldNotSelectPlace)),
       );
+    } finally {
+      if (mounted) setState(() => _selecting = false);
     }
   }
 
@@ -156,16 +208,15 @@ class _DestinationSearchScreenState
       ).toString(),
     );
     if (result == null || !mounted) return;
-    setState(() {
-      _pickupLat = result.lat;
-      _pickupLng = result.lng;
-      _pickupAddress = result.address.isNotEmpty
-          ? result.address
-          : context.l10n.selectedPickup;
-    });
+    _setUserPickup(
+      result.lat,
+      result.lng,
+      result.address.isNotEmpty ? result.address : context.l10n.selectedPickup,
+    );
   }
 
   Future<void> _chooseDropoffOnMap() async {
+    if (_selecting) return;
     await _ensurePickupReady();
     if (!mounted) return;
     if (_pickupLat == null || _pickupLng == null) {
@@ -212,13 +263,7 @@ class _DestinationSearchScreenState
         initialAddress: _pickupAddress,
         pickupLat: _pickupLat,
         pickupLng: _pickupLng,
-        onPickupSelected: (lat, lng, address) {
-          setState(() {
-            _pickupLat = lat;
-            _pickupLng = lng;
-            _pickupAddress = address;
-          });
-        },
+        onPickupSelected: _setUserPickup,
         onChooseMap: () async {
           Navigator.pop(sheetContext);
           await _choosePickupOnMap();
@@ -231,8 +276,8 @@ class _DestinationSearchScreenState
   Widget build(BuildContext context) {
     ref.listen(passengerLiveLocationProvider, (prev, next) {
       if (next != null) {
-        unawaited(_applyPickup(next.lat, next.lng));
-      } else if (mounted) {
+        unawaited(_applyGpsPickup(next.lat, next.lng));
+      } else if (mounted && !_pickupChosenByUser && _pickupLat == null) {
         setState(() => _pickupAddress = context.l10n.enableLocationToBook);
       }
     });
@@ -248,10 +293,17 @@ class _DestinationSearchScreenState
             iconColor: RawanaColors.onSurface,
             elevated: false,
             size: 40,
-            onPressed: () => context.pop(),
+            onPressed: () =>
+                context.canPop() ? context.pop() : context.go('/home'),
           ),
         ),
         title: Text(context.l10n.planYourTrip),
+        bottom: _selecting
+            ? const PreferredSize(
+                preferredSize: Size.fromHeight(2),
+                child: LinearProgressIndicator(minHeight: 2),
+              )
+            : null,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -422,20 +474,7 @@ class _DestinationSearchScreenState
               ],
             ),
           ),
-          if (_suggestions.isEmpty && _destController.text.isEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-              child: Text(
-                context.l10n.popularPlaces,
-                style: const TextStyle(
-                  color: RawanaColors.onSurfaceMuted,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            )
-          else
+          if (_suggestions.isNotEmpty || _destController.text.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
               child: Text(
@@ -450,7 +489,14 @@ class _DestinationSearchScreenState
             ),
           Expanded(
             child: _suggestions.isEmpty && _destController.text.isEmpty
-                ? _EmptyState(onChooseMap: _chooseDropoffOnMap)
+                ? _QuickPlaces(
+                    saved: ref.watch(savedAddressesProvider).valueOrNull ??
+                        const [],
+                    recent: ref.watch(recentPlacesProvider).valueOrNull ??
+                        const [],
+                    onPick: _selectKnownPlace,
+                    onChooseMap: _chooseDropoffOnMap,
+                  )
                 : ListView.separated(
                     itemCount: _suggestions.length,
                     separatorBuilder: (_, _) => Padding(
@@ -564,7 +610,11 @@ class _EditPickupSheetState extends ConsumerState<_EditPickupSheet> {
         final results = await ref
             .read(mapsServiceProvider)
             .autocomplete(q, lat: widget.pickupLat, lng: widget.pickupLng);
-        if (mounted) setState(() => _suggestions = results);
+        if (mounted && _controller.text.trim() == q) {
+          setState(() => _suggestions = results);
+        }
+      } catch (_) {
+        if (mounted) setState(() => _suggestions = []);
       } finally {
         if (mounted) setState(() => _loading = false);
       }
@@ -574,24 +624,42 @@ class _EditPickupSheetState extends ConsumerState<_EditPickupSheet> {
   Future<void> _useCurrentLocation() async {
     _debounce?.cancel();
     final pos = await LocationService.getCurrentPosition();
-    if (pos == null || !mounted) return;
-    final place = await ref
-        .read(mapsServiceProvider)
-        .reverseGeocode(pos.lat, pos.lng);
+    if (!mounted) return;
+    if (pos == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.locationUnavailableEnableGps)),
+      );
+      return;
+    }
+    String address = '';
+    try {
+      final place = await ref
+          .read(mapsServiceProvider)
+          .reverseGeocode(pos.lat, pos.lng);
+      address = place.address;
+    } catch (_) {}
     if (!mounted) return;
     widget.onPickupSelected(
       pos.lat,
       pos.lng,
-      place.address.isNotEmpty ? place.address : context.l10n.currentLocation,
+      address.isNotEmpty ? address : context.l10n.currentLocation,
     );
     Navigator.pop(context);
   }
 
   Future<void> _selectPickup(PlaceSuggestion suggestion) async {
     _debounce?.cancel();
-    final details = await ref
-        .read(mapsServiceProvider)
-        .getPlace(suggestion.placeId);
+    final PlaceDetails details;
+    try {
+      details = await ref.read(mapsServiceProvider).getPlace(suggestion.placeId);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.couldNotSelectPlace)),
+        );
+      }
+      return;
+    }
     if (!mounted) return;
     widget.onPickupSelected(
       details.lat,
@@ -716,23 +784,97 @@ class _Label extends StatelessWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onChooseMap});
+class _QuickPlaces extends StatelessWidget {
+  const _QuickPlaces({
+    required this.saved,
+    required this.recent,
+    required this.onPick,
+    required this.onChooseMap,
+  });
 
+  final List<Map<String, dynamic>> saved;
+  final List<RecentPlace> recent;
+  final void Function(String address, double lat, double lng) onPick;
   final VoidCallback onChooseMap;
+
+  static IconData _savedIcon(String label) => switch (label.toLowerCase()) {
+        'home' => LucideIcons.house,
+        'work' => LucideIcons.briefcase,
+        _ => LucideIcons.bookmark,
+      };
+
+  static String _savedTitle(BuildContext context, String label) =>
+      switch (label.toLowerCase()) {
+        'home' => context.l10n.quickHome,
+        'work' => context.l10n.quickWork,
+        _ => label,
+      };
 
   @override
   Widget build(BuildContext context) {
+    final savedPlaces = [
+      for (final item in saved)
+        if ((parseWktLat(item['location'] as String?) ??
+                    (item['lat'] as num?)?.toDouble()) !=
+                null &&
+            (parseWktLng(item['location'] as String?) ??
+                    (item['lng'] as num?)?.toDouble()) !=
+                null)
+          (
+            label: item['label'] as String? ?? '',
+            address: item['address'] as String? ?? '',
+            lat: parseWktLat(item['location'] as String?) ??
+                (item['lat'] as num).toDouble(),
+            lng: parseWktLng(item['location'] as String?) ??
+                (item['lng'] as num).toDouble(),
+          ),
+    ];
+
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
       children: [
-        _emptyTile(
-          LucideIcons.compass,
-          context.l10n.startTyping,
-          context.l10n.weWillSuggestPlaces,
+        if (savedPlaces.isNotEmpty) ...[
+          _SectionHeader(context.l10n.savedPlacesHeader),
+          for (final place in savedPlaces)
+            _PlaceTile(
+              icon: _savedIcon(place.label),
+              title: place.label.isEmpty
+                  ? place.address
+                  : _savedTitle(context, place.label),
+              subtitle: place.label.isEmpty ? null : place.address,
+              onTap: () => onPick(
+                place.address.isNotEmpty ? place.address : place.label,
+                place.lat,
+                place.lng,
+              ),
+            ),
+        ],
+        if (recent.isNotEmpty) ...[
+          _SectionHeader(context.l10n.recentPlacesHeader),
+          for (final place in recent)
+            _PlaceTile(
+              icon: LucideIcons.clock,
+              title: place.address.split(',').first,
+              subtitle: place.address.contains(',')
+                  ? place.address.substring(place.address.indexOf(',') + 1).trim()
+                  : null,
+              onTap: () => onPick(place.address, place.lat, place.lng),
+            ),
+        ],
+        if (savedPlaces.isEmpty && recent.isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            child: _emptyTile(
+              LucideIcons.compass,
+              context.l10n.startTyping,
+              context.l10n.weWillSuggestPlaces,
+            ),
+          ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: _mapTile(context),
         ),
-        const SizedBox(height: 10),
-        _mapTile(context),
       ],
     );
   }
@@ -824,4 +966,74 @@ class _EmptyState extends StatelessWidget {
       ),
     ),
   );
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: RawanaColors.onSurfaceMuted,
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _PlaceTile extends StatelessWidget {
+  const _PlaceTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: RawanaColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, size: 18, color: RawanaColors.onSurface),
+      ),
+      title: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+      ),
+      subtitle: subtitle == null || subtitle!.isEmpty
+          ? null
+          : Text(
+              subtitle!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: RawanaColors.onSurfaceMuted,
+                fontSize: 13,
+              ),
+            ),
+      onTap: onTap,
+    );
+  }
 }

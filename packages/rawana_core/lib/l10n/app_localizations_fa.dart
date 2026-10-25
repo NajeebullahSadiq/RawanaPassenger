@@ -2587,4 +2587,265 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get txCashCollected => 'کرایه نقدی (نزد شما)';
+
+  @override
+  String get chat => 'گفتگو';
+
+  @override
+  String chatWithName(String name) {
+    return 'گفتگو با $name';
+  }
+
+  @override
+  String get chatHint => 'پیام خود را بنویسید…';
+
+  @override
+  String get chatEmpty =>
+      'هنوز پیامی نیست. برای هماهنگی محل سوار شدن یک پیام کوتاه بفرستید.';
+
+  @override
+  String get chatLoadFailed => 'پیام‌ها بارگذاری نشد';
+
+  @override
+  String get chatClosed => 'گفتگوی این سفر بسته شده است';
+
+  @override
+  String get chatSendFailed => 'ارسال نشد · برای تلاش دوباره بزنید';
+
+  @override
+  String get chatQuickOnMyWay => 'در راه هستم';
+
+  @override
+  String get chatQuickArrived => 'رسیدم';
+
+  @override
+  String get chatQuickFewMinutes => 'چند دقیقه دیگر می‌رسم';
+
+  @override
+  String get chatQuickWaiting => 'در محل سوار شدن منتظرم';
+
+  @override
+  String get chatQuickComing => 'همین حالا می‌آیم';
+
+  @override
+  String newMessageFrom(String name) {
+    return 'پیام جدید از $name';
+  }
+
+  @override
+  String get openChat => 'باز کردن';
+
+  @override
+  String get recenter => 'مرکز نقشه';
+
+  @override
+  String get showTripDetails => 'نمایش جزئیات سفر';
+
+  @override
+  String get hideTripDetails => 'پنهان کردن جزئیات';
+
+  @override
+  String get lookingForDriversNearby =>
+      'در حال جستجوی راننده در نزدیکی محل سوار شدن شما';
+
+  @override
+  String get changeLabel => 'تغییر';
+
+  @override
+  String get pickupSpotHint =>
+      'نقشه را حرکت دهید تا محل دقیق سوار شدن را تعیین کنید';
+
+  @override
+  String get movingMap => 'در حال حرکت…';
+
+  @override
+  String get couldNotLoadFares =>
+      'قیمت‌ها بارگذاری نشد. اتصال خود را بررسی کرده و دوباره تلاش کنید.';
+
+  @override
+  String get tripTooShort =>
+      'مبدا و مقصد خیلی نزدیک هستند. مقصد دیگری انتخاب کنید.';
+
+  @override
+  String get statusScheduled => 'زمان‌بندی‌شده';
+
+  @override
+  String get pickupNow => 'اکنون';
+
+  @override
+  String get pickupLater => 'بعداً';
+
+  @override
+  String get pickupTime => 'زمان سوار شدن';
+
+  @override
+  String get choosePickupTime => 'زمان سوار شدن را انتخاب کنید';
+
+  @override
+  String scheduledFor(String time) {
+    return 'زمان‌بندی‌شده برای $time';
+  }
+
+  @override
+  String scheduleRideWithFare(String rideType, String fare) {
+    return 'رزرو $rideType · $fare';
+  }
+
+  @override
+  String get scheduling => 'در حال رزرو…';
+
+  @override
+  String get rideScheduledTitle => 'سفر رزرو شد';
+
+  @override
+  String rideScheduledBody(String time) {
+    return 'سفر شما برای $time رزرو شد. پیش از زمان سوار شدن، راننده شما را تأیید می‌کنیم.';
+  }
+
+  @override
+  String get scheduledRides => 'سفرهای رزروشده';
+
+  @override
+  String get noScheduledRides => 'سفر پیش رو ندارید';
+
+  @override
+  String get noScheduledRidesHint =>
+      'سفری را از قبل رزرو کنید تا اینجا نمایش داده شود.';
+
+  @override
+  String get scheduleRideCta => 'رزرو سفر برای بعد';
+
+  @override
+  String get scheduleRideCtaHint =>
+      'از قبل رزرو کنید و کرایه را ثابت نگه دارید';
+
+  @override
+  String get driverConfirmed => 'راننده تأیید شد';
+
+  @override
+  String get driverAssignedBeforePickup =>
+      'پیش از زمان سوار شدن راننده تعیین می‌شود';
+
+  @override
+  String get cancelScheduledRideTitle => 'این سفر رزروشده لغو شود؟';
+
+  @override
+  String freeCancelUntil(String time) {
+    return 'لغو رایگان تا $time.';
+  }
+
+  @override
+  String scheduledCancelFee(String fee) {
+    return 'راننده شما تأیید شده است، بنابراین هزینه لغو $fee اعمال می‌شود.';
+  }
+
+  @override
+  String get scheduledRideCancelled => 'سفر رزروشده لغو شد';
+
+  @override
+  String get scheduledTooSoon =>
+      'این زمان خیلی نزدیک است. لطفاً زمان دیرتری انتخاب کنید.';
+
+  @override
+  String get scheduledTooFar => 'این زمان خیلی دور است.';
+
+  @override
+  String get scheduledLimitReached =>
+      'شما به حداکثر تعداد سفرهای رزروشده رسیده‌اید.';
+
+  @override
+  String get scheduledOverlap => 'شما در همین حدود زمانی یک سفر رزروشده دارید.';
+
+  @override
+  String get priceLockedNote => 'کرایه هنگام رزرو ثابت می‌شود.';
+
+  @override
+  String get scheduledRideBadge => 'سفر رزروشده';
+
+  @override
+  String get availableReservations => 'موجود';
+
+  @override
+  String get myReservations => 'رزروهای من';
+
+  @override
+  String get reserveRide => 'رزرو';
+
+  @override
+  String get rideReserved =>
+      'سفر رزرو شد. پیش از زمان سوار شدن به شما یادآوری می‌کنیم.';
+
+  @override
+  String get releaseReservation => 'رها کردن';
+
+  @override
+  String get releaseReservationTitle => 'این رزرو رها شود؟';
+
+  @override
+  String get releaseReservationBody =>
+      'این سفر به رانندگان دیگر داده می‌شود. رها کردن نزدیک به زمان سوار شدن، اعتبار شما را کاهش می‌دهد.';
+
+  @override
+  String get reservationReleased => 'رزرو رها شد';
+
+  @override
+  String get noAvailableReservations =>
+      'در حال حاضر سفر رزروشده‌ای در نزدیکی نیست';
+
+  @override
+  String get noMyReservations => 'سفر رزروشده‌ای ندارید';
+
+  @override
+  String get reservationConflict =>
+      'شما در همین حدود زمانی یک سفر رزروشده دارید.';
+
+  @override
+  String get reservationUnavailable => 'این سفر دیگر موجود نیست.';
+
+  @override
+  String kmAway(String km) {
+    return '$km کیلومتر فاصله';
+  }
+
+  @override
+  String get stayOnlineForReservation =>
+      'پیش از زمان سوار شدن آنلاین بمانید تا سفر به شما سپرده شود.';
+
+  @override
+  String nextReservationAt(String time) {
+    return 'رزرو بعدی · $time';
+  }
+
+  @override
+  String get confirmPickup => 'تأیید محل سوار شدن';
+
+  @override
+  String get confirmPickupTitle => 'محل دقیق سوار شدن را تأیید کنید';
+
+  @override
+  String get confirmPickupHint =>
+      'نقشه را بکشید تا سنجاق دقیقاً جایی باشد که راننده باید شما را ببیند.';
+
+  @override
+  String get pickupMovedCheckPrice =>
+      'محل سوار شدن تغییر کرد. قیمت جدید را بررسی کنید و دوباره درخواست دهید.';
+
+  @override
+  String get savedPlacesHeader => 'مکان‌های ذخیره‌شده';
+
+  @override
+  String get recentPlacesHeader => 'اخیر';
+
+  @override
+  String get fareChangedTitle => 'قیمت به‌روز شد';
+
+  @override
+  String fareChangedBody(String oldPrice, String newPrice) {
+    return 'قیمت این سفر از $oldPrice به $newPrice افزایش یافت. با قیمت جدید درخواست می‌کنید؟';
+  }
+
+  @override
+  String requestAtPrice(String price) {
+    return 'درخواست با $price';
+  }
 }

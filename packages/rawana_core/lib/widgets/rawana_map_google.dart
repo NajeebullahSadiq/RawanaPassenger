@@ -8,6 +8,7 @@ import '../constants.dart';
 import '../theme/rawana_theme.dart';
 import '../utils/trip_polyline_helpers.dart';
 import 'ltr_map_surface.dart';
+import 'map_compass_button.dart';
 import 'map_marker_icon_factory.dart';
 import 'rawana_map_marker.dart';
 import 'web_map_marker_sync.dart';
@@ -38,6 +39,13 @@ class RawanaGoogleMap extends StatefulWidget {
     this.followHeading,
     this.onTap,
     this.onCameraMove,
+    this.onCameraIdle,
+    this.cameraResetRevision = 0,
+    this.mapPadding = EdgeInsets.zero,
+    this.gesturesEnabled = true,
+    this.showCompass = true,
+    this.compassBottom,
+    this.compassTop,
   });
 
   final double zoom;
@@ -62,6 +70,24 @@ class RawanaGoogleMap extends StatefulWidget {
   final double? followHeading;
   final ValueChanged<LatLng>? onTap;
   final ValueChanged<LatLng>? onCameraMove;
+  final VoidCallback? onCameraIdle;
+
+  /// Once the user pans or zooms, automatic camera moves (route fits, follow,
+  /// center changes) stop until this or [recenterRevision] changes.
+  final int cameraResetRevision;
+
+  /// Space covered by overlays (bottom sheet, top banners) so fits and
+  /// centering happen inside the visible part of the map.
+  final EdgeInsets mapPadding;
+  final bool gesturesEnabled;
+  final bool showCompass;
+
+  /// Distance of the compass from the bottom edge; defaults to just above
+  /// [mapPadding].
+  final double? compassBottom;
+
+  /// When set, the compass sits this far from the top instead.
+  final double? compassTop;
 
   @override
   State<RawanaGoogleMap> createState() => _RawanaGoogleMapState();
@@ -74,6 +100,13 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
   final Map<String, gm.BitmapDescriptor> _iconCache = {};
   int _iconLoadToken = 0;
   int _lastFitRevision = -1;
+  bool _userMovedCamera = false;
+  bool _didInitialFit = false;
+  final ValueNotifier<double> _bearing = ValueNotifier(0);
+  gm.CameraPosition? _camera;
+
+  /// Navigation follows the travel direction unless the driver picks north-up.
+  bool _northUp = false;
 
   /// Same widget instance on marker-only rebuilds — Flutter skips map updates.
   Widget? _cachedWebMapLayer;
@@ -101,12 +134,23 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
   void dispose() {
     _webMarkerSync = null;
     _webPolylineSync = null;
+    _bearing.dispose();
     super.dispose();
+  }
+
+  void _onUserGesture() {
+    if (!widget.gesturesEnabled || _userMovedCamera) return;
+    _userMovedCamera = true;
   }
 
   @override
   void didUpdateWidget(RawanaGoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.cameraResetRevision != widget.cameraResetRevision ||
+        oldWidget.recenterRevision != widget.recenterRevision) {
+      _userMovedCamera = false;
+    }
 
     if (!RawanaMapMarker.sameGeometryList(oldWidget.markers, widget.markers) ||
         oldWidget.myLocationEnabled != widget.myLocationEnabled) {
@@ -149,6 +193,7 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
       }
       _scheduleFitRoute();
     } else if (_controller != null &&
+        !_userMovedCamera &&
         !widget.fitRouteBounds &&
         // Avoid fighting the user when the screen drives selection via onCameraMove
         // (map picker): recentering on every centerLat/Lng update creates a feedback loop.
@@ -193,7 +238,9 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
   }
 
   Future<void> _followDriverIfNeeded() async {
-    if (!widget.navigationMode || _controller == null) return;
+    if (!widget.navigationMode || _controller == null || _userMovedCamera) {
+      return;
+    }
     final lat = widget.followLat;
     final lng = widget.followLng;
     if (lat == null || lng == null || !_isValidCoord(lat, lng)) return;
@@ -203,9 +250,57 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
           target: gm.LatLng(lat, lng),
           zoom: widget.zoom.clamp(16, 18),
           tilt: 0,
-          bearing: 0,
+          bearing: _northUp ? 0 : (widget.followHeading ?? _bearing.value),
         ),
       ),
+    );
+  }
+
+  void _onCompassPressed() {
+    if (widget.navigationMode) {
+      _northUp = !_northUp;
+      _userMovedCamera = false;
+      _followDriverIfNeeded();
+      return;
+    }
+    final controller = _controller;
+    final camera = _camera;
+    if (controller == null || camera == null) return;
+    controller.animateCamera(
+      gm.CameraUpdate.newCameraPosition(
+        gm.CameraPosition(target: camera.target, zoom: camera.zoom),
+      ),
+    );
+  }
+
+  void _handleCameraMove(gm.CameraPosition position) {
+    _camera = position;
+    _bearing.value = position.bearing;
+    widget.onCameraMove?.call(
+      LatLng(position.target.latitude, position.target.longitude),
+    );
+  }
+
+  Widget _withCompass(Widget map) {
+    if (!widget.showCompass || !widget.gesturesEnabled) return map;
+    final bottom = widget.compassBottom ??
+        (widget.mapPadding.bottom > 0
+            ? widget.mapPadding.bottom + 16
+            : MediaQuery.paddingOf(context).bottom + 24);
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        map,
+        Positioned(
+          right: 16,
+          top: widget.compassTop,
+          bottom: widget.compassTop == null ? bottom : null,
+          child: MapCompassButton(
+            bearing: _bearing,
+            onPressed: _onCompassPressed,
+          ),
+        ),
+      ],
     );
   }
 
@@ -460,6 +555,7 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
 
   Future<void> _fitRouteIfNeeded({bool force = false}) async {
     if (!widget.fitRouteBounds || _controller == null) return;
+    if (_userMovedCamera) return;
     if (!force && _lastFitRevision == widget.fitRouteRevision) return;
     _lastFitRevision = widget.fitRouteRevision;
 
@@ -487,15 +583,20 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
       maxLng += minSpan / 2;
     }
 
-    await _controller!.moveCamera(
-      gm.CameraUpdate.newLatLngBounds(
-        gm.LatLngBounds(
-          southwest: gm.LatLng(minLat, minLng),
-          northeast: gm.LatLng(maxLat, maxLng),
-        ),
-        widget.boundsPadding,
+    final update = gm.CameraUpdate.newLatLngBounds(
+      gm.LatLngBounds(
+        southwest: gm.LatLng(minLat, minLng),
+        northeast: gm.LatLng(maxLat, maxLng),
       ),
+      widget.boundsPadding,
     );
+    // Jump on first layout, glide afterwards so live updates do not flicker.
+    if (_didInitialFit && !kIsWeb) {
+      await _controller!.animateCamera(update);
+    } else {
+      await _controller!.moveCamera(update);
+    }
+    _didInitialFit = true;
   }
 
   Future<void> _onMapReady(gm.GoogleMapController controller) async {
@@ -526,7 +627,7 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
         initialCameraPosition: _initialCameraPosition(),
         onMapReady: _onMapReady,
         onTap: widget.onTap,
-        onCameraMove: widget.onCameraMove,
+        onCameraMove: _handleCameraMove,
         myLocationEnabled: widget.myLocationEnabled,
         myLocationButtonEnabled: widget.myLocationButtonEnabled,
         zoomControlsEnabled: widget.zoomControlsEnabled,
@@ -538,7 +639,13 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb && _hasRoute) {
-      return _buildWebRouteLayer();
+      return _withCompass(
+        Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerMove: (_) => _onUserGesture(),
+          child: _buildWebRouteLayer(),
+        ),
+      );
     }
 
     return LayoutBuilder(
@@ -548,36 +655,40 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
         if (w <= 0 || h <= 0) {
           return const SizedBox.shrink();
         }
+        final gestures = widget.gesturesEnabled;
         return SizedBox(
           width: w,
           height: h,
-          child: LtrMapSurface(
+          child: _withCompass(Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerMove: (_) => _onUserGesture(),
+            child: LtrMapSurface(
             child: gm.GoogleMap(
             mapType: gm.MapType.normal,
             initialCameraPosition: _initialCameraPosition(),
             onMapCreated: _onMapReady,
+            padding: widget.mapPadding,
+            scrollGesturesEnabled: gestures,
+            zoomGesturesEnabled: gestures,
+            rotateGesturesEnabled: gestures,
+            tiltGesturesEnabled: gestures,
+            onCameraIdle: widget.onCameraIdle,
             markers: _buildMarkers(),
             circles: _buildAccuracyCircles(),
             polylines: _buildPolylines(),
             onTap: widget.onTap == null
                 ? null
                 : (pos) => widget.onTap!(LatLng(pos.latitude, pos.longitude)),
-            onCameraMove: widget.onCameraMove == null
-                ? null
-                : (position) => widget.onCameraMove!(
-                      LatLng(
-                        position.target.latitude,
-                        position.target.longitude,
-                      ),
-                    ),
+            onCameraMove: _handleCameraMove,
             myLocationEnabled: widget.myLocationEnabled,
             myLocationButtonEnabled: widget.myLocationButtonEnabled,
             zoomControlsEnabled: widget.zoomControlsEnabled,
             mapToolbarEnabled: false,
-            compassEnabled: true,
+            compassEnabled: false,
             trafficEnabled: true,
           ),
           ),
+          )),
         );
       },
     );
@@ -602,7 +713,7 @@ class _FrozenWebGoogleMap extends StatefulWidget {
   final gm.CameraPosition initialCameraPosition;
   final Future<void> Function(gm.GoogleMapController controller) onMapReady;
   final ValueChanged<LatLng>? onTap;
-  final ValueChanged<LatLng>? onCameraMove;
+  final ValueChanged<gm.CameraPosition>? onCameraMove;
   final bool myLocationEnabled;
   final bool myLocationButtonEnabled;
   final bool zoomControlsEnabled;
@@ -630,19 +741,12 @@ class _FrozenWebGoogleMapState extends State<_FrozenWebGoogleMap> {
         onTap: widget.onTap == null
             ? null
             : (pos) => widget.onTap!(LatLng(pos.latitude, pos.longitude)),
-        onCameraMove: widget.onCameraMove == null
-            ? null
-            : (position) => widget.onCameraMove!(
-                  LatLng(
-                    position.target.latitude,
-                    position.target.longitude,
-                  ),
-                ),
+        onCameraMove: widget.onCameraMove,
         myLocationEnabled: widget.myLocationEnabled,
         myLocationButtonEnabled: widget.myLocationButtonEnabled,
         zoomControlsEnabled: widget.zoomControlsEnabled,
         mapToolbarEnabled: false,
-        compassEnabled: true,
+        compassEnabled: false,
         trafficEnabled: true,
       ),
       ),

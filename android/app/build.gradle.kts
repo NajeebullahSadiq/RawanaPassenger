@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -62,6 +63,32 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+// Flutter 3.44: GeneratedPluginRegistrant.java cannot resolve Kotlin plugin
+// classes at javac time. Rewrite those constructors to reflection.
+tasks.matching { it.name.startsWith("compile") && it.name.contains("Java") }.configureEach {
+    doFirst {
+        val registrant = file("${project.projectDir}/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java")
+        if (!registrant.exists()) return@doFirst
+        var contents = registrant.readText()
+        val replacements = mapOf(
+            "new dev.fluttercommunity.plus.packageinfo.PackageInfoPlugin()" to
+                "(io.flutter.embedding.engine.plugins.FlutterPlugin) Class.forName(\"dev.fluttercommunity.plus.packageinfo.PackageInfoPlugin\").getDeclaredConstructor().newInstance()",
+            "new dev.fluttercommunity.plus.share.SharePlusPlugin()" to
+                "(io.flutter.embedding.engine.plugins.FlutterPlugin) Class.forName(\"dev.fluttercommunity.plus.share.SharePlusPlugin\").getDeclaredConstructor().newInstance()",
+            "new dev.fluttercommunity.plus.device_info.DeviceInfoPlusPlugin()" to
+                "(io.flutter.embedding.engine.plugins.FlutterPlugin) Class.forName(\"dev.fluttercommunity.plus.device_info.DeviceInfoPlusPlugin\").getDeclaredConstructor().newInstance()",
+        )
+        var changed = false
+        for ((old, replacement) in replacements) {
+            if (contents.contains(old)) {
+                contents = contents.replace(old, replacement)
+                changed = true
+            }
+        }
+        if (changed) registrant.writeText(contents)
+    }
 }
 
 dependencies {

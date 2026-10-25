@@ -16,9 +16,13 @@ Future<void> setupPushNotifications({
   );
   if (!ok) return;
 
-  push.onMessage = (data) {
+  push.onMessage = (data, {foreground = false}) {
     onTripEvent?.call();
-    final route = push.routeForData(data, role: 'passenger');
+    final route = push.routeForData(
+      data,
+      role: 'passenger',
+      foreground: foreground,
+    );
     if (route != null) router.go(route);
   };
 

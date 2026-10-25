@@ -70,6 +70,20 @@ class DriverService {
     return Trip.fromJson(data);
   }
 
+  /// Scheduled rides nearby that no driver has reserved yet.
+  Future<List<Trip>> getAvailableScheduledRides() async {
+    final data = await _api.get('/drivers/scheduled-rides');
+    final list = data['trips'] as List<dynamic>? ?? [];
+    return list.map((e) => Trip.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  /// Scheduled rides this driver has reserved, soonest first.
+  Future<List<Trip>> getMyReservations() async {
+    final data = await _api.get('/drivers/scheduled-rides/mine');
+    final list = data['trips'] as List<dynamic>? ?? [];
+    return list.map((e) => Trip.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   Future<Map<String, dynamic>> getProfile() async {
     return _api.get('/drivers/profile');
   }

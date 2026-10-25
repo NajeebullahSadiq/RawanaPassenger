@@ -22,6 +22,10 @@ final mapsServiceProvider = Provider<MapsService>((ref) {
   return MapsService(ref.watch(apiClientProvider));
 });
 
+final tripChatServiceProvider = Provider<TripChatService>((ref) {
+  return TripChatService(ref.watch(apiClientProvider));
+});
+
 final tripRealtimeServiceProvider = Provider<TripRealtimeService>((ref) {
   final service = TripRealtimeService();
   ref.onDispose(service.unsubscribe);
@@ -31,6 +35,15 @@ final tripRealtimeServiceProvider = Provider<TripRealtimeService>((ref) {
 final currentTripIdProvider = StateProvider<String?>((ref) => null);
 
 final bookingDraftProvider = StateProvider<TripBookingDraft?>((ref) => null);
+
+/// Pickup time chosen for the ride being booked; null means "now".
+final scheduledPickupProvider = StateProvider<DateTime?>((ref) => null);
+
+/// Passenger's upcoming pre-booked rides, soonest first.
+final scheduledRidesProvider = FutureProvider.autoDispose<List<Trip>>((ref) async {
+  if (!ref.watch(isAppLoggedInProvider)) return const [];
+  return ref.read(passengerServiceProvider).getScheduledRides();
+});
 
 final rideTypesProvider = FutureProvider<List<RideType>>((ref) async {
   return ref.read(passengerServiceProvider).getRideTypes();
@@ -144,14 +157,31 @@ class ActiveTripNotifier extends StateNotifier<AsyncValue<Trip?>> {
   void clearLocalTripState({bool keepDraft = false}) {
     if (!mounted) return;
     stopMatchPolling();
-    _ref.read(currentTripIdProvider.notifier).state = null;
-    if (!keepDraft) {
-      _ref.read(bookingDraftProvider.notifier).state = null;
+    try {
+      _ref.read(currentTripIdProvider.notifier).state = null;
+      if (!keepDraft) {
+        _ref.read(bookingDraftProvider.notifier).state = null;
+      }
+      _ref.read(tripRealtimeServiceProvider).unsubscribe();
+      state = const AsyncValue.data(null);
+    } catch (_) {
+      if (mounted) state = const AsyncValue.data(null);
     }
-    _ref.read(tripRealtimeServiceProvider).unsubscribe();
-    state = const AsyncValue.data(null);
-    refreshPassengerLocationForNextBooking(_ref);
-    _ref.invalidate(pendingRatingProvider);
+    // Defer so map/nearby-driver dependents finish flushing before we
+    // touch location providers (avoids reentrant CircularDependencyError).
+    Future.microtask(() {
+      if (!mounted) return;
+      try {
+        refreshPassengerLocationForNextBooking(_ref);
+      } catch (_) {}
+    });
+  }
+
+  /// Same as [clearLocalTripState] but never throws into the caller's catch.
+  void tryClearLocalTripState({bool keepDraft = false}) {
+    try {
+      clearLocalTripState(keepDraft: keepDraft);
+    } catch (_) {}
   }
 
   /// Re-opens a specific trip (e.g. an unrated completed one, or a live trip

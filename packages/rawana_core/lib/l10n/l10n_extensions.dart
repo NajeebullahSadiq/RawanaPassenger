@@ -8,6 +8,8 @@ extension RawanaL10nContext on BuildContext {
 extension RawanaL10nHelpers on AppLocalizations {
   String tripStatusLabel(String apiValue) {
     switch (apiValue) {
+      case 'scheduled':
+        return statusScheduled;
       case 'searching':
         return statusSearching;
       case 'accepted':
