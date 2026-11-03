@@ -19,7 +19,7 @@ class TripDetailScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.tripTitleWithId(tripId.substring(0, 6).toUpperCase()))),
       body: tripAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.errorWithDetail('$e'))),
+        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
         data: (trip) {
           final fare = trip.cashToCollect;
           final hasRoute = trip.pickupLat != null &&

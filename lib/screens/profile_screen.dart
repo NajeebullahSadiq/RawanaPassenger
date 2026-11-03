@@ -45,7 +45,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.photoUploadFailed('$e'))),
+          SnackBar(content: Text(context.l10n.friendlyApiError(e))),
         );
       }
     } finally {
@@ -89,7 +89,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        showRawanaError(context, e);
       }
     }
   }
@@ -112,7 +112,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.failedToLoadProfile('$e'))),
+        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
         data: (profile) {
           final name = profile['name'] as String? ?? context.l10n.passengerFallbackName;
           final phone = profile['phone'] as String? ?? '';

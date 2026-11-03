@@ -91,10 +91,13 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       }
     } on RawanaAuthException catch (e) {
       if (!mounted) return;
-      setState(() => _error = authErrorMessage(e.messageKey, detail: e.message, l10n: context.l10n));
+      final message = authErrorMessage(e.messageKey, detail: e.message, l10n: context.l10n);
+      setState(() => _error = message);
+      showRawanaMessage(context, message);
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = context.l10n.friendlyApiError(e));
+      showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }

@@ -31,7 +31,7 @@ Future<void> performPassengerDemoLogin({
   } on RawanaAuthException catch (e) {
     setError(authErrorMessage(e.messageKey, detail: e.message, l10n: l10n));
   } catch (e) {
-    setError(e.toString());
+    setError(l10n.friendlyApiError(e));
   } finally {
     setLoading(false);
   }

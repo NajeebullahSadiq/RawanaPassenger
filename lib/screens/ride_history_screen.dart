@@ -114,7 +114,7 @@ class _RideHistoryScreenState extends ConsumerState<RideHistoryScreen> {
           Expanded(
             child: historyAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(context.l10n.failedToLoadHistory('$e'))),
+              error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
               data: (page) {
                 final trips = [...page.trips, ..._extra];
                 if (trips.isEmpty) {

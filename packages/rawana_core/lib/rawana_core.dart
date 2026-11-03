@@ -15,6 +15,7 @@ export 'widgets/rawana_sheet_handle.dart';
 export 'widgets/rawana_section_label.dart';
 export 'widgets/rawana_brand_mark.dart';
 export 'widgets/rawana_empty_state.dart';
+export 'widgets/show_rawana_error.dart';
 export 'widgets/rawana_bottom_sheet.dart';
 export 'widgets/otp_input.dart';
 export 'widgets/status_chip.dart';

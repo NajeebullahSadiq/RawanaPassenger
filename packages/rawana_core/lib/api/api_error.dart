@@ -105,6 +105,42 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       return 'Confirm the cash for your last trip before deleting your account.';
     case 'confirm_failed':
       return 'Could not confirm cash collection. Please try again.';
+    case 'profile_sync_failed':
+      return 'We could not finish setting up your account. Please try again.';
+    case 'not_found':
+    case 'trip_not_found':
+    case 'driver_not_found':
+      return 'That item could not be found.';
+    case 'no_active_trip':
+      return 'There is no active ride right now.';
+    case 'location_unavailable':
+      return 'Location is not available right now. Try again in a moment.';
+    case 'nearby_drivers_failed':
+      return 'Nearby drivers could not be loaded. Please try again.';
+    case 'invalid_trip':
+    case 'invalid_trip_status':
+      return 'This ride can no longer be updated.';
+    case 'rating_failed':
+      return 'The rating could not be saved. Please try again.';
+    case 'trip_too_short':
+      return 'This trip is too short to book.';
+    case 'fare_changed':
+      return 'The fare changed. Please review the price and try again.';
+    case 'too_far_from_pickup':
+      return 'Move closer to the pickup point, then try again.';
+    case 'too_far_from_dropoff':
+      return 'Move closer to the drop-off point, then try again.';
+    case 'route_unavailable':
+      return 'That is not available yet. Please try again shortly.';
+    case 'trip_not_cancellable':
+      return 'This ride can no longer be cancelled.';
+    case 'whatsapp_send_failed':
+    case 'session_failed':
+      return 'Sign-in could not be completed. Please try again.';
+    case 'driver_account_on_passenger_app':
+      return 'This account is a driver account. Open the driver app to sign in.';
+    case 'internal_error':
+      return 'The server hit a problem. Please try again shortly.';
   }
   if (error is DioException) {
     switch (error.type) {
@@ -116,13 +152,19 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       default:
         break;
     }
-    final data = error.response?.data;
-    if (data is Map && data['message'] is String && (data['message'] as String).isNotEmpty) {
-      return data['message'] as String;
+    final code = error.response?.statusCode;
+    if (code == 400 || code == 422) {
+      return 'Some of these details cannot be saved. Please check them and try again.';
     }
-    if (error.response?.statusCode != null && error.response!.statusCode! >= 500) {
+    if (code == 404) return 'That item could not be found.';
+    if (code == 409) return 'This is already in use. Try a different value.';
+    if (code != null && code >= 500) {
       return 'The server hit a problem. Please try again shortly.';
     }
+  }
+  final raw = error.toString();
+  if (raw.contains('Could not save profile')) {
+    return 'Could not save your details. Please try again.';
   }
   return fallback;
 }

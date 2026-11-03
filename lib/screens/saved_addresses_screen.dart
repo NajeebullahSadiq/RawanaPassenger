@@ -83,7 +83,7 @@ class _SavedAddressesScreenState extends ConsumerState<SavedAddressesScreen> {
       _pickedLng = null;
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted) showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _adding = false);
     }
@@ -192,7 +192,7 @@ class _SavedAddressesScreenState extends ConsumerState<SavedAddressesScreen> {
       ),
       body: addressesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.failedToLoadAddresses('$e'))),
+        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
         data: (addresses) {
           if (addresses.isEmpty) {
             return Center(

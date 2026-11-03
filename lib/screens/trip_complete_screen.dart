@@ -59,7 +59,7 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.ratingFailed('$e'))),
+          SnackBar(content: Text(context.l10n.friendlyApiError(e))),
         );
       }
     } finally {

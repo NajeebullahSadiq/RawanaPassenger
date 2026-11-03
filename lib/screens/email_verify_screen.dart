@@ -33,7 +33,7 @@ class _EmailVerifyScreenState extends ConsumerState<EmailVerifyScreen> {
       });
     } catch (e) {
       setState(() {
-        _message = e.toString();
+        _message = context.l10n.friendlyApiError(e);
         _messageIsError = true;
       });
     } finally {

@@ -66,7 +66,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     } catch (e) {
       setState(() {
         _error = true;
-        _errorMessage = e.toString();
+        _errorMessage = context.l10n.friendlyApiError(e);
       });
     } finally {
       if (mounted) setState(() => _loading = false);

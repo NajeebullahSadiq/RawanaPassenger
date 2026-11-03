@@ -37,7 +37,7 @@ class _EmergencyContactsScreenState extends ConsumerState<EmergencyContactsScree
       _phoneController.clear();
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted) showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _adding = false);
     }
@@ -48,7 +48,7 @@ class _EmergencyContactsScreenState extends ConsumerState<EmergencyContactsScree
       await ref.read(passengerServiceProvider).deleteEmergencyContact(id);
       ref.invalidate(emergencyContactsProvider);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+      if (mounted) showRawanaError(context, e);
     }
   }
 
@@ -159,7 +159,7 @@ class _EmergencyContactsScreenState extends ConsumerState<EmergencyContactsScree
       ),
       body: contactsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.failedToLoadContacts('$e'))),
+        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
         data: (contacts) {
           if (contacts.isEmpty) {
             return Center(

@@ -366,7 +366,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       extendBodyBehindAppBar: true,
       body: tripAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.errorWithDetail('$e'))),
+        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
         data: (trip) {
           if (trip == null) {
             return Center(

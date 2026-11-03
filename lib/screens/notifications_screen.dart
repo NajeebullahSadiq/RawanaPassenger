@@ -15,7 +15,7 @@ class NotificationsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(context.l10n.notifications)),
       body: inbox.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
         data: (items) => NotificationInboxList(
           notifications: items,
           onOpen: (_) {},

@@ -89,7 +89,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedToSubmit('$e'))),
+          SnackBar(content: Text(l10n.friendlyApiError(e))),
         );
       }
     } finally {

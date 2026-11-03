@@ -36,7 +36,8 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
     } on RawanaAuthException catch (e) {
       setState(() => _error = authErrorMessage(e.messageKey, detail: e.message, l10n: context.l10n));
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = context.l10n.friendlyApiError(e));
+      showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }

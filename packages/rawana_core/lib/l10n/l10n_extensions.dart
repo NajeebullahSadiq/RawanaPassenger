@@ -63,8 +63,35 @@ extension RawanaL10nHelpers on AppLocalizations {
   /// Signup and profile saves should never show a raw HTTP exception.
   String friendlyApiError(Object error) {
     final key = apiErrorKey(error);
-    if (key != null) return authError(key);
-    return apiErrorMessage(error, fallback: authGenericError);
+    switch (key) {
+      case 'supabase_not_configured':
+      case 'invalid_credentials':
+      case 'email_not_verified':
+      case 'email_already_exists':
+      case 'rate_limit':
+      case 'database_signup_failed':
+      case 'weak_password':
+      case 'invalid_email':
+      case 'invalid_phone':
+      case 'phone_already_exists':
+      case 'profile_update_failed':
+      case 'invalid_otp':
+      case 'whatsapp_api_not_configured':
+        return authError(key!);
+      default:
+        return apiErrorMessage(error, fallback: authGenericError);
+    }
+  }
+
+  String get dialogOk {
+    switch (localeName) {
+      case 'fa':
+        return 'باشه';
+      case 'ps':
+        return 'سمه ده';
+      default:
+        return 'OK';
+    }
   }
 
   String get authPhoneAlreadyRegistered {
