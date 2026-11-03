@@ -195,7 +195,12 @@ class AuthService {
     final m = message.toLowerCase();
     if (m.contains('invalid login')) return 'invalid_credentials';
     if (m.contains('email not confirmed')) return 'email_not_verified';
-    if (m.contains('already registered')) return 'email_already_exists';
+    if (m.contains('already registered') || m.contains('already been registered') || m.contains('user already exists')) {
+      return 'email_already_exists';
+    }
+    if (m.contains('phone') && (m.contains('already') || m.contains('duplicate') || m.contains('unique'))) {
+      return 'phone_already_exists';
+    }
     if (m.contains('rate limit')) return 'rate_limit';
     if (m.contains('database error saving new user')) return 'database_signup_failed';
     if (m.contains('password should be at least') || m.contains('weak password')) {

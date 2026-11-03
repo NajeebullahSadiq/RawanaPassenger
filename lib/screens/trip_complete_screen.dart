@@ -57,11 +57,7 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
       ref.read(activeTripProvider.notifier).clearLocalTripState();
       if (mounted) context.go('/home');
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.friendlyApiError(e))),
-        );
-      }
+      if (mounted) showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

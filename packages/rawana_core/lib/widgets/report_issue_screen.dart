@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../content/rawana_driver_content.dart';
 import '../l10n/l10n_extensions.dart';
+import 'show_rawana_error.dart';
 import '../services/support_service.dart';
 import '../theme/rawana_theme.dart';
 import 'rawana_primary_button.dart';
@@ -88,9 +89,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
       Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.friendlyApiError(e))),
-        );
+        showRawanaError(context, e);
       }
     } finally {
       if (mounted) setState(() => _submitting = false);

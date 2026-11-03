@@ -110,11 +110,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           );
       setState(() => _photoUrl = url);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.friendlyApiError(e))),
-        );
-      }
+      if (mounted) showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _uploadingPhoto = false);
     }

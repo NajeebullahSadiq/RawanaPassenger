@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../api/api_error.dart';
 import '../l10n/l10n_extensions.dart';
 import '../theme/rawana_theme.dart';
+import 'show_rawana_error.dart';
 
 class AccountPrivacyActions extends StatelessWidget {
   const AccountPrivacyActions({
@@ -30,7 +30,7 @@ class AccountPrivacyActions extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
+        showRawanaError(context, e);
       }
     }
   }
@@ -54,7 +54,7 @@ class AccountPrivacyActions extends StatelessWidget {
       // The server refuses deletion while a ride is live or cash is unsettled;
       // surface that instead of an unhandled exception.
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
+        showRawanaError(context, e);
       }
     }
   }

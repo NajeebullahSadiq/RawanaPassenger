@@ -203,8 +203,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (mounted) context.push('/ride-selection');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
+        showRawanaError(context, e);
       }
     }
   }

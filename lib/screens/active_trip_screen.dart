@@ -237,9 +237,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       // resync so the screen reflects reality instead of a stale cancel button.
       await ref.read(activeTripProvider.notifier).refresh();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(apiErrorMessage(e))),
-        );
+        showRawanaError(context, e);
       }
       return;
     } finally {

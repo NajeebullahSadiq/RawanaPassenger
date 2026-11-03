@@ -29,7 +29,7 @@ Future<void> performPassengerDemoLogin({
     }
     if (context.mounted) context.go('/home');
   } on RawanaAuthException catch (e) {
-    setError(authErrorMessage(e.messageKey, detail: e.message, l10n: l10n));
+    setError(authErrorMessage(e.messageKey, l10n: l10n));
   } catch (e) {
     setError(l10n.friendlyApiError(e));
   } finally {

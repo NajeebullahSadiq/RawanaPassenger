@@ -345,28 +345,25 @@ class _RideSelectionScreenState extends ConsumerState<RideSelectionScreen> {
     } catch (e) {
       if (mounted) {
         final key = apiErrorKey(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              key == 'account_blocked'
-                  ? context.l10n.accountBlocked
-                  : key == 'too_many_cancellations'
-                      ? context.l10n.tooManyCancellations
-                      : key == 'trip_too_short'
+        showRawanaMessage(
+          context,
+          key == 'account_blocked'
+              ? context.l10n.accountBlocked
+              : key == 'too_many_cancellations'
+                  ? context.l10n.tooManyCancellations
+                  : key == 'trip_too_short'
                       ? context.l10n.tripTooShort
                       : key == 'scheduled_too_soon'
-                      ? context.l10n.scheduledTooSoon
-                      : key == 'scheduled_too_far'
-                      ? context.l10n.scheduledTooFar
-                      : key == 'scheduled_limit_reached'
-                      ? context.l10n.scheduledLimitReached
-                      : key == 'scheduled_overlap'
-                      ? context.l10n.scheduledOverlap
-                  : key != null && key.startsWith('promo_')
-                  ? context.l10n.promoInvalid
-                  : apiErrorMessage(e),
-            ),
-          ),
+                          ? context.l10n.scheduledTooSoon
+                          : key == 'scheduled_too_far'
+                              ? context.l10n.scheduledTooFar
+                              : key == 'scheduled_limit_reached'
+                                  ? context.l10n.scheduledLimitReached
+                                  : key == 'scheduled_overlap'
+                                      ? context.l10n.scheduledOverlap
+                                      : key != null && key.startsWith('promo_')
+                                          ? context.l10n.promoInvalid
+                                          : context.l10n.friendlyApiError(e),
         );
       }
     } finally {
@@ -489,9 +486,7 @@ class _RideSelectionScreenState extends ConsumerState<RideSelectionScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            context.l10n.failedToLoadRideTypes(
-                              apiErrorMessage(e),
-                            ),
+                            context.l10n.friendlyApiError(e),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 12),

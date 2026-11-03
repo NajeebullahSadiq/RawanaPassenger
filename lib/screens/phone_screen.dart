@@ -34,7 +34,9 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       ref.read(pendingOtpProvider.notifier).state = (phone: phone, channel: _channel);
       if (mounted) context.go('/otp');
     } on RawanaAuthException catch (e) {
-      setState(() => _error = authErrorMessage(e.messageKey, detail: e.message, l10n: context.l10n));
+      final message = authErrorMessage(e.messageKey, l10n: context.l10n);
+      setState(() => _error = message);
+      if (mounted) showRawanaMessage(context, message);
     } catch (e) {
       setState(() => _error = context.l10n.friendlyApiError(e));
       showRawanaError(context, e);

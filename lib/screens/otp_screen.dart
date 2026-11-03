@@ -59,15 +59,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       );
       if (mounted) context.go(route);
     } on RawanaAuthException catch (e) {
+      final message = authErrorMessage(e.messageKey, l10n: context.l10n);
       setState(() {
         _error = true;
-        _errorMessage = authErrorMessage(e.messageKey, detail: e.message, l10n: context.l10n);
+        _errorMessage = message;
       });
+      if (mounted) showRawanaMessage(context, message);
     } catch (e) {
+      final message = context.l10n.friendlyApiError(e);
       setState(() {
         _error = true;
-        _errorMessage = context.l10n.friendlyApiError(e);
+        _errorMessage = message;
       });
+      if (mounted) showRawanaMessage(context, message);
     } finally {
       if (mounted) setState(() => _loading = false);
     }

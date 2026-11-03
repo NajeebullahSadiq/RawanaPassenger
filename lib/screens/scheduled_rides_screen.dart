@@ -78,9 +78,7 @@ class _ScheduledRidesScreenState extends ConsumerState<ScheduledRidesScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(apiErrorMessage(e))));
+        showRawanaError(context, e);
       }
       ref.invalidate(scheduledRidesProvider);
     } finally {

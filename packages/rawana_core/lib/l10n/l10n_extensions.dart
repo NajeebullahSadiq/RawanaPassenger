@@ -28,10 +28,10 @@ extension RawanaL10nHelpers on AppLocalizations {
     }
   }
 
-  String authError(String key, {String? detail}) {
+  String authError(String key) {
     switch (key) {
       case 'supabase_not_configured':
-        return detail ?? authSupabaseNotConfigured;
+        return authSupabaseNotConfigured;
       case 'invalid_credentials':
         return authInvalidCredentials;
       case 'email_not_verified':
@@ -56,7 +56,7 @@ extension RawanaL10nHelpers on AppLocalizations {
       case 'whatsapp_api_not_configured':
         return authWhatsAppUnavailable;
       default:
-        return detail ?? authGenericError;
+        return authGenericError;
     }
   }
 

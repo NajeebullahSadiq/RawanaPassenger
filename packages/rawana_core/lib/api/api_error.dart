@@ -141,6 +141,22 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       return 'This account is a driver account. Open the driver app to sign in.';
     case 'internal_error':
       return 'The server hit a problem. Please try again shortly.';
+    case 'scheduled_too_soon':
+      return 'That pickup time is too soon. Please choose a later time.';
+    case 'scheduled_too_far':
+      return 'That pickup time is too far ahead.';
+    case 'scheduled_limit_reached':
+      return 'You already have the maximum number of upcoming rides.';
+    case 'scheduled_overlap':
+    case 'reservation_conflict':
+      return 'You already have a ride booked around that time.';
+    case 'invalid_report':
+      return 'That report could not be submitted. Please try again.';
+    case 'use_supabase_sms':
+      return 'Phone sign-in is not available this way. Use email instead.';
+    case 'admin_create_failed':
+    case 'admin_update_failed':
+      return 'That change could not be saved. Please try again.';
   }
   if (error is DioException) {
     switch (error.type) {
@@ -165,6 +181,9 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
   final raw = error.toString();
   if (raw.contains('Could not save profile')) {
     return 'Could not save your details. Please try again.';
+  }
+  if (raw.contains('confirm_failed')) {
+    return 'Could not confirm cash collection. Please try again.';
   }
   return fallback;
 }

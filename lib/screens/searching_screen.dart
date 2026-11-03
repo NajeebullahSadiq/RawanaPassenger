@@ -113,9 +113,7 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.cancelFailed(apiErrorMessage(e)))),
-        );
+        showRawanaError(context, e);
       }
       if (mounted) setState(() => _cancelling = false);
       return;
@@ -167,9 +165,7 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.cancelFailed(apiErrorMessage(e)))),
-        );
+        showRawanaError(context, e);
       }
       return;
     } finally {

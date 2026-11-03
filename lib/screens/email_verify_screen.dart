@@ -32,10 +32,12 @@ class _EmailVerifyScreenState extends ConsumerState<EmailVerifyScreen> {
         _messageIsError = false;
       });
     } catch (e) {
+      final message = context.l10n.friendlyApiError(e);
       setState(() {
-        _message = context.l10n.friendlyApiError(e);
+        _message = message;
         _messageIsError = true;
       });
+      if (mounted) showRawanaMessage(context, message);
     } finally {
       setState(() => _loading = false);
     }

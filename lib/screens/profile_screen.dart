@@ -43,11 +43,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       await ref.read(passengerServiceProvider).updateProfile(profilePhotoUrl: url);
       ref.invalidate(passengerProfileProvider);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.friendlyApiError(e))),
-        );
-      }
+      if (mounted) showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _uploadingPhoto = false);
     }

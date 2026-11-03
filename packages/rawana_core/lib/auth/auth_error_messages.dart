@@ -2,11 +2,11 @@ import '../l10n/app_localizations.dart';
 import '../l10n/l10n_extensions.dart';
 
 /// User-facing copy for [RawanaAuthException.messageKey] values.
-String authErrorMessage(String key, {String? detail, AppLocalizations? l10n}) {
-  if (l10n != null) return l10n.authError(key, detail: detail);
+String authErrorMessage(String key, {AppLocalizations? l10n}) {
+  if (l10n != null) return l10n.authError(key);
   switch (key) {
     case 'supabase_not_configured':
-      return detail ?? 'Sign-in is not configured. Contact support.';
+      return 'Sign-in is not configured. Contact support.';
     case 'invalid_credentials':
       return 'Incorrect email or password. Please check and try again.';
     case 'email_not_verified':
@@ -23,13 +23,16 @@ String authErrorMessage(String key, {String? detail, AppLocalizations? l10n}) {
       return 'Enter a valid email address.';
     case 'invalid_phone':
       return 'Enter a valid Afghan phone number (9 digits, e.g. 70 123 4567).';
+    case 'phone_already_exists':
+    case 'profile_update_failed':
+      return 'This phone number is already registered. Sign in with that account, or use a different number.';
     case 'invalid_otp':
       return 'That code is incorrect or expired. Request a new code and try again.';
     case 'whatsapp_api_not_configured':
       return 'WhatsApp sign-in is not available right now.';
     case 'auth_error':
-      return detail ?? 'Something went wrong. Please try again.';
+      return 'Something went wrong. Please try again.';
     default:
-      return detail ?? 'Something went wrong. Please try again.';
+      return 'Something went wrong. Please try again.';
   }
 }
