@@ -109,7 +109,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitlePassenger.
   ///
   /// In en, this message translates to:
-  /// **'Rawana Passenger'**
+  /// **'Rawana Taxi'**
   String get appTitlePassenger;
 
   /// No description provided for @appTitleDriver.

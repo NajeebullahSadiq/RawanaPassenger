@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Rawana';
 
   @override
-  String get appTitlePassenger => 'Rawana Passenger';
+  String get appTitlePassenger => 'Rawana Taxi';
 
   @override
   String get appTitleDriver => 'Rawana Driver';
