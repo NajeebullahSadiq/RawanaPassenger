@@ -88,6 +88,11 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       return 'That promo code is not active right now.';
     case 'invalid_phone':
       return 'Please enter a valid phone number.';
+    case 'phone_already_exists':
+    case 'profile_update_failed':
+      return 'This phone number is already registered. Sign in with that account, or use a different number.';
+    case 'email_already_exists':
+      return 'This email is already registered. Try signing in instead.';
     case 'file_too_large':
       return 'That file is too large (max 10 MB).';
     case 'empty_file':

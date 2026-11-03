@@ -94,7 +94,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
       setState(() => _error = authErrorMessage(e.messageKey, detail: e.message, l10n: context.l10n));
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = e.toString());
+      setState(() => _error = context.l10n.friendlyApiError(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
