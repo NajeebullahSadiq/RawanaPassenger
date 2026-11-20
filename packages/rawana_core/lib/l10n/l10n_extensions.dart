@@ -80,6 +80,8 @@ extension RawanaL10nHelpers on AppLocalizations {
         return authError(key!);
       case 'driver_account_on_passenger_app':
         return driverAccountOnPassengerApp;
+      case 'passenger_account_on_driver_app':
+        return passengerAccountOnDriverApp;
       default:
         return apiErrorMessage(error, fallback: authGenericError);
     }
@@ -104,6 +106,17 @@ extension RawanaL10nHelpers on AppLocalizations {
         return 'دا حساب د موټر چلوونکي دی. د ننوتلو لپاره د موټر چلوونکي اپ پرانیزئ، یا د مسافر حساب جوړ کړئ.';
       default:
         return 'This account is a driver account. Open the driver app to sign in, or create a passenger account.';
+    }
+  }
+
+  String get passengerAccountOnDriverApp {
+    switch (localeName) {
+      case 'fa':
+        return 'این حساب راننده نیست. برای سفر اپ مسافر را باز کنید، یا یک حساب راننده بسازید.';
+      case 'ps':
+        return 'دا حساب د موټر چلوونکي نه دی. د سفر لپاره د مسافر اپ پرانیزئ، یا د موټر چلوونکي حساب جوړ کړئ.';
+      default:
+        return 'This account is not a driver account. Open the passenger app to ride, or create a driver account.';
     }
   }
 

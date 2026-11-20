@@ -13,6 +13,8 @@ class TripNavigationHeader extends StatelessWidget {
     this.etaMinutes,
     this.distanceKm,
     this.guidance,
+    this.voiceMuted = false,
+    this.onToggleVoice,
   });
 
   final String destinationLabel;
@@ -20,6 +22,8 @@ class TripNavigationHeader extends StatelessWidget {
   final int? etaMinutes;
   final double? distanceKm;
   final NavigationGuidance? guidance;
+  final bool voiceMuted;
+  final VoidCallback? onToggleVoice;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +54,13 @@ class TripNavigationHeader extends StatelessWidget {
                   icon: const Icon(Icons.keyboard_arrow_down_rounded),
                   color: RawanaColors.onSurface,
                 ),
+                if (onToggleVoice != null)
+                  IconButton(
+                    onPressed: onToggleVoice,
+                    tooltip: voiceMuted ? l10n.unmuteVoice : l10n.muteVoice,
+                    icon: Icon(voiceMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded),
+                    color: RawanaColors.onSurface,
+                  ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
