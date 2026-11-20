@@ -151,18 +151,25 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
   }
 
   Future<void> _contactDriver(String tripId, {required bool call}) async {
+    if (call) {
+      final trip = ref.read(activeTripProvider).valueOrNull;
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => TripCallScreen(
+            api: ref.read(apiClientProvider),
+            tripId: tripId,
+            partyName: trip?.driver?.name ?? context.l10n.yourDriver,
+          ),
+        ),
+      );
+      return;
+    }
     final api = ref.read(apiClientProvider);
-    final ok = call
-        ? await callTripParty(api, tripId)
-        : await messageTripParty(api, tripId);
+    final ok = await messageTripParty(api, tripId);
     if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            call
-                ? context.l10n.couldNotOpenWhatsAppCall
-                : context.l10n.couldNotOpenWhatsAppMessages,
-          ),
+          content: Text(context.l10n.couldNotOpenWhatsAppMessages),
         ),
       );
     }
@@ -329,7 +336,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
         ),
         TripStatus.driverArriving => (
           label: l10n.driverIsAtPickup,
-          color: RawanaColors.warning,
+          color: RawanaColors.success,
           icon: LucideIcons.mapPinCheck,
         ),
         TripStatus.tripStarted => (

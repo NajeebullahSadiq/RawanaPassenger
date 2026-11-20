@@ -563,6 +563,8 @@
   "routeDistance": "route distance",
   "whatsApp": "WhatsApp",
   "endNavigation": "End navigation",
+  "muteVoice": "Mute voice",
+  "unmuteVoice": "Turn voice on",
   "navigating": "Navigating",
   "followingSelectedRoute": "Following selected route",
   "routes": "Routes",
@@ -1465,5 +1467,46 @@
         "type": "String"
       }
     }
-  }
+  },
+  "forgotPassword": "Forgot password?",
+  "resetPasswordTitle": "Reset your password",
+  "resetPasswordHint": "Use your email or phone. We'll send a link or a code so you can choose a new password.",
+  "resetByEmail": "Email",
+  "resetBySms": "SMS",
+  "sendResetLink": "Send reset link",
+  "resetLinkSent": "Check your email for a link to set a new password.",
+  "sendResetCode": "Send code",
+  "enterTheCode": "Enter the 6-digit code",
+  "setNewPassword": "Set a new password",
+  "passwordResetSignIn": "Your password was updated. Sign in with it next time.",
+  "registrationLanguage": "Language",
+  "inDistance": "in {distance}",
+  "@inDistance": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "distanceRemaining": "{distance} remaining",
+  "@distanceRemaining": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "callingName": "Calling {name}",
+  "@callingName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "callPassenger": "Call passenger",
+  "callDriver": "Call driver",
+  "couldNotStartCall": "Could not start the call",
+  "callConnectedHint": "The call opens on your phone through Rawana's secure line.",
+  "endCall": "End call"
 }

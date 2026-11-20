@@ -23,6 +23,7 @@ final pendingEmailProvider = StateProvider<String?>((ref) => null);
 final demoLoggedInProvider = StateProvider<bool>((ref) => false);
 
 final isAppLoggedInProvider = Provider<bool>((ref) {
-  final auth = ref.watch(authServiceProvider);
-  return auth.isAuthenticated;
+  ref.watch(authSessionProvider);
+  final demo = ref.watch(demoLoggedInProvider);
+  return demo || ref.watch(authServiceProvider).isAuthenticated;
 });

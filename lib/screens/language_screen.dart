@@ -54,24 +54,33 @@ class LanguageScreen extends ConsumerWidget {
                       selected: selected,
                       onTap: () async {
                         await ref.read(localeProvider.notifier).setLocale(Locale(o.$1));
-                        if (ref.read(isAppLoggedInProvider)) {
-                          try {
-                            await ref.read(passengerServiceProvider).updateProfile(language: o.$1);
-                          } catch (_) {}
-                          if (context.mounted) {
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.go('/home');
-                            }
-                          }
-                        } else if (context.mounted) {
-                          context.go('/auth');
-                        }
+                        if (!ref.read(isAppLoggedInProvider)) return;
+                        try {
+                          await ref.read(passengerServiceProvider).updateProfile(language: o.$1);
+                        } catch (_) {}
                       },
                     );
                   },
                 ),
+              ),
+              const SizedBox(height: 16),
+              RawanaPrimaryButton(
+                label: l10n.continueAction,
+                onPressed: () async {
+                  final code = ref.read(localeProvider).languageCode;
+                  final loggedIn = ref.read(isAppLoggedInProvider);
+                  if (loggedIn) {
+                    try {
+                      await ref.read(passengerServiceProvider).updateProfile(language: code);
+                    } catch (_) {}
+                  }
+                  if (!context.mounted) return;
+                  if (context.canPop()) {
+                    context.pop();
+                    return;
+                  }
+                  context.go(loggedIn ? '/home' : '/auth');
+                },
               ),
             ],
           ),

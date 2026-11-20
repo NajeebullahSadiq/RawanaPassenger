@@ -17,8 +17,21 @@ bool isRegistrationPhoneValid(String? phone) {
 bool isRegistrationNameValid(String? name) =>
     (name?.trim().length ?? 0) >= 2;
 
+bool isSyntheticProfileEmail(String? email) {
+  if (email == null) return false;
+  return email.trim().toLowerCase().endsWith('@phone.rawana.af');
+}
+
+/// Phone sign-up stores a placeholder inbox. Treat it as "no email".
+String registrationEmailForDisplay(String? email) {
+  if (email == null || isSyntheticProfileEmail(email)) return '';
+  return email.trim();
+}
+
 bool isRegistrationEmailValid(String? email) {
-  if (email == null || email.trim().isEmpty) return true;
+  if (email == null || email.trim().isEmpty || isSyntheticProfileEmail(email)) {
+    return true;
+  }
   return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim());
 }
 

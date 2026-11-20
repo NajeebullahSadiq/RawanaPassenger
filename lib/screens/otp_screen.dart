@@ -107,7 +107,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             iconColor: RawanaColors.onSurface,
             elevated: false,
             size: 40,
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/phone');
+              }
+            },
           ),
         ),
       ),

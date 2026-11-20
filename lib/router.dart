@@ -1,9 +1,11 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/language_screen.dart';
 import 'screens/auth_entry_screen.dart';
 import 'screens/email_auth_screen.dart';
+import 'screens/forgot_password_screen.dart';
 import 'screens/email_verify_screen.dart';
 import 'screens/phone_screen.dart';
 import 'screens/otp_screen.dart';
@@ -24,14 +26,28 @@ import 'screens/emergency_contacts_screen.dart';
 import 'screens/saved_addresses_screen.dart';
 import 'screens/scheduled_rides_screen.dart';
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final appRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/',
   routes: [
     GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
     GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
     GoRoute(path: '/language', builder: (_, _) => const LanguageScreen()),
     GoRoute(path: '/auth', builder: (_, _) => const AuthEntryScreen()),
-    GoRoute(path: '/email-auth', builder: (_, _) => const EmailAuthScreen()),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (_, state) => ForgotPasswordScreen(
+        initialSms: state.uri.queryParameters['channel'] == 'sms',
+      ),
+    ),
+    GoRoute(
+      path: '/email-auth',
+      builder: (_, state) => EmailAuthScreen(
+        startAsSignUp: state.uri.queryParameters['mode'] == 'signup',
+      ),
+    ),
     GoRoute(
       path: '/email-verify',
       builder: (_, _) => const EmailVerifyScreen(),

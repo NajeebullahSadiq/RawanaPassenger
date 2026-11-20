@@ -14,6 +14,9 @@ import 'rawana_map_marker.dart';
 import 'web_map_marker_sync.dart';
 import 'web_route_polyline_sync.dart';
 
+/// Google Maps camera bearing is clockwise from north on every platform.
+double navigationCameraBearing(double bearing) => bearing;
+
 class RawanaGoogleMap extends StatefulWidget {
   const RawanaGoogleMap({
     super.key,
@@ -250,7 +253,9 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
           target: gm.LatLng(lat, lng),
           zoom: widget.zoom.clamp(16, 18),
           tilt: 0,
-          bearing: _northUp ? 0 : (widget.followHeading ?? _bearing.value),
+          bearing: _northUp
+              ? 0
+              : navigationCameraBearing(widget.followHeading ?? _bearing.value),
         ),
       ),
     );

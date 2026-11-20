@@ -206,6 +206,13 @@ Future<TripContact?> fetchTripContact(ApiClient api, String tripId) async {
 Future<bool> _openPhoneDialer(String phone) =>
     _launchExternal(Uri(scheme: 'tel', path: phone.replaceAll(RegExp(r'[^\d+]'), '')));
 
+/// Starts the trip call on the masked Rawana line from inside the app.
+Future<bool> dialTripContact(ApiClient api, String tripId) async {
+  final contact = await fetchTripContact(api, tripId);
+  if (contact == null || contact.dialNumber.isEmpty) return false;
+  return _openPhoneDialer(contact.dialNumber);
+}
+
 /// Calls the other party on an active trip — via the masked proxy line when
 /// masking is on, otherwise through WhatsApp voice (falling back to the dialer).
 Future<bool> callTripParty(ApiClient api, String tripId) async {

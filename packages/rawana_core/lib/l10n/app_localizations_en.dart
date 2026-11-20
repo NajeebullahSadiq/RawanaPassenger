@@ -1195,6 +1195,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endNavigation => 'End navigation';
 
   @override
+  String get muteVoice => 'Mute voice';
+
+  @override
+  String get unmuteVoice => 'Turn voice on';
+
+  @override
   String get navigating => 'Navigating';
 
   @override
@@ -2856,4 +2862,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String requestAtPrice(String price) {
     return 'Request for $price';
   }
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get resetPasswordTitle => 'Reset your password';
+
+  @override
+  String get resetPasswordHint =>
+      'Use your email or phone. We\'ll send a link or a code so you can choose a new password.';
+
+  @override
+  String get resetByEmail => 'Email';
+
+  @override
+  String get resetBySms => 'SMS';
+
+  @override
+  String get sendResetLink => 'Send reset link';
+
+  @override
+  String get resetLinkSent =>
+      'Check your email for a link to set a new password.';
+
+  @override
+  String get sendResetCode => 'Send code';
+
+  @override
+  String get enterTheCode => 'Enter the 6-digit code';
+
+  @override
+  String get setNewPassword => 'Set a new password';
+
+  @override
+  String get passwordResetSignIn =>
+      'Your password was updated. Sign in with it next time.';
+
+  @override
+  String get registrationLanguage => 'Language';
+
+  @override
+  String inDistance(String distance) {
+    return 'in $distance';
+  }
+
+  @override
+  String distanceRemaining(String distance) {
+    return '$distance remaining';
+  }
+
+  @override
+  String callingName(String name) {
+    return 'Calling $name';
+  }
+
+  @override
+  String get callPassenger => 'Call passenger';
+
+  @override
+  String get callDriver => 'Call driver';
+
+  @override
+  String get couldNotStartCall => 'Could not start the call';
+
+  @override
+  String get callConnectedHint =>
+      'The call opens on your phone through Rawana\'s secure line.';
+
+  @override
+  String get endCall => 'End call';
 }

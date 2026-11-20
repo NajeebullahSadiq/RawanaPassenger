@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
 import '../providers/trip_providers.dart';
 
 class ProfileSetupScreen extends ConsumerStatefulWidget {
@@ -20,10 +21,12 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   bool _loading = false;
+  bool _leaving = false;
   bool _loadingProfile = true;
   bool _uploadingPhoto = false;
   bool _phoneReadOnly = false;
   bool _phoneVerified = false;
+  bool _driverAccount = false;
   String? _photoUrl;
 
   @override
@@ -43,7 +46,7 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       final phone = profile['phone'] as String? ?? '';
       final hasRealPhone = isRegistrationPhoneValid(phone);
       _nameController.text = (profile['name'] as String?)?.trim() ?? '';
-      _emailController.text = (profile['email'] as String?)?.trim() ?? '';
+      _emailController.text = registrationEmailForDisplay(profile['email'] as String?);
       _photoUrl = profile['profile_photo_url'] as String?;
       if (hasRealPhone) {
         _phoneController.text = phone;
@@ -65,9 +68,26 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
           _nameController.text = metaName.trim();
         }
       }
-    } catch (_) {
+    } catch (e) {
+      if (apiErrorKey(e) == 'driver_account_on_passenger_app') {
+        _driverAccount = true;
+      }
     } finally {
       if (mounted) setState(() => _loadingProfile = false);
+    }
+  }
+
+  Future<void> _leave({required bool createAccount}) async {
+    if (_leaving) return;
+    setState(() => _leaving = true);
+    try {
+      await ref.read(authServiceProvider).signOut();
+    } catch (_) {}
+    if (!mounted) return;
+    if (createAccount) {
+      context.go('/email-auth?mode=signup');
+    } else {
+      context.go('/auth');
     }
   }
 
@@ -127,12 +147,18 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
       await ref.read(passengerServiceProvider).updateProfile(
             name: _nameController.text.trim(),
             phone: phone,
-            email: _emailController.text.trim(),
+            email: registrationEmailForDisplay(_emailController.text),
+            language: ref.read(localeProvider).languageCode,
             profilePhotoUrl: _photoUrl,
           );
       if (mounted) context.go('/home');
     } catch (e) {
-      if (mounted) showRawanaError(context, e);
+      if (!mounted) return;
+      if (apiErrorKey(e) == 'driver_account_on_passenger_app') {
+        setState(() => _driverAccount = true);
+        return;
+      }
+      showRawanaError(context, e);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -140,13 +166,34 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = ref.watch(localeProvider).languageCode;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: Text(context.l10n.completeYourProfile)),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(context.l10n.completeYourProfile),
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: RawanaCircleIconButton(
+            icon: LucideIcons.arrowLeft,
+            background: RawanaColors.surfaceAlt,
+            iconColor: RawanaColors.onSurface,
+            elevated: false,
+            size: 40,
+            onPressed: _leaving ? null : () => _leave(createAccount: false),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: _loadingProfile
             ? const Center(child: CircularProgressIndicator())
-            : Padding(
+            : _driverAccount
+                ? _DriverAccountBlock(
+                    leaving: _leaving,
+                    onBack: () => _leave(createAccount: false),
+                    onCreateAccount: () => _leave(createAccount: true),
+                  )
+                : Padding(
                 padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -217,6 +264,10 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                           phoneReadOnly: _phoneReadOnly,
                           phoneVerified: _phoneVerified,
                           onChanged: () => setState(() {}),
+                          languageCode: languageCode,
+                          onLanguageChanged: (code) {
+                            ref.read(localeProvider.notifier).setLocale(Locale(code));
+                          },
                         ),
                       ),
                     ),
@@ -225,11 +276,61 @@ class _ProfileSetupScreenState extends ConsumerState<ProfileSetupScreen> {
                       label: context.l10n.continueAction,
                       icon: LucideIcons.arrowRight,
                       loading: _loading,
-                      onPressed: _formValid ? _submit : null,
+                      onPressed: _formValid && !_leaving ? _submit : null,
+                    ),
+                    TextButton(
+                      onPressed: _leaving || _loading ? null : () => _leave(createAccount: true),
+                      child: Text(context.l10n.newHereCreateAccount),
                     ),
                   ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+class _DriverAccountBlock extends StatelessWidget {
+  const _DriverAccountBlock({
+    required this.leaving,
+    required this.onBack,
+    required this.onCreateAccount,
+  });
+
+  final bool leaving;
+  final VoidCallback onBack;
+  final VoidCallback onCreateAccount;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: 8),
+          Text(
+            context.l10n.almostThere,
+            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.6),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            context.l10n.driverAccountOnPassengerApp,
+            style: const TextStyle(color: RawanaColors.onSurfaceMuted, fontSize: 15, height: 1.5),
+          ),
+          const Spacer(),
+          RawanaPrimaryButton(
+            label: context.l10n.createAccount,
+            icon: LucideIcons.userPlus,
+            loading: leaving,
+            onPressed: leaving ? null : onCreateAccount,
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: leaving ? null : onBack,
+            child: Text(context.l10n.back),
+          ),
+        ],
       ),
     );
   }

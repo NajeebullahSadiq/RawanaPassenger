@@ -78,6 +78,8 @@ extension RawanaL10nHelpers on AppLocalizations {
       case 'invalid_otp':
       case 'whatsapp_api_not_configured':
         return authError(key!);
+      case 'driver_account_on_passenger_app':
+        return driverAccountOnPassengerApp;
       default:
         return apiErrorMessage(error, fallback: authGenericError);
     }
@@ -91,6 +93,17 @@ extension RawanaL10nHelpers on AppLocalizations {
         return 'سمه ده';
       default:
         return 'OK';
+    }
+  }
+
+  String get driverAccountOnPassengerApp {
+    switch (localeName) {
+      case 'fa':
+        return 'این حساب راننده است. برای ورود اپ راننده را باز کنید، یا یک حساب مسافر بسازید.';
+      case 'ps':
+        return 'دا حساب د موټر چلوونکي دی. د ننوتلو لپاره د موټر چلوونکي اپ پرانیزئ، یا د مسافر حساب جوړ کړئ.';
+      default:
+        return 'This account is a driver account. Open the driver app to sign in, or create a passenger account.';
     }
   }
 

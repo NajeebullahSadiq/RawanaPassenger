@@ -139,6 +139,13 @@ class _AuthEntryScreenState extends ConsumerState<AuthEntryScreen> {
                         icon: LucideIcons.phone,
                         onPressed: () => context.push('/phone'),
                       ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        onPressed: () => context.push('/forgot-password'),
+                        child: Text(context.l10n.forgotPassword),
+                      ),
+                    ),
                     if (AppConfig.enableDemoLogin) ...[
                       const SizedBox(height: 20),
                       Row(children: [

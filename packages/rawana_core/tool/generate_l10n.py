@@ -392,6 +392,8 @@ STRINGS: dict[str, dict[str, str]] = {
     "routeDistance": {"en": "route distance", "fa": "فاصله مسیر", "ps": "د لارې واټن"},
     "whatsApp": {"en": "WhatsApp", "fa": "واتساپ", "ps": "واټساپ"},
     "endNavigation": {"en": "End navigation", "fa": "پایان ناوبری", "ps": "نیویګیشن پای"},
+    "muteVoice": {"en": "Mute voice", "fa": "بی‌صدا کردن راهنما", "ps": "لارښود بې غږه کړئ"},
+    "unmuteVoice": {"en": "Turn voice on", "fa": "روشن کردن راهنما", "ps": "لارښود فعال کړئ"},
     "navigating": {"en": "Navigating", "fa": "در حال مسیریابی", "ps": "لارښوونه کېږي"},
     "followingSelectedRoute": {"en": "Following selected route", "fa": "دنبال کردن مسیر انتخاب‌شده", "ps": "ټاکل شوې لاره تعقیبېږي"},
     "routes": {"en": "Routes", "fa": "مسیرها", "ps": "لارې"},

@@ -38,7 +38,6 @@ class PassengerApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final isRtl = LocaleStorage.isRtl(locale);
     final l10n = lookupAppLocalizations(locale);
-    final textDirection = RawanaLocale.textDirectionOf(locale);
 
     return AppBootstrap(
       child: MaterialApp.router(
@@ -51,9 +50,8 @@ class PassengerApp extends ConsumerWidget {
         localeResolutionCallback: (device, supported) =>
             RawanaLocale.resolutionCallback(locale, device, supported),
         builder: (context, child) {
-          RawanaLocale.apply(locale);
           return Directionality(
-            textDirection: textDirection,
+            textDirection: RawanaLocale.textDirectionOf(locale),
             child: child ?? const SizedBox.shrink(),
           );
         },

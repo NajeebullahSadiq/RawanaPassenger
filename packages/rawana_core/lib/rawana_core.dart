@@ -39,6 +39,8 @@ export 'widgets/map_compass_button.dart';
 export 'widgets/map_recenter_button.dart';
 export 'widgets/measure_size.dart';
 export 'widgets/trip_chat_screen.dart';
+export 'widgets/trip_call_screen.dart';
+export 'widgets/forgot_password_form.dart';
 export 'services/trip_chat_service.dart';
 export 'utils/trip_map_helpers.dart';
 export 'utils/navigation_guidance.dart';

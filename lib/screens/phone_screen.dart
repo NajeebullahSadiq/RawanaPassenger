@@ -59,7 +59,13 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
             iconColor: RawanaColors.onSurface,
             elevated: false,
             size: 40,
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/auth');
+              }
+            },
           ),
         ),
       ),
@@ -137,6 +143,13 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 ],
               ),
               const Spacer(),
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: TextButton(
+                  onPressed: _loading ? null : () => context.push('/forgot-password?channel=sms'),
+                  child: Text(context.l10n.forgotPassword),
+                ),
+              ),
               RawanaPrimaryButton(
                 label: context.l10n.sendCode,
                 icon: LucideIcons.arrowRight,

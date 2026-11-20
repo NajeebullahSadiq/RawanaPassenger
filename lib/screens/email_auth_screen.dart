@@ -5,12 +5,15 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
 import '../providers/app_providers.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
 import '../providers/trip_providers.dart';
 import '../utils/auth_routing.dart';
 import '../utils/demo_login.dart';
 
 class EmailAuthScreen extends ConsumerStatefulWidget {
-  const EmailAuthScreen({super.key});
+  const EmailAuthScreen({super.key, this.startAsSignUp = false});
+
+  final bool startAsSignUp;
 
   @override
   ConsumerState<EmailAuthScreen> createState() => _EmailAuthScreenState();
@@ -21,11 +24,17 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  bool _isSignUp = false;
+  late bool _isSignUp;
   bool _loading = false;
   bool _demoLoading = false;
   bool _showPassword = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSignUp = widget.startAsSignUp;
+  }
 
   @override
   void dispose() {
@@ -74,6 +83,7 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
               name: _nameController.text.trim(),
               phone: phone,
               email: _emailController.text.trim(),
+              language: ref.read(localeProvider).languageCode,
             );
       } else {
         await auth.signInWithEmail(
@@ -116,7 +126,13 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
             iconColor: RawanaColors.onSurface,
             elevated: false,
             size: 40,
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/auth');
+              }
+            },
           ),
         ),
       ),
@@ -204,6 +220,30 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    context.l10n.registrationLanguage,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final option in [
+                        ('en', context.l10n.languageEnglish),
+                        ('fa', context.l10n.languageDari),
+                        ('ps', context.l10n.languagePashto),
+                      ])
+                        ChoiceChip(
+                          label: Text(option.$2),
+                          selected: ref.watch(localeProvider).languageCode == option.$1,
+                          onSelected: (_) {
+                            ref.read(localeProvider.notifier).setLocale(Locale(option.$1));
+                          },
+                        ),
+                    ],
+                  ),
                 ],
                 const SizedBox(height: 12),
                 TextField(
@@ -223,6 +263,14 @@ class _EmailAuthScreenState extends ConsumerState<EmailAuthScreen> {
                   ),
                   onChanged: (_) => _onFieldChanged(),
                 ),
+                if (!_isSignUp)
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: TextButton(
+                      onPressed: _loading ? null : () => context.push('/forgot-password'),
+                      child: Text(context.l10n.forgotPassword),
+                    ),
+                  ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
                   Row(

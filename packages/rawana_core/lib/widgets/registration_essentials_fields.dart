@@ -14,6 +14,8 @@ class RegistrationEssentialsFields extends StatelessWidget {
     this.phoneReadOnly = false,
     this.phoneVerified = false,
     this.onChanged,
+    this.languageCode,
+    this.onLanguageChanged,
   });
 
   final TextEditingController nameController;
@@ -22,6 +24,8 @@ class RegistrationEssentialsFields extends StatelessWidget {
   final bool phoneReadOnly;
   final bool phoneVerified;
   final VoidCallback? onChanged;
+  final String? languageCode;
+  final ValueChanged<String>? onLanguageChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +96,30 @@ class RegistrationEssentialsFields extends StatelessWidget {
           ),
           onChanged: (_) => onChanged?.call(),
         ),
+        if (languageCode != null && onLanguageChanged != null) ...[
+          const SizedBox(height: 20),
+          Text(
+            context.l10n.registrationLanguage,
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final option in [
+                ('en', context.l10n.languageEnglish),
+                ('fa', context.l10n.languageDari),
+                ('ps', context.l10n.languagePashto),
+              ])
+                ChoiceChip(
+                  label: Text(option.$2),
+                  selected: languageCode == option.$1,
+                  onSelected: (_) => onLanguageChanged!(option.$1),
+                ),
+            ],
+          ),
+        ],
       ],
     );
   }

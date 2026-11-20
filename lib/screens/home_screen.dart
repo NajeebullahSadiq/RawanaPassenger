@@ -242,7 +242,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         TripStatus.driverArriving => (
           label: l10n.driverIsAtPickup,
-          color: RawanaColors.warning,
+          color: RawanaColors.success,
         ),
         TripStatus.tripStarted => (
           label: l10n.onTripToDestination,

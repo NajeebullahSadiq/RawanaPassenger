@@ -2266,6 +2266,18 @@ abstract class AppLocalizations {
   /// **'End navigation'**
   String get endNavigation;
 
+  /// No description provided for @muteVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute voice'**
+  String get muteVoice;
+
+  /// No description provided for @unmuteVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn voice on'**
+  String get unmuteVoice;
+
   /// No description provided for @navigating.
   ///
   /// In en, this message translates to:
@@ -5211,6 +5223,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Request for {price}'**
   String requestAtPrice(String price);
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your email or phone. We\'ll send a link or a code so you can choose a new password.'**
+  String get resetPasswordHint;
+
+  /// No description provided for @resetByEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get resetByEmail;
+
+  /// No description provided for @resetBySms.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get resetBySms;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send reset link'**
+  String get sendResetLink;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email for a link to set a new password.'**
+  String get resetLinkSent;
+
+  /// No description provided for @sendResetCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send code'**
+  String get sendResetCode;
+
+  /// No description provided for @enterTheCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code'**
+  String get enterTheCode;
+
+  /// No description provided for @setNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password'**
+  String get setNewPassword;
+
+  /// No description provided for @passwordResetSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password was updated. Sign in with it next time.'**
+  String get passwordResetSignIn;
+
+  /// No description provided for @registrationLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get registrationLanguage;
+
+  /// No description provided for @inDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'in {distance}'**
+  String inDistance(String distance);
+
+  /// No description provided for @distanceRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} remaining'**
+  String distanceRemaining(String distance);
+
+  /// No description provided for @callingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Calling {name}'**
+  String callingName(String name);
+
+  /// No description provided for @callPassenger.
+  ///
+  /// In en, this message translates to:
+  /// **'Call passenger'**
+  String get callPassenger;
+
+  /// No description provided for @callDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Call driver'**
+  String get callDriver;
+
+  /// No description provided for @couldNotStartCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the call'**
+  String get couldNotStartCall;
+
+  /// No description provided for @callConnectedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The call opens on your phone through Rawana\'s secure line.'**
+  String get callConnectedHint;
+
+  /// No description provided for @endCall.
+  ///
+  /// In en, this message translates to:
+  /// **'End call'**
+  String get endCall;
 }
 
 class _AppLocalizationsDelegate
