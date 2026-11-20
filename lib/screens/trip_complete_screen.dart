@@ -160,17 +160,12 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
           }
           await Share.share(url, subject: context.l10n.tripReceipt);
         },
-        onReport: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => ReportIssueScreen(
-                supportService: ref.read(supportServiceProvider),
-                tripId: trip.id,
-                initialCategory: 'driver_behaviour',
-              ),
-            ),
-          );
-        },
+        onReport: () => showReportIssueSheet(
+          context,
+          supportService: ref.read(supportServiceProvider),
+          tripId: trip.id,
+          initialCategory: 'driver_behaviour',
+        ),
       ),
     );
   }
@@ -328,7 +323,7 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
                             ),
                             Text(AfnFormatter.format(total), style: context.text.priceLarge),
                             const SizedBox(width: 4),
-                            const Icon(LucideIcons.chevronRight, size: 18, color: RawanaColors.onSurfaceMuted),
+                            const Icon(RawanaIcons.chevronForward, size: 18, color: RawanaColors.onSurfaceMuted),
                           ],
                         ),
                       ),
@@ -351,7 +346,8 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
                   if (rated)
                     TextButton(
                       onPressed: _submitting ? null : () => _goHome(skipped: true),
-                      child: Text(l10n.skipRating, style: const TextStyle(color: RawanaColors.onSurfaceMuted)),
+                      style: TextButton.styleFrom(foregroundColor: RawanaColors.onSurfaceMuted),
+                      child: Text(l10n.skipRating),
                     ),
                 ],
               ),

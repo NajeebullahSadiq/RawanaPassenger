@@ -79,14 +79,13 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     final trip = ref.read(activeTripProvider).valueOrNull;
     if (!increased || trip == null) return;
     final name = trip.driver?.name ?? context.l10n.yourDriver;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.newMessageFrom(name)),
-          action: SnackBarAction(label: context.l10n.openChat, onPressed: () => _openChat(trip)),
-        ),
-      );
+    showRawanaToast(
+      context,
+      context.l10n.newMessageFrom(name),
+      icon: LucideIcons.messageCircle,
+      actionLabel: context.l10n.openChat,
+      onAction: () => _openChat(trip),
+    );
   }
 
   Future<void> _openChat(Trip trip) async {
@@ -119,9 +118,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       context.go('/trip-complete');
     } else if (trip?.status == TripStatus.cancelled) {
       // Explain why the ride disappeared (driver / support / no drivers).
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(passengerCancellationMessage(context.l10n, trip!))),
-      );
+      showRawanaToast(context, passengerCancellationMessage(context.l10n, trip!), icon: LucideIcons.circleX);
       ref.read(activeTripProvider.notifier).tryClearLocalTripState();
       context.go('/home');
     } else if (trip?.driver != null && trip!.status != TripStatus.searching) {
@@ -152,7 +149,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
   Future<void> _whatsAppDriver(String tripId) async {
     final ok = await messageTripParty(ref.read(apiClientProvider), tripId);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.couldNotOpenWhatsAppMessages)));
+      showRawanaToast(context, context.l10n.couldNotOpenWhatsAppMessages, error: true);
     }
   }
 
@@ -185,11 +182,11 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       if (!mounted) return;
       if (result.cancellationFee > 0) {
         // Cash-first: the fee is collected on the next ride, so say so now.
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.cancellationFeeChargedNextRide(AfnFormatter.format(result.cancellationFee))),
-            duration: const Duration(seconds: 5),
-          ),
+        showRawanaToast(
+          context,
+          context.l10n.cancellationFeeChargedNextRide(AfnFormatter.format(result.cancellationFee)),
+          icon: LucideIcons.banknote,
+          duration: const Duration(seconds: 6),
         );
       }
     } catch (e) {
@@ -227,7 +224,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     final contacts = await ref.read(passengerServiceProvider).getEmergencyContacts();
     if (!mounted) return;
     if (contacts.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.sosNoContacts)));
+      showRawanaToast(context, context.l10n.sosNoContacts, icon: LucideIcons.shieldAlert);
       context.push('/emergency-contacts');
       return;
     }
@@ -251,12 +248,10 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
         await _shareTrip(trip);
         if (!mounted) return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(stub ? context.l10n.sosFailed : context.l10n.sosSent)),
-      );
+      showRawanaToast(context, stub ? context.l10n.sosFailed : context.l10n.sosSent, error: stub);
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.sosFailed)));
+      showRawanaToast(context, context.l10n.sosFailed, error: true);
     }
   }
 

@@ -165,7 +165,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
         leading: Padding(
           padding: const EdgeInsets.all(8),
           child: RawanaCircleIconButton(
-            icon: LucideIcons.arrowLeft,
+            icon: RawanaIcons.back,
             onPressed: () => context.pop(),
           ),
         ),

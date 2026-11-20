@@ -17,7 +17,15 @@ Future<void> showRawanaError(BuildContext context, Object error) {
 }
 
 /// Brief, non-blocking confirmation ("Saved", "Report sent").
-void showRawanaToast(BuildContext context, String message, {bool error = false, IconData? icon}) {
+void showRawanaToast(
+  BuildContext context,
+  String message, {
+  bool error = false,
+  IconData? icon,
+  String? actionLabel,
+  VoidCallback? onAction,
+  Duration duration = const Duration(seconds: 4),
+}) {
   final messenger = ScaffoldMessenger.maybeOf(context);
   if (messenger == null) return;
   messenger
@@ -25,6 +33,10 @@ void showRawanaToast(BuildContext context, String message, {bool error = false, 
     ..showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
+        duration: duration,
+        action: actionLabel != null && onAction != null
+            ? SnackBarAction(label: actionLabel, onPressed: onAction, textColor: RawanaColors.accent)
+            : null,
         content: Row(
           children: [
             Icon(

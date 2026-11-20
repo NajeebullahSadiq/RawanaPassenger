@@ -287,7 +287,7 @@ class _RideSelectionScreenState extends ConsumerState<RideSelectionScreen> {
       });
       _showOptionsOnMap();
       if (!_isTooShort(draft)) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.pickupMovedCheckPrice)));
+        showRawanaToast(context, context.l10n.pickupMovedCheckPrice, icon: LucideIcons.mapPin);
       }
       await _loadFares();
       return;
@@ -321,7 +321,7 @@ class _RideSelectionScreenState extends ConsumerState<RideSelectionScreen> {
       // The server refused a second ride — resume the live one.
       final trip = await ref.read(activeTripProvider.notifier).resumeTrip(e.tripId);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.resumingActiveTrip)));
+      showRawanaToast(context, context.l10n.resumingActiveTrip, icon: LucideIcons.car);
       context.go(trip?.status == TripStatus.searching ? '/searching' : '/active-trip');
     } catch (e) {
       if (!mounted) return;
@@ -585,7 +585,7 @@ class _RideSelectionScreenState extends ConsumerState<RideSelectionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RawanaCircleIconButton(
-                    icon: LucideIcons.arrowLeft,
+                    icon: RawanaIcons.back,
                     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                     onPressed: _back,
                   ),
@@ -652,7 +652,7 @@ class _RideSelectionScreenState extends ConsumerState<RideSelectionScreen> {
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: RawanaCircleIconButton(
-                icon: LucideIcons.arrowLeft,
+                icon: RawanaIcons.back,
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 onPressed: _confirming ? null : _back,
               ),

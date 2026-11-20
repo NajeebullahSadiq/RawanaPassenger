@@ -5,6 +5,7 @@ import '../theme/rawana_theme.dart';
 import 'rawana_sheet_handle.dart';
 import 'rawana_surface_card.dart';
 import 'trip_route_addresses.dart';
+import 'ui/rawana_icons.dart';
 
 /// Uber/Ola-style bottom trip panel: status, ETA, party, route, navigate, actions.
 ///
@@ -776,7 +777,7 @@ class _PartyRow extends StatelessWidget {
                       ),
                     ),
                     const Icon(
-                      Icons.chevron_right_rounded,
+                      RawanaIcons.chevronForward,
                       color: RawanaColors.onSurfaceMuted,
                     ),
                   ],

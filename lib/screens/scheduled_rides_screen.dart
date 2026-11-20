@@ -10,8 +10,7 @@ class ScheduledRidesScreen extends ConsumerStatefulWidget {
   const ScheduledRidesScreen({super.key});
 
   @override
-  ConsumerState<ScheduledRidesScreen> createState() =>
-      _ScheduledRidesScreenState();
+  ConsumerState<ScheduledRidesScreen> createState() => _ScheduledRidesScreenState();
 }
 
 class _ScheduledRidesScreenState extends ConsumerState<ScheduledRidesScreen> {
@@ -26,10 +25,7 @@ class _ScheduledRidesScreenState extends ConsumerState<ScheduledRidesScreen> {
   }
 
   Future<void> _scheduleNew() async {
-    final choice = await showPickupTimeSheet(
-      context,
-      initial: earliestScheduledPickup(),
-    );
+    final choice = await showPickupTimeSheet(context, initial: earliestScheduledPickup());
     if (choice == null || !mounted) return;
     ref.read(scheduledPickupProvider.notifier).state = choice.at;
     context.push('/destination');
@@ -42,44 +38,28 @@ class _ScheduledRidesScreenState extends ConsumerState<ScheduledRidesScreen> {
       final service = ref.read(tripServiceProvider);
       final policy = await service.getCancellationPolicy(trip.id);
       if (!mounted) return;
+      final l10n = context.l10n;
       final freeUntil = policy.freeCancelUntil;
       final message = policy.feeApplies
-          ? context.l10n.scheduledCancelFee(
-              AfnFormatter.format(policy.cancellationFee),
-            )
+          ? l10n.scheduledCancelFee(AfnFormatter.format(policy.cancellationFee))
           : freeUntil != null && freeUntil.isAfter(DateTime.now())
-          ? context.l10n.freeCancelUntil(formatScheduledTime(context, freeUntil))
-          : context.l10n.noCancellationFee;
-      final confirmed = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(ctx.l10n.cancelScheduledRideTitle),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(ctx.l10n.keepRide),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: TextButton.styleFrom(foregroundColor: RawanaColors.error),
-              child: Text(ctx.l10n.cancelRide),
-            ),
-          ],
-        ),
+              ? l10n.freeCancelUntil(formatScheduledTime(context, freeUntil))
+              : l10n.noCancellationFee;
+      final confirmed = await RawanaActionSheet.confirm(
+        context,
+        title: l10n.cancelScheduledRideTitle,
+        message: message,
+        confirmLabel: l10n.cancelRide,
+        cancelLabel: l10n.keepRide,
+        destructive: true,
+        icon: LucideIcons.calendarX,
       );
-      if (confirmed != true || !mounted) return;
+      if (!confirmed || !mounted) return;
       await service.cancelRide(trip.id, reason: 'passenger_cancelled_scheduled');
       ref.invalidate(scheduledRidesProvider);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.scheduledRideCancelled)),
-        );
-      }
+      if (mounted) showRawanaToast(context, context.l10n.scheduledRideCancelled, icon: LucideIcons.circleCheck);
     } catch (e) {
-      if (mounted) {
-        showRawanaError(context, e);
-      }
+      if (mounted) showRawanaError(context, e);
       ref.invalidate(scheduledRidesProvider);
     } finally {
       if (mounted) setState(() => _cancellingId = null);
@@ -88,61 +68,39 @@ class _ScheduledRidesScreenState extends ConsumerState<ScheduledRidesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final ridesAsync = ref.watch(scheduledRidesProvider);
-    return Scaffold(
-      backgroundColor: RawanaColors.surface,
-      appBar: AppBar(
-        title: Text(context.l10n.scheduledRides),
-        leading: IconButton(
-          icon: const Icon(LucideIcons.arrowLeft),
-          onPressed: _back,
-        ),
-      ),
+    return RawanaScaffold(
+      title: l10n.scheduledRides,
+      onBack: _back,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _scheduleNew,
         icon: const Icon(LucideIcons.calendarPlus),
-        label: Text(context.l10n.scheduleRideCta),
+        label: Text(l10n.scheduleRideCta),
+        backgroundColor: RawanaColors.primary,
+        foregroundColor: Colors.white,
       ),
-      body: RefreshIndicator(
+      body: RawanaAsyncBody<List<Trip>>(
+        data: ridesAsync.valueOrNull,
+        error: ridesAsync.error,
+        onRetry: () => ref.invalidate(scheduledRidesProvider),
         onRefresh: () => ref.refresh(scheduledRidesProvider.future),
-        child: ridesAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => ListView(
-            children: [
-              const SizedBox(height: 80),
-              RawanaEmptyState.error(
-                message: apiErrorMessage(e),
-                action: OutlinedButton(
-                  onPressed: () => ref.invalidate(scheduledRidesProvider),
-                  child: Text(context.l10n.retry),
-                ),
-              ),
-            ],
+        isEmpty: (rides) => rides.isEmpty,
+        empty: RawanaEmptyState(
+          icon: LucideIcons.calendarClock,
+          title: l10n.noScheduledRides,
+          message: l10n.noScheduledRidesHint,
+        ),
+        builder: (context, rides) => ListView.separated(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+          itemCount: rides.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (_, i) => _ScheduledRideCard(
+            trip: rides[i],
+            cancelling: _cancellingId == rides[i].id,
+            onCancel: () => _cancel(rides[i]),
           ),
-          data: (rides) {
-            if (rides.isEmpty) {
-              return ListView(
-                children: [
-                  const SizedBox(height: 80),
-                  RawanaEmptyState(
-                    icon: LucideIcons.calendarClock,
-                    title: context.l10n.noScheduledRides,
-                    message: context.l10n.noScheduledRidesHint,
-                  ),
-                ],
-              );
-            }
-            return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
-              itemCount: rides.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (_, i) => _ScheduledRideCard(
-                trip: rides[i],
-                cancelling: _cancellingId == rides[i].id,
-                onCancel: () => _cancel(rides[i]),
-              ),
-            );
-          },
         ),
       ),
     );
@@ -150,11 +108,7 @@ class _ScheduledRidesScreenState extends ConsumerState<ScheduledRidesScreen> {
 }
 
 class _ScheduledRideCard extends StatelessWidget {
-  const _ScheduledRideCard({
-    required this.trip,
-    required this.cancelling,
-    required this.onCancel,
-  });
+  const _ScheduledRideCard({required this.trip, required this.cancelling, required this.onCancel});
 
   final Trip trip;
   final bool cancelling;
@@ -162,23 +116,22 @@ class _ScheduledRideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final driver = trip.driver;
     final confirmed = trip.hasReservedDriver;
-    final statusColor = confirmed ? RawanaColors.success : RawanaColors.warning;
-    final vehicle = [
-      driver?.vehicleColour,
-      driver?.vehicleMake,
-      driver?.vehicleModel,
-    ].whereType<String>().where((s) => s.isNotEmpty).join(' ');
-    return Container(
+    final vehicle = [driver?.vehicleColour, driver?.vehicleMake, driver?.vehicleModel]
+        .whereType<String>()
+        .where((s) => s.isNotEmpty)
+        .join(' ');
+    final driverLine = confirmed && driver?.name != null
+        ? [driver!.name!, if (vehicle.isNotEmpty) vehicle, ?driver.plateNumber].join(' · ')
+        : null;
+    return RawanaSurfaceCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-        border: Border.all(color: RawanaColors.divider),
-      ),
+      shadows: const [],
+      border: Border.all(color: RawanaColors.divider),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -187,13 +140,9 @@ class _ScheduledRideCard extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: RawanaColors.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(RawanaSpacing.radiusSm),
                 ),
-                child: const Icon(
-                  LucideIcons.calendarClock,
-                  color: RawanaColors.primary,
-                  size: 20,
-                ),
+                child: const Icon(LucideIcons.calendarClock, color: RawanaColors.primary, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -201,93 +150,25 @@ class _ScheduledRideCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      trip.scheduledAt != null
-                          ? formatScheduledTime(context, trip.scheduledAt!)
-                          : '—',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16,
-                      ),
+                      trip.scheduledAt != null ? formatScheduledTime(context, trip.scheduledAt!) : '—',
+                      style: context.text.title,
                     ),
-                    if (trip.rideTypeName != null)
-                      Text(
-                        trip.rideTypeName!,
-                        style: const TextStyle(
-                          color: RawanaColors.onSurfaceMuted,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    if (trip.rideTypeName != null) Text(trip.rideTypeName!, style: context.text.caption),
                   ],
                 ),
               ),
-              Text(
-                AfnFormatter.format(trip.cashToCollect),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16,
-                ),
-              ),
+              Text(AfnFormatter.format(trip.cashToCollect), style: context.text.price),
             ],
           ),
           const SizedBox(height: 14),
-          _AddressLine(
-            icon: LucideIcons.circleDot,
-            color: RawanaColors.primary,
-            text: trip.pickupAddress,
-          ),
-          const SizedBox(height: 6),
-          _AddressLine(
-            icon: LucideIcons.mapPin,
-            color: RawanaColors.error,
-            text: trip.dropoffAddress,
-          ),
+          TripRouteAddresses(pickupAddress: trip.pickupAddress, dropoffAddress: trip.dropoffAddress, dense: true),
           const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(RawanaSpacing.radiusMd),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  confirmed ? LucideIcons.badgeCheck : LucideIcons.hourglass,
-                  color: statusColor,
-                  size: 18,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        confirmed
-                            ? context.l10n.driverConfirmed
-                            : context.l10n.driverAssignedBeforePickup,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: statusColor,
-                          fontSize: 13,
-                        ),
-                      ),
-                      if (confirmed && driver?.name != null)
-                        Text(
-                          [
-                            driver!.name!,
-                            if (vehicle.isNotEmpty) vehicle,
-                            if (driver.plateNumber != null) driver.plateNumber!,
-                          ].join(' · '),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: RawanaColors.onSurfaceMuted,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          RawanaBanner(
+            tone: confirmed ? RawanaBannerTone.success : RawanaBannerTone.warning,
+            icon: confirmed ? LucideIcons.badgeCheck : LucideIcons.hourglass,
+            message: driverLine == null
+                ? (confirmed ? l10n.driverConfirmed : l10n.driverAssignedBeforePickup)
+                : '${l10n.driverConfirmed}\n$driverLine',
           ),
           const SizedBox(height: 8),
           Align(
@@ -296,47 +177,13 @@ class _ScheduledRideCard extends StatelessWidget {
               onPressed: cancelling ? null : onCancel,
               style: TextButton.styleFrom(foregroundColor: RawanaColors.error),
               icon: cancelling
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(LucideIcons.x, size: 16),
-              label: Text(context.l10n.cancelRide),
+              label: Text(l10n.cancelRide),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _AddressLine extends StatelessWidget {
-  const _AddressLine({
-    required this.icon,
-    required this.color,
-    required this.text,
-  });
-
-  final IconData icon;
-  final Color color;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 13),
-          ),
-        ),
-      ],
     );
   }
 }

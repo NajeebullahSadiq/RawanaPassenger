@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../currency/afn_formatter.dart';
 import '../l10n/l10n_extensions.dart';
 import '../theme/rawana_theme.dart';
+import 'ui/rawana_icons.dart';
 
 /// Large, tappable card shown on home/dashboard when the user has an active trip.
 class ActiveTripBanner extends StatelessWidget {
@@ -154,7 +155,7 @@ class ActiveTripBanner extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, color: color, size: 22),
+                      Icon(RawanaIcons.forward, color: color, size: 22),
                     ],
                   ),
                 ),

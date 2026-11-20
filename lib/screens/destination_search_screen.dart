@@ -288,7 +288,7 @@ class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScree
                   IconButton(
                     onPressed: _close,
                     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                    icon: const Icon(LucideIcons.arrowLeft),
+                    icon: const Icon(RawanaIcons.back),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
