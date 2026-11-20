@@ -19,9 +19,15 @@ import 'ui/status_pill.dart';
 
 /// "Report an issue" button plus the user's support tickets.
 class SupportTicketsPanel extends StatefulWidget {
-  const SupportTicketsPanel({super.key, required this.supportService, this.categoryOptions});
+  const SupportTicketsPanel({
+    super.key,
+    required this.supportService,
+    this.categoryOptions,
+    this.showReportButton = true,
+  });
 
   final SupportService supportService;
+  final bool showReportButton;
 
   /// Category labels for the report form and ticket rows; defaults to passenger categories.
   final Map<String, String>? categoryOptions;
@@ -72,8 +78,10 @@ class _SupportTicketsPanelState extends State<SupportTicketsPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        RawanaPrimaryButton(label: l10n.reportAnIssue, icon: LucideIcons.flag, onPressed: _report),
-        const SizedBox(height: 24),
+        if (widget.showReportButton) ...[
+          RawanaPrimaryButton(label: l10n.reportAnIssue, icon: LucideIcons.flag, onPressed: _report),
+          const SizedBox(height: 24),
+        ],
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(4, 0, 4, 8),
           child: Text(l10n.yourTickets, style: context.text.label.copyWith(color: RawanaColors.onSurfaceMuted)),
