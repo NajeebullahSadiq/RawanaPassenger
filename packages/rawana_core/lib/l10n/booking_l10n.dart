@@ -142,6 +142,7 @@ extension RawanaBookingL10n on AppLocalizations {
   String get goLabel => _t('GO', 'برو', 'لاړ شه');
   String get findingTrips => _t('Finding trips', 'در حال یافتن سفر', 'سفرونه لټول کېږي');
   String get youAreOfflineTitle => _t("You're offline", 'شما آفلاین هستید', 'تاسو آفلاین یاست');
+  String get onlineLabel => _t('Online', 'آنلاین', 'آنلاین');
   String get goOnlineHint => _t('Go online to start getting trips', 'برای دریافت سفر آنلاین شوید', 'د سفرونو د ترلاسه کولو لپاره آنلاین شئ');
   String get todayLabel => _t('Today', 'امروز', 'نن');
   String toPickup(int minutes, String km) =>
