@@ -50,6 +50,30 @@ class _RawanaSkeletonState extends State<RawanaSkeleton> with SingleTickerProvid
   }
 }
 
+/// Page-level loading placeholder: a column of skeleton rows.
+class RawanaSkeletonList extends StatelessWidget {
+  const RawanaSkeletonList({
+    super.key,
+    this.count = 6,
+    this.padding = const EdgeInsets.fromLTRB(16, 8, 16, 16),
+    this.trailing = true,
+  });
+
+  final int count;
+  final EdgeInsetsGeometry padding;
+  final bool trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: padding,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: count,
+      itemBuilder: (_, _) => RawanaSkeletonRow(trailing: trailing),
+    );
+  }
+}
+
 /// Skeleton for a list row: leading circle, two text lines, optional trailing.
 class RawanaSkeletonRow extends StatelessWidget {
   const RawanaSkeletonRow({super.key, this.leadingSize = 44, this.trailing = false});

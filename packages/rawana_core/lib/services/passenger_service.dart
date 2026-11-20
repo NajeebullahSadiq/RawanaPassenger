@@ -214,6 +214,10 @@ class PassengerService {
     await _api.patch('/passengers/notifications/$id/read');
   }
 
+  Future<void> markAllNotificationsRead() async {
+    await _api.post('/passengers/notifications/read-all');
+  }
+
   Future<Map<String, dynamic>> exportAccountData() async {
     return _api.get('/passengers/data-export');
   }

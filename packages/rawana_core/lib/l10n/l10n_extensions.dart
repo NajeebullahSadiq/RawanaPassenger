@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import '../api/api_error.dart';
 import 'app_localizations.dart';
+import 'app_ui_l10n.dart';
 
 extension RawanaL10nContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
@@ -82,6 +84,47 @@ extension RawanaL10nHelpers on AppLocalizations {
         return driverAccountOnPassengerApp;
       case 'passenger_account_on_driver_app':
         return passengerAccountOnDriverApp;
+      case 'unauthorized':
+      case 'invalid_token':
+        return errorSessionExpired;
+      case 'forbidden':
+        return errorForbidden;
+      case 'rate_limited':
+      case 'otp_rate_limited':
+        return errorTooManyAttempts;
+      case 'validation_error':
+        return errorInvalidDetails;
+      case 'not_found':
+      case 'trip_not_found':
+      case 'driver_not_found':
+      case 'invalid_id':
+        return errorNotFound;
+      case 'unsupported_file_type':
+        return errorUnsupportedFile;
+      case 'file_too_large':
+        return errorFileTooLarge;
+      case 'call_masking_unavailable':
+        return errorCallingUnavailable;
+      case 'internal_error':
+        return errorServer;
+      case null:
+        if (error is DioException) {
+          switch (error.type) {
+            case DioExceptionType.connectionError:
+            case DioExceptionType.connectionTimeout:
+            case DioExceptionType.receiveTimeout:
+            case DioExceptionType.sendTimeout:
+              return errorNoConnection;
+            default:
+              break;
+          }
+          final code = error.response?.statusCode ?? 0;
+          if (code == 401) return errorSessionExpired;
+          if (code == 429) return errorTooManyAttempts;
+          if (code == 404) return errorNotFound;
+          if (code >= 500) return errorServer;
+        }
+        return apiErrorMessage(error, fallback: authGenericError);
       default:
         return apiErrorMessage(error, fallback: authGenericError);
     }

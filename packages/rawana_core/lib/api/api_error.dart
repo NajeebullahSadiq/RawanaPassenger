@@ -97,6 +97,10 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       return 'That file is too large (max 10 MB).';
     case 'empty_file':
       return 'The selected file is empty.';
+    case 'unsupported_file_type':
+      return 'Use a JPG, PNG, WEBP or PDF file.';
+    case 'invalid_id':
+      return 'That item could not be found.';
     case 'upload_failed':
       return 'Upload failed. Please try again.';
     case 'active_trip_exists':
