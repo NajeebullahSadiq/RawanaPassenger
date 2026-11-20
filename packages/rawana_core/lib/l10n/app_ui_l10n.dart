@@ -140,6 +140,38 @@ extension RawanaUiL10n on AppLocalizations {
   String get statusAutoRefresh =>
       _t('This page updates automatically.', 'این صفحه به‌طور خودکار به‌روز می‌شود.', 'دا پاڼه په خپله تازه کېږي.');
 
+  String get approvalPending => _t('In review', 'در حال بررسی', 'د بیاکتنې لاندې');
+  String get approvalApproved => _t('Approved', 'تأیید شد', 'تایید شو');
+  String get approvalRejected => _t('Not approved', 'تأیید نشد', 'تایید نه شو');
+  String approvalStatusLabel(String status) => switch (status) {
+        'approved' => approvalApproved,
+        'rejected' => approvalRejected,
+        _ => approvalPending,
+      };
+  /// Rating tags are stored by their English label.
+  String ratingTagLabel(String key) => switch (key) {
+        'Clean car' => ratingTagCleanCar,
+        'Safe driving' => ratingTagSafeDriving,
+        'Friendly driver' => ratingTagFriendlyDriver,
+        'On time' => ratingTagOnTime,
+        'Good navigation' => ratingTagGoodNavigation,
+        _ => key,
+      };
+
+  String get addPayoutDetailsFirst => _t(
+        'Add your payout method and account below before requesting a payout.',
+        'پیش از درخواست پرداخت، روش و حساب پرداخت خود را در پایین اضافه کنید.',
+        'د تادیې غوښتنې مخکې، لاندې خپله د تادیې طریقه او حساب ورګډ کړئ.',
+      );
+  String payoutDestination(String method, String account) => _t(
+        'To: $method · $account',
+        'به: $method · $account',
+        'ته: $method · $account',
+      );
+
+  String vehicleYearInvalid(int max) =>
+      _t('Enter a year between 1980 and $max', 'سالی بین ۱۹۸۰ و $max وارد کنید', 'د ۱۹۸۰ او $max ترمنځ کال ولیکئ');
+
   // ---- Support ----
   String get ticketStatusInProgress => _t('In progress', 'در حال بررسی', 'د څېړنې لاندې');
   String get ticketStatusResolved => _t('Resolved', 'حل شد', 'حل شو');

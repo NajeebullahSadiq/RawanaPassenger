@@ -29,15 +29,6 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
   bool _tipSaving = false;
   int _tipToken = 0;
 
-  String _tagLabel(AppLocalizations l10n, String key) => switch (key) {
-        'Clean car' => l10n.ratingTagCleanCar,
-        'Safe driving' => l10n.ratingTagSafeDriving,
-        'Friendly driver' => l10n.ratingTagFriendlyDriver,
-        'On time' => l10n.ratingTagOnTime,
-        'Good navigation' => l10n.ratingTagGoodNavigation,
-        _ => key,
-      };
-
   @override
   void dispose() {
     _comment.dispose();
@@ -238,7 +229,7 @@ class _TripCompleteScreenState extends ConsumerState<TripCompleteScreen> {
                                     children: [
                                       for (final t in _tagKeys)
                                         FilterChip(
-                                          label: Text(_tagLabel(l10n, t)),
+                                          label: Text(l10n.ratingTagLabel(t)),
                                           selected: _selectedTags.contains(t),
                                           showCheckmark: false,
                                           labelStyle: context.text.label.copyWith(
