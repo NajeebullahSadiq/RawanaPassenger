@@ -158,6 +158,17 @@ extension RawanaUiL10n on AppLocalizations {
         _ => key,
       };
 
+  String get onlineTrackingTitle => _t(
+        'You are online',
+        'شما آنلاین هستید',
+        'تاسو آنلاین یاست',
+      );
+  String get onlineTrackingBody => _t(
+        'Rawana is sharing your location to match you with nearby riders.',
+        'روانا موقعیت شما را برای وصل‌کردن با مسافران نزدیک شریک می‌کند.',
+        'روانا ستاسو موقعیت د نږدې سپرلیو سره د نښلولو لپاره شریکوي.',
+      );
+
   String get addPayoutDetailsFirst => _t(
         'Add your payout method and account below before requesting a payout.',
         'پیش از درخواست پرداخت، روش و حساب پرداخت خود را در پایین اضافه کنید.',
