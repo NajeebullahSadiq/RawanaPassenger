@@ -123,6 +123,16 @@ extension RawanaBookingL10n on AppLocalizations {
   String get tripDetailsTitle => _t('Trip details', 'جزئیات سفر', 'د سفر تفصیل');
   String get whatWentWell => _t('What went well?', 'چه چیزی خوب بود؟', 'څه ښه وو؟');
   String get whatCouldBeBetter => _t('What could be better?', 'چه چیزی بهتر می‌شد؟', 'څه ښه کېدای شول؟');
+  String get tipLocked => _t(
+        'Your driver has already confirmed payment, so the tip can no longer change.',
+        'راننده پرداخت را تأیید کرده است، بنابراین انعام دیگر تغییر نمی‌کند.',
+        'چلوونکي پیسې تایید کړې، نو بخشش نور نه بدلېږي.',
+      );
+  String get tipFailed => _t("Couldn't update the tip. Try again.", 'انعام به‌روز نشد. دوباره تلاش کنید.', 'بخشش تازه نه شو. بیا هڅه وکړئ.');
+  String get customTip => _t('Other', 'دیگر', 'نور');
+  String get fareLabel => _t('Fare', 'کرایه', 'کرایه');
+  String get shareReceipt => _t('Share receipt', 'اشتراک رسید', 'رسید شریک کړئ');
+  String get doneLabel => _t('Done', 'تمام', 'بشپړ');
 
   // ---- Schedule ----
   String get tomorrowLabel => _t('Tomorrow', 'فردا', 'سبا');

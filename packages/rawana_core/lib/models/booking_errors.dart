@@ -57,6 +57,14 @@ class FareChangedException implements Exception {
   final int expectedCash;
 }
 
+/// Thrown by `TripService.startTrip` when the rider's PIN is missing or wrong.
+class StartPinException implements Exception {
+  const StartPinException({required this.required});
+
+  /// True when no PIN was sent; false when the PIN did not match.
+  final bool required;
+}
+
 /// Result of completing a ride under the cash-first model.
 class CompletedRide {
   const CompletedRide({

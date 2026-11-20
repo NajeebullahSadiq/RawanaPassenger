@@ -5,1035 +5,565 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
+
+import '../booking/places.dart';
 import '../providers/history_providers.dart';
 import '../providers/live_location_providers.dart';
 import '../providers/profile_providers.dart';
 import '../providers/trip_providers.dart';
 
+enum _Field { pickup, dropoff }
+
 class DestinationSearchScreen extends ConsumerStatefulWidget {
-  const DestinationSearchScreen({super.key});
+  const DestinationSearchScreen({super.key, this.focusPickup = false});
+
+  /// Opens with the pickup field active (e.g. from the pickup chip on Home).
+  final bool focusPickup;
 
   @override
-  ConsumerState<DestinationSearchScreen> createState() =>
-      _DestinationSearchScreenState();
+  ConsumerState<DestinationSearchScreen> createState() => _DestinationSearchScreenState();
 }
 
-class _DestinationSearchScreenState
-    extends ConsumerState<DestinationSearchScreen> {
-  final _destController = TextEditingController();
-  final _destFocusNode = FocusNode();
-  String _pickupAddress = '';
-  double? _pickupLat;
-  double? _pickupLng;
-  List<PlaceSuggestion> _suggestions = [];
-  Timer? _debounce;
-  bool _loading = false;
+class _DestinationSearchScreenState extends ConsumerState<DestinationSearchScreen> {
+  final _pickupController = TextEditingController();
+  final _dropoffController = TextEditingController();
+  final _pickupFocus = FocusNode();
+  final _dropoffFocus = FocusNode();
 
-  /// Set once the passenger picks a pickup themselves; GPS updates must not
-  /// replace it afterwards.
+  PlaceDetails? _pickup;
+  bool _pickupIsGps = false;
+
+  /// Set once the passenger picks a pickup themselves; GPS must not replace it.
   bool _pickupChosenByUser = false;
+  _Field _active = _Field.dropoff;
+  List<PlaceSuggestion> _suggestions = [];
+  bool _loading = false;
+  bool _failed = false;
+  Timer? _debounce;
   int _searchToken = 0;
-
-  /// Guards against a double tap pushing ride selection twice.
   bool _selecting = false;
+
+  TextEditingController get _activeController =>
+      _active == _Field.pickup ? _pickupController : _dropoffController;
 
   @override
   void initState() {
     super.initState();
+    _active = widget.focusPickup ? _Field.pickup : _Field.dropoff;
+    _pickupFocus.addListener(() => _onFocus(_Field.pickup, _pickupFocus));
+    _dropoffFocus.addListener(() => _onFocus(_Field.dropoff, _dropoffFocus));
+    _pickupController.addListener(() => _onQueryChanged(_Field.pickup));
+    _dropoffController.addListener(() => _onQueryChanged(_Field.dropoff));
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      (widget.focusPickup ? _pickupFocus : _dropoffFocus).requestFocus();
       ref.read(passengerLiveLocationProvider.notifier).refresh();
       final loc = ref.read(passengerLiveLocationProvider);
-      if (loc != null) {
-        unawaited(_applyGpsPickup(loc.lat, loc.lng));
-      }
+      if (loc != null) unawaited(_applyGpsPickup(loc.lat, loc.lng));
     });
-    _destController.addListener(_onSearchChanged);
-  }
-
-  /// Uses GPS as the default pickup only until one is set.
-  Future<void> _applyGpsPickup(double lat, double lng) async {
-    if (_pickupChosenByUser || _pickupLat != null) return;
-    await _applyPickup(lat, lng, fromGps: true);
-  }
-
-  void _setUserPickup(double lat, double lng, String address) {
-    setState(() {
-      _pickupChosenByUser = true;
-      _pickupLat = lat;
-      _pickupLng = lng;
-      _pickupAddress = address;
-    });
-  }
-
-  Future<void> _applyPickup(double lat, double lng, {bool fromGps = false}) async {
-    try {
-      final place = await ref.read(mapsServiceProvider).reverseGeocode(lat, lng);
-      if (!mounted) return;
-      if (fromGps && _pickupChosenByUser) return;
-      setState(() {
-        _pickupLat = lat;
-        _pickupLng = lng;
-        _pickupAddress = place.address.isNotEmpty
-            ? place.address
-            : context.l10n.currentLocation;
-      });
-    } catch (_) {
-      if (!mounted || (fromGps && _pickupChosenByUser)) return;
-      setState(() {
-        _pickupLat = lat;
-        _pickupLng = lng;
-        _pickupAddress = context.l10n.currentLocation;
-      });
-    }
-  }
-
-  Future<void> _ensurePickupReady() async {
-    if (_pickupLat != null && _pickupLng != null) return;
-    final pos = await LocationService.getCurrentPosition();
-    if (!mounted) return;
-    if (pos != null) {
-      await _applyPickup(pos.lat, pos.lng);
-      return;
-    }
-    // Last resort so search selection is not blocked when GPS is denied.
-    await _applyPickup(RawanaConstants.kabulLat, RawanaConstants.kabulLng);
-    if (!mounted) return;
-    setState(() => _pickupAddress = context.l10n.kabulFallbackPickup);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(context.l10n.locationUnavailableEnableGps),
-      ),
-    );
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
-    _destController.removeListener(_onSearchChanged);
-    _destController.dispose();
-    _destFocusNode.dispose();
+    _pickupController.dispose();
+    _dropoffController.dispose();
+    _pickupFocus.dispose();
+    _dropoffFocus.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 350), () async {
-      if (!mounted) return;
-      final q = _destController.text.trim();
-      final token = ++_searchToken;
-      if (q.length < 2) {
-        setState(() {
-          _suggestions = [];
-          _loading = false;
-        });
-        return;
-      }
-      setState(() => _loading = true);
-      try {
-        final results = await ref
-            .read(mapsServiceProvider)
-            .autocomplete(q, lat: _pickupLat, lng: _pickupLng);
-        if (mounted && token == _searchToken) setState(() => _suggestions = results);
-      } catch (_) {
-        if (mounted && token == _searchToken) setState(() => _suggestions = []);
-      } finally {
-        if (mounted && token == _searchToken) setState(() => _loading = false);
-      }
+  void _onFocus(_Field field, FocusNode node) {
+    if (!node.hasFocus || _active == field) return;
+    setState(() {
+      _active = field;
+      _suggestions = [];
+      _failed = false;
+      _loading = false;
     });
+    if (field == _Field.pickup) {
+      _pickupController.selection =
+          TextSelection(baseOffset: 0, extentOffset: _pickupController.text.length);
+    }
   }
 
-  Future<void> _selectDestination(PlaceSuggestion suggestion) =>
-      _goToRideSelection(() async {
-        final details =
-            await ref.read(mapsServiceProvider).getPlace(suggestion.placeId);
-        return PlaceDetails(
-          address: details.address.isNotEmpty
-              ? details.address
-              : suggestion.description,
-          lat: details.lat,
-          lng: details.lng,
-        );
+  Future<void> _applyGpsPickup(double lat, double lng) async {
+    if (_pickupChosenByUser || _pickup != null) return;
+    var address = '';
+    try {
+      address = (await ref.read(mapsServiceProvider).reverseGeocode(lat, lng)).address;
+    } catch (_) {}
+    if (!mounted || _pickupChosenByUser) return;
+    _setPickup(PlaceDetails(address: address.isNotEmpty ? address : context.l10n.currentLocation, lat: lat, lng: lng),
+        gps: true, byUser: false);
+  }
+
+  void _setPickup(PlaceDetails place, {required bool gps, bool byUser = true}) {
+    setState(() {
+      _pickup = place;
+      _pickupIsGps = gps;
+      if (byUser) _pickupChosenByUser = true;
+      _suggestions = [];
+    });
+    _pickupController.value = TextEditingValue(
+      text: gps ? context.l10n.currentLocation : place.address,
+      selection: const TextSelection.collapsed(offset: -1),
+    );
+  }
+
+  String _shownText(_Field field) {
+    if (field == _Field.pickup && _pickup != null) {
+      return _pickupIsGps ? context.l10n.currentLocation : _pickup!.address;
+    }
+    return '';
+  }
+
+  void _onQueryChanged(_Field field) {
+    if (field != _active) return;
+    final q = _activeController.text.trim();
+    if (q == _shownText(field)) return;
+    _debounce?.cancel();
+    if (q.length < 2) {
+      setState(() {
+        _suggestions = [];
+        _loading = false;
+        _failed = false;
       });
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _failed = false;
+    });
+    _debounce = Timer(const Duration(milliseconds: 300), () => _search(q));
+  }
 
-  /// Saved and recent places already carry coordinates.
-  Future<void> _selectKnownPlace(String address, double lat, double lng) =>
-      _goToRideSelection(
-        () async => PlaceDetails(address: address, lat: lat, lng: lng),
+  Future<void> _search(String q) async {
+    final token = ++_searchToken;
+    final near = _pickup ?? _gpsPoint();
+    try {
+      final results = await ref.read(mapsServiceProvider).autocomplete(q, lat: near?.lat, lng: near?.lng);
+      if (!mounted || token != _searchToken) return;
+      setState(() {
+        _suggestions = results;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted || token != _searchToken) return;
+      setState(() {
+        _suggestions = [];
+        _loading = false;
+        _failed = true;
+      });
+    }
+  }
+
+  PlaceDetails? _gpsPoint() {
+    final loc = ref.read(passengerLiveLocationProvider);
+    return loc == null ? null : PlaceDetails(address: '', lat: loc.lat, lng: loc.lng);
+  }
+
+  Future<void> _useCurrentLocation() async {
+    final pos = ref.read(passengerLiveLocationProvider) ?? await LocationService.getCurrentPosition();
+    if (!mounted) return;
+    if (pos == null) {
+      await RawanaActionSheet.info(
+        context,
+        title: context.l10n.locationOffTitle,
+        message: context.l10n.locationOffBody,
+        actionLabel: context.l10n.dialogOk,
+        icon: LucideIcons.mapPinOff,
+        tone: RawanaColors.warning,
       );
+      return;
+    }
+    var address = '';
+    try {
+      address = (await ref.read(mapsServiceProvider).reverseGeocode(pos.lat, pos.lng)).address;
+    } catch (_) {}
+    if (!mounted) return;
+    _setPickup(
+      PlaceDetails(address: address.isNotEmpty ? address : context.l10n.currentLocation, lat: pos.lat, lng: pos.lng),
+      gps: true,
+    );
+    _dropoffFocus.requestFocus();
+  }
 
-  Future<void> _goToRideSelection(
-    Future<PlaceDetails> Function() resolveDestination,
-  ) async {
+  Future<void> _pick(Future<PlaceDetails> Function() resolve) async {
     if (_selecting) return;
     setState(() => _selecting = true);
     try {
-      await _ensurePickupReady();
+      final place = await resolve();
       if (!mounted) return;
-      if (_pickupLat == null || _pickupLng == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.choosePickupFirst)),
-        );
+      if (_active == _Field.pickup) {
+        _setPickup(place, gps: false);
+        if (_dropoffController.text.trim().isEmpty) _dropoffFocus.requestFocus();
         return;
       }
-      final destination = await resolveDestination();
-      if (!mounted) return;
-      ref.read(bookingDraftProvider.notifier).state = TripBookingDraft(
-        pickupLat: _pickupLat!,
-        pickupLng: _pickupLng!,
-        pickupAddress: _pickupAddress,
-        dropoffLat: destination.lat,
-        dropoffLng: destination.lng,
-        dropoffAddress: destination.address,
-      );
-      await context.push('/ride-selection');
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.couldNotSelectPlace)),
-      );
+      await _continueTo(place);
+    } catch (_) {
+      if (mounted) showRawanaMessage(context, context.l10n.couldNotSelectPlace);
     } finally {
       if (mounted) setState(() => _selecting = false);
     }
   }
 
-  Future<void> _choosePickupOnMap() async {
-    final result = await context.push<PlaceDetails>(
-      Uri(
-        path: '/map-picker',
-        queryParameters: {
-          'mode': 'pickup',
-          if (_pickupLat != null) 'lat': _pickupLat!.toString(),
-          if (_pickupLng != null) 'lng': _pickupLng!.toString(),
-        },
-      ).toString(),
-    );
-    if (result == null || !mounted) return;
-    _setUserPickup(
-      result.lat,
-      result.lng,
-      result.address.isNotEmpty ? result.address : context.l10n.selectedPickup,
-    );
-  }
-
-  Future<void> _chooseDropoffOnMap() async {
-    if (_selecting) return;
-    await _ensurePickupReady();
-    if (!mounted) return;
-    if (_pickupLat == null || _pickupLng == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.choosePickupFirstShort)));
+  Future<void> _continueTo(PlaceDetails destination) async {
+    final pickup = _pickup;
+    if (pickup == null) {
+      _dropoffController.text = destination.address;
+      _pickupFocus.requestFocus();
+      showRawanaMessage(context, context.l10n.choosePickupFirst);
       return;
     }
+    ref.read(bookingDraftProvider.notifier).state = TripBookingDraft(
+      pickupLat: pickup.lat,
+      pickupLng: pickup.lng,
+      pickupAddress: pickup.address,
+      dropoffLat: destination.lat,
+      dropoffLng: destination.lng,
+      dropoffAddress: destination.address,
+    );
+    context.go('/ride-selection');
+  }
+
+  Future<void> _selectSuggestion(PlaceSuggestion s) => _pick(() async {
+        final details = await ref.read(mapsServiceProvider).getPlace(s.placeId);
+        return PlaceDetails(
+          address: details.address.isNotEmpty ? details.address : s.description,
+          lat: details.lat,
+          lng: details.lng,
+        );
+      });
+
+  Future<void> _selectKnown(String address, double lat, double lng) =>
+      _pick(() async => PlaceDetails(address: address, lat: lat, lng: lng));
+
+  Future<void> _setOnMap() async {
+    final anchor = _pickup ?? _gpsPoint();
     final result = await context.push<PlaceDetails>(
       Uri(
         path: '/map-picker',
         queryParameters: {
-          'mode': 'dropoff',
-          'lat': _pickupLat!.toString(),
-          'lng': _pickupLng!.toString(),
+          'mode': _active == _Field.pickup ? 'pickup' : 'dropoff',
+          if (anchor != null) 'lat': anchor.lat.toString(),
+          if (anchor != null) 'lng': anchor.lng.toString(),
         },
       ).toString(),
     );
     if (result == null || !mounted) return;
-    ref.read(bookingDraftProvider.notifier).state = TripBookingDraft(
-      pickupLat: _pickupLat!,
-      pickupLng: _pickupLng!,
-      pickupAddress: _pickupAddress,
-      dropoffLat: result.lat,
-      dropoffLng: result.lng,
-      dropoffAddress: result.address.isNotEmpty
+    final place = PlaceDetails(
+      address: result.address.isNotEmpty
           ? result.address
-          : context.l10n.selectedDestination,
+          : (_active == _Field.pickup ? context.l10n.selectedPickup : context.l10n.selectedDestination),
+      lat: result.lat,
+      lng: result.lng,
     );
-    context.push('/ride-selection');
+    await _pick(() async => place);
   }
 
-  Future<void> _editPickup() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(RawanaSpacing.radiusXl),
-        ),
-      ),
-      builder: (sheetContext) => _EditPickupSheet(
-        initialAddress: _pickupAddress,
-        pickupLat: _pickupLat,
-        pickupLng: _pickupLng,
-        onPickupSelected: _setUserPickup,
-        onChooseMap: () async {
-          Navigator.pop(sheetContext);
-          await _choosePickupOnMap();
-        },
-      ),
-    );
-  }
+  void _close() => context.canPop() ? context.pop() : context.go('/home');
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(passengerLiveLocationProvider, (prev, next) {
-      if (next != null) {
-        unawaited(_applyGpsPickup(next.lat, next.lng));
-      } else if (mounted && !_pickupChosenByUser && _pickupLat == null) {
-        setState(() => _pickupAddress = context.l10n.enableLocationToBook);
-      }
+    ref.listen(passengerLiveLocationProvider, (_, next) {
+      if (next != null) unawaited(_applyGpsPickup(next.lat, next.lng));
     });
+    final query = _activeController.text.trim();
+    final searching = query.length >= 2 && query != _shownText(_active);
+    final saved = parseSavedPlaces(ref.watch(savedAddressesProvider).valueOrNull ?? const []);
+    final recent = ref.watch(recentPlacesProvider).valueOrNull ?? const <RecentPlace>[];
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: RawanaCircleIconButton(
-            icon: LucideIcons.arrowLeft,
-            background: RawanaColors.surfaceAlt,
-            iconColor: RawanaColors.onSurface,
-            elevated: false,
-            size: 40,
-            onPressed: () =>
-                context.canPop() ? context.pop() : context.go('/home'),
-          ),
-        ),
-        title: Text(context.l10n.planYourTrip),
-        bottom: _selecting
-            ? const PreferredSize(
-                preferredSize: Size.fromHeight(2),
-                child: LinearProgressIndicator(minHeight: 2),
-              )
-            : null,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-              boxShadow: RawanaShadows.floating,
-            ),
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: RawanaColors.success,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: RawanaColors.success.withValues(alpha: 0.3),
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(
-                          5,
-                          (_) => Container(
-                            width: 2,
-                            height: 2,
-                            decoration: const BoxDecoration(
-                              color: RawanaColors.outline,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: RawanaColors.dropoffPin,
-                        borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: Colors.white, width: 2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: RawanaColors.dropoffPin.withValues(
-                              alpha: 0.3,
-                            ),
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          _Label(context.l10n.fromLabel),
-                          const Spacer(),
-                          TextButton(
-                            onPressed: _editPickup,
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size(44, 24),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(context.l10n.edit),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _pickupAddress.isEmpty
-                            ? context.l10n.gettingLocation
-                            : _pickupAddress,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12),
-                        height: 1,
-                        color: RawanaColors.divider,
-                      ),
-                      _Label(context.l10n.toLabel),
-                      Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        heightFactor: 0.8,
-                        child: TextButton.icon(
-                          onPressed: _chooseDropoffOnMap,
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size(44, 24),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          icon: const Icon(LucideIcons.mapPinned, size: 14),
-                          label: Text(context.l10n.map),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      TextField(
-                        controller: _destController,
-                        focusNode: _destFocusNode,
-                        autofocus: true,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: context.l10n.searchDestination,
-                          hintStyle: const TextStyle(
-                            color: RawanaColors.onSurfaceFaint,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          filled: false,
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                          suffixIcon: _loading
-                              ? const Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: SizedBox(
-                                    width: 14,
-                                    height: 14,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                )
-                              : (_destController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(
-                                          LucideIcons.x,
-                                          size: 16,
-                                        ),
-                                        color: RawanaColors.onSurfaceMuted,
-                                        onPressed: () =>
-                                            _destController.clear(),
-                                      )
-                                    : null),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (_suggestions.isNotEmpty || _destController.text.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-              child: Text(
-                context.l10n.suggestions,
-                style: const TextStyle(
-                  color: RawanaColors.onSurfaceMuted,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
-          Expanded(
-            child: _suggestions.isEmpty && _destController.text.isEmpty
-                ? _QuickPlaces(
-                    saved: ref.watch(savedAddressesProvider).valueOrNull ??
-                        const [],
-                    recent: ref.watch(recentPlacesProvider).valueOrNull ??
-                        const [],
-                    onPick: _selectKnownPlace,
-                    onChooseMap: _chooseDropoffOnMap,
-                  )
-                : ListView.separated(
-                    itemCount: _suggestions.length,
-                    separatorBuilder: (_, _) => Padding(
-                      padding: const EdgeInsets.only(left: 76),
-                      child: Container(height: 1, color: RawanaColors.divider),
-                    ),
-                    itemBuilder: (context, index) {
-                      final s = _suggestions[index];
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 8,
-                        ),
-                        leading: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: RawanaColors.primary.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            LucideIcons.mapPin,
-                            size: 18,
-                            color: RawanaColors.primary,
-                          ),
-                        ),
-                        title: Text(
-                          s.mainText,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(
-                            s.secondaryText,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: RawanaColors.onSurfaceMuted,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                        trailing: const Icon(
-                          LucideIcons.arrowUpRight,
-                          size: 16,
-                          color: RawanaColors.onSurfaceFaint,
-                        ),
-                        onTap: () => _selectDestination(s),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EditPickupSheet extends ConsumerStatefulWidget {
-  const _EditPickupSheet({
-    required this.initialAddress,
-    required this.pickupLat,
-    required this.pickupLng,
-    required this.onPickupSelected,
-    required this.onChooseMap,
-  });
-
-  final String initialAddress;
-  final double? pickupLat;
-  final double? pickupLng;
-  final void Function(double lat, double lng, String address) onPickupSelected;
-  final VoidCallback onChooseMap;
-
-  @override
-  ConsumerState<_EditPickupSheet> createState() => _EditPickupSheetState();
-}
-
-class _EditPickupSheetState extends ConsumerState<_EditPickupSheet> {
-  late final TextEditingController _controller;
-  Timer? _debounce;
-  bool _loading = false;
-  List<PlaceSuggestion> _suggestions = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialAddress);
-  }
-
-  @override
-  void dispose() {
-    _debounce?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String value) {
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 350), () async {
-      if (!mounted) return;
-      final q = value.trim();
-      if (q.length < 2) {
-        setState(() => _suggestions = []);
-        return;
-      }
-      setState(() => _loading = true);
-      try {
-        final results = await ref
-            .read(mapsServiceProvider)
-            .autocomplete(q, lat: widget.pickupLat, lng: widget.pickupLng);
-        if (mounted && _controller.text.trim() == q) {
-          setState(() => _suggestions = results);
-        }
-      } catch (_) {
-        if (mounted) setState(() => _suggestions = []);
-      } finally {
-        if (mounted) setState(() => _loading = false);
-      }
-    });
-  }
-
-  Future<void> _useCurrentLocation() async {
-    _debounce?.cancel();
-    final pos = await LocationService.getCurrentPosition();
-    if (!mounted) return;
-    if (pos == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.locationUnavailableEnableGps)),
-      );
-      return;
-    }
-    String address = '';
-    try {
-      final place = await ref
-          .read(mapsServiceProvider)
-          .reverseGeocode(pos.lat, pos.lng);
-      address = place.address;
-    } catch (_) {}
-    if (!mounted) return;
-    widget.onPickupSelected(
-      pos.lat,
-      pos.lng,
-      address.isNotEmpty ? address : context.l10n.currentLocation,
-    );
-    Navigator.pop(context);
-  }
-
-  Future<void> _selectPickup(PlaceSuggestion suggestion) async {
-    _debounce?.cancel();
-    final PlaceDetails details;
-    try {
-      details = await ref.read(mapsServiceProvider).getPlace(suggestion.placeId);
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.couldNotSelectPlace)),
-        );
-      }
-      return;
-    }
-    if (!mounted) return;
-    widget.onPickupSelected(
-      details.lat,
-      details.lng,
-      details.address.isNotEmpty ? details.address : suggestion.description,
-    );
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          12,
-          20,
-          MediaQuery.of(context).viewInsets.bottom + 20,
-        ),
+      body: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const RawanaSheetHandle(),
-            const SizedBox(height: 8),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                context.l10n.editPickup,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.4,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(LucideIcons.search),
-                suffixIcon: _loading
-                    ? const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : null,
-                hintText: context.l10n.searchPickupLocation,
-              ),
-              onChanged: _onSearchChanged,
-            ),
-            const SizedBox(height: 8),
-            ListTile(
-              leading: const Icon(
-                LucideIcons.locateFixed,
-                color: RawanaColors.primary,
-              ),
-              title: Text(context.l10n.useCurrentLocation),
-              onTap: _useCurrentLocation,
-            ),
-            ListTile(
-              leading: const Icon(
-                LucideIcons.mapPinned,
-                color: RawanaColors.primary,
-              ),
-              title: Text(context.l10n.chooseOnMap),
-              subtitle: Text(context.l10n.movePinToPickup),
-              onTap: widget.onChooseMap,
-            ),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 280),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _suggestions.length,
-                itemBuilder: (_, index) {
-                  final suggestion = _suggestions[index];
-                  return ListTile(
-                    leading: const Icon(
-                      LucideIcons.mapPin,
-                      color: RawanaColors.onSurfaceMuted,
-                    ),
-                    title: Text(
-                      suggestion.mainText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      suggestion.secondaryText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onTap: () => _selectPickup(suggestion),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Label extends StatelessWidget {
-  const _Label(this.text);
-  final String text;
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text.toUpperCase(),
-      style: const TextStyle(
-        color: RawanaColors.onSurfaceMuted,
-        fontSize: 10,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.2,
-      ),
-    );
-  }
-}
-
-class _QuickPlaces extends StatelessWidget {
-  const _QuickPlaces({
-    required this.saved,
-    required this.recent,
-    required this.onPick,
-    required this.onChooseMap,
-  });
-
-  final List<Map<String, dynamic>> saved;
-  final List<RecentPlace> recent;
-  final void Function(String address, double lat, double lng) onPick;
-  final VoidCallback onChooseMap;
-
-  static IconData _savedIcon(String label) => switch (label.toLowerCase()) {
-        'home' => LucideIcons.house,
-        'work' => LucideIcons.briefcase,
-        _ => LucideIcons.bookmark,
-      };
-
-  static String _savedTitle(BuildContext context, String label) =>
-      switch (label.toLowerCase()) {
-        'home' => context.l10n.quickHome,
-        'work' => context.l10n.quickWork,
-        _ => label,
-      };
-
-  @override
-  Widget build(BuildContext context) {
-    final savedPlaces = [
-      for (final item in saved)
-        if ((parseWktLat(item['location'] as String?) ??
-                    (item['lat'] as num?)?.toDouble()) !=
-                null &&
-            (parseWktLng(item['location'] as String?) ??
-                    (item['lng'] as num?)?.toDouble()) !=
-                null)
-          (
-            label: item['label'] as String? ?? '',
-            address: item['address'] as String? ?? '',
-            lat: parseWktLat(item['location'] as String?) ??
-                (item['lat'] as num).toDouble(),
-            lng: parseWktLng(item['location'] as String?) ??
-                (item['lng'] as num).toDouble(),
-          ),
-    ];
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
-      children: [
-        if (savedPlaces.isNotEmpty) ...[
-          _SectionHeader(context.l10n.savedPlacesHeader),
-          for (final place in savedPlaces)
-            _PlaceTile(
-              icon: _savedIcon(place.label),
-              title: place.label.isEmpty
-                  ? place.address
-                  : _savedTitle(context, place.label),
-              subtitle: place.label.isEmpty ? null : place.address,
-              onTap: () => onPick(
-                place.address.isNotEmpty ? place.address : place.label,
-                place.lat,
-                place.lng,
-              ),
-            ),
-        ],
-        if (recent.isNotEmpty) ...[
-          _SectionHeader(context.l10n.recentPlacesHeader),
-          for (final place in recent)
-            _PlaceTile(
-              icon: LucideIcons.clock,
-              title: place.address.split(',').first,
-              subtitle: place.address.contains(',')
-                  ? place.address.substring(place.address.indexOf(',') + 1).trim()
-                  : null,
-              onTap: () => onPick(place.address, place.lat, place.lng),
-            ),
-        ],
-        if (savedPlaces.isEmpty && recent.isEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-            child: _emptyTile(
-              LucideIcons.compass,
-              context.l10n.startTyping,
-              context.l10n.weWillSuggestPlaces,
-            ),
-          ),
-        const SizedBox(height: 12),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _mapTile(context),
-        ),
-      ],
-    );
-  }
-
-  Widget _emptyTile(IconData icon, String title, String sub) => Container(
-    margin: const EdgeInsets.only(top: 8),
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: RawanaColors.surfaceAlt,
-      borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-    ),
-    child: Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: RawanaColors.primary, size: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                sub,
-                style: const TextStyle(
-                  color: RawanaColors.onSurfaceMuted,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget _mapTile(BuildContext context) => Material(
-    color: Colors.transparent,
-    child: InkWell(
-      borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-      onTap: onChooseMap,
-      child: Ink(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: RawanaColors.primary.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-          border: Border.all(
-            color: RawanaColors.primary.withValues(alpha: 0.16),
-          ),
-        ),
-        child: Row(
-          children: [
-            const Icon(LucideIcons.mapPinned, color: RawanaColors.primary, size: 22),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 16, 12),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    context.l10n.chooseOnMap,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                  IconButton(
+                    onPressed: _close,
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    icon: const Icon(LucideIcons.arrowLeft),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    context.l10n.dropPinDestination,
-                    style: const TextStyle(
-                      color: RawanaColors.onSurfaceMuted,
-                      fontSize: 12,
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: _FieldStack(
+                      pickupController: _pickupController,
+                      dropoffController: _dropoffController,
+                      pickupFocus: _pickupFocus,
+                      dropoffFocus: _dropoffFocus,
+                      active: _active,
+                      onClear: () => _activeController.clear(),
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(LucideIcons.arrowRight, color: RawanaColors.primary, size: 18),
+            if (_selecting) const LinearProgressIndicator(minHeight: 2) else const Divider(height: 2),
+            Expanded(
+              child: searching
+                  ? _Results(
+                      loading: _loading,
+                      failed: _failed,
+                      suggestions: _suggestions,
+                      onRetry: () => _search(query),
+                      onSelect: _selectSuggestion,
+                    )
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                      children: [
+                        if (_active == _Field.pickup) ...[
+                          PlaceRow(
+                            icon: LucideIcons.locateFixed,
+                            title: context.l10n.currentLocation,
+                            subtitle: context.l10n.pickupFromCurrentLocation,
+                            highlight: true,
+                            onTap: _useCurrentLocation,
+                          ),
+                          const PlaceRowDivider(),
+                        ],
+                        for (final place in saved)
+                          PlaceRow(
+                            icon: savedPlaceIcon(place.label),
+                            title: place.label.isEmpty ? place.address : savedPlaceTitle(context, place.label),
+                            subtitle: place.label.isEmpty ? null : place.address,
+                            onTap: () => _selectKnown(
+                              place.address.isNotEmpty ? place.address : place.label,
+                              place.lat,
+                              place.lng,
+                            ),
+                          ),
+                        for (final place in recent)
+                          Builder(builder: (context) {
+                            final (title, subtitle) = splitAddress(place.address);
+                            return PlaceRow(
+                              icon: LucideIcons.clock,
+                              title: title,
+                              subtitle: subtitle,
+                              onTap: () => _selectKnown(place.address, place.lat, place.lng),
+                            );
+                          }),
+                      ],
+                    ),
+            ),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: PlaceRow(
+                icon: LucideIcons.mapPinned,
+                title: context.l10n.setLocationOnMap,
+                highlight: true,
+                onTap: _setOnMap,
+              ),
+            ),
           ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: RawanaColors.onSurfaceMuted,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
         ),
       ),
     );
   }
 }
 
-class _PlaceTile extends StatelessWidget {
-  const _PlaceTile({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-    this.subtitle,
+class _FieldStack extends StatelessWidget {
+  const _FieldStack({
+    required this.pickupController,
+    required this.dropoffController,
+    required this.pickupFocus,
+    required this.dropoffFocus,
+    required this.active,
+    required this.onClear,
   });
 
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final VoidCallback onTap;
+  final TextEditingController pickupController;
+  final TextEditingController dropoffController;
+  final FocusNode pickupFocus;
+  final FocusNode dropoffFocus;
+  final _Field active;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: RawanaColors.surfaceAlt,
-          borderRadius: BorderRadius.circular(12),
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 20,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: RawanaColors.pickupPin, width: 3),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    color: RawanaColors.outline,
+                  ),
+                ),
+                Container(width: 10, height: 10, color: RawanaColors.dropoffPin),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              children: [
+                _SearchField(
+                  controller: pickupController,
+                  focusNode: pickupFocus,
+                  hint: context.l10n.pickupTitle,
+                  active: active == _Field.pickup,
+                  onClear: onClear,
+                ),
+                const SizedBox(height: 8),
+                _SearchField(
+                  controller: dropoffController,
+                  focusNode: dropoffFocus,
+                  hint: context.l10n.searchDestinationHint,
+                  active: active == _Field.dropoff,
+                  onClear: onClear,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  const _SearchField({
+    required this.controller,
+    required this.focusNode,
+    required this.hint,
+    required this.active,
+    required this.onClear,
+  });
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final String hint;
+  final bool active;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: RawanaMotion.fast,
+      height: 48,
+      decoration: BoxDecoration(
+        color: active ? Colors.white : RawanaColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(RawanaSpacing.radiusMd),
+        border: Border.all(
+          color: active ? RawanaColors.primary : Colors.transparent,
+          width: 1.5,
         ),
-        child: Icon(icon, size: 18, color: RawanaColors.onSurface),
       ),
-      title: Text(
-        title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-      ),
-      subtitle: subtitle == null || subtitle!.isEmpty
-          ? null
-          : Text(
-              subtitle!,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: RawanaColors.onSurfaceMuted,
-                fontSize: 13,
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              style: context.text.bodyStrong,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: context.text.body.copyWith(color: RawanaColors.onSurfaceFaint),
+                filled: false,
+                isDense: true,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               ),
             ),
-      onTap: onTap,
+          ),
+          if (active)
+            ListenableBuilder(
+              listenable: controller,
+              builder: (context, _) => controller.text.isEmpty
+                  ? const SizedBox(width: 8)
+                  : IconButton(
+                      onPressed: onClear,
+                      icon: const Icon(LucideIcons.x, size: 18),
+                      color: RawanaColors.onSurfaceMuted,
+                      tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
+                    ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Results extends StatelessWidget {
+  const _Results({
+    required this.loading,
+    required this.failed,
+    required this.suggestions,
+    required this.onRetry,
+    required this.onSelect,
+  });
+
+  final bool loading;
+  final bool failed;
+  final List<PlaceSuggestion> suggestions;
+  final VoidCallback onRetry;
+  final ValueChanged<PlaceSuggestion> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    if (loading && suggestions.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        children: const [
+          RawanaSkeletonRow(),
+          RawanaSkeletonRow(),
+          RawanaSkeletonRow(),
+          RawanaSkeletonRow(),
+        ],
+      );
+    }
+    if (failed) {
+      return RawanaErrorState(
+        title: context.l10n.searchFailed,
+        retryLabel: context.l10n.tryAgain,
+        onRetry: onRetry,
+        icon: LucideIcons.wifiOff,
+      );
+    }
+    if (suggestions.isEmpty) {
+      return RawanaErrorState(title: context.l10n.noPlacesFound, icon: LucideIcons.searchX);
+    }
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      itemCount: suggestions.length,
+      separatorBuilder: (_, _) => const PlaceRowDivider(),
+      itemBuilder: (context, i) {
+        final s = suggestions[i];
+        return PlaceRow(
+          icon: LucideIcons.mapPin,
+          title: s.mainText,
+          subtitle: s.secondaryText,
+          onTap: () => onSelect(s),
+        );
+      },
     );
   }
 }

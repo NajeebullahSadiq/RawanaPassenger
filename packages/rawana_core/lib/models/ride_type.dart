@@ -5,6 +5,9 @@ class RideType {
   final String description;
   final double fareMultiplier;
   final int displayOrder;
+  final int? seats;
+  /// Which vehicle illustration to draw; falls back to [iconName].
+  final String? imageKey;
 
   const RideType({
     required this.id,
@@ -13,7 +16,11 @@ class RideType {
     required this.description,
     required this.fareMultiplier,
     required this.displayOrder,
+    this.seats,
+    this.imageKey,
   });
+
+  String get artKey => imageKey ?? iconName;
 
   factory RideType.fromJson(Map<String, dynamic> json) => RideType(
         id: json['id'] as String,
@@ -22,6 +29,8 @@ class RideType {
         description: json['description'] as String? ?? '',
         fareMultiplier: (json['fare_multiplier'] as num?)?.toDouble() ?? 1.0,
         displayOrder: json['display_order'] as int? ?? 0,
+        seats: (json['seats'] as num?)?.round(),
+        imageKey: json['image_key'] as String?,
       );
 }
 
@@ -43,6 +52,11 @@ class FareEstimate {
   final int outstandingFee;
   /// Account credit that will be applied at booking time.
   final int creditAvailable;
+  /// Minutes until the nearest free driver could reach the pickup; null when
+  /// none is nearby or the ride is scheduled.
+  final int? pickupEtaMinutes;
+  /// False when the server found no free driver of this type in range.
+  final bool driversAvailable;
 
   const FareEstimate({
     required this.estimatedFare,
@@ -60,6 +74,8 @@ class FareEstimate {
     this.originalFare,
     this.outstandingFee = 0,
     this.creditAvailable = 0,
+    this.pickupEtaMinutes,
+    this.driversAvailable = true,
   });
 
   /// Ride price before account effects (credit / outstanding fee).
@@ -87,5 +103,7 @@ class FareEstimate {
         originalFare: (json['original_fare'] as num?)?.round(),
         outstandingFee: (json['outstanding_fee'] as num?)?.round() ?? 0,
         creditAvailable: (json['credit_available'] as num?)?.round() ?? 0,
+        pickupEtaMinutes: (json['pickup_eta_minutes'] as num?)?.round(),
+        driversAvailable: json['drivers_available'] != false,
       );
 }

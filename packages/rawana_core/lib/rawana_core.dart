@@ -30,6 +30,7 @@ export 'widgets/ui/ride_option_tile.dart';
 export 'widgets/ui/party_card.dart';
 export 'widgets/ui/star_rating.dart';
 export 'widgets/ui/status_pill.dart';
+export 'widgets/ui/rawana_center_pin.dart';
 export 'widgets/otp_input.dart';
 export 'widgets/status_chip.dart';
 export 'widgets/active_trip_banner.dart';

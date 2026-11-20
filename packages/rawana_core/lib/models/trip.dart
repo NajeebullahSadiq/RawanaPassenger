@@ -75,6 +75,7 @@ class TripParty {
   factory TripParty.fromUserJson(Map<String, dynamic>? json) => TripParty(
     name: json?['name'] as String?,
     phone: json?['phone'] as String?,
+    profilePhotoUrl: json?['profile_photo_url'] as String?,
     ratingAverage: (json?['rating_average'] as num?)?.toDouble(),
   );
 
@@ -96,6 +97,7 @@ class Trip {
   final String? rideTypeId;
   final String? rideTypeName;
   final String? rideTypeIconName;
+  final String? rideTypeImageKey;
   final String pickupAddress;
   final String dropoffAddress;
   final double? pickupLat;
@@ -135,6 +137,15 @@ class Trip {
   final DateTime? reservedAt;
   /// Driver marketplace only: distance from the driver to the pickup.
   final int? distanceToPickupMeters;
+  /// Driver offers only: rough minutes from the driver to the pickup.
+  final int? pickupEtaMinutes;
+  /// Tip the passenger added; collected in cash with the fare.
+  final int tipAmount;
+  /// Passenger only, while the driver is on the way: the 4-digit start PIN.
+  final String? startPin;
+  /// Driver only: the server asks for the rider's PIN to start the trip.
+  final bool startPinRequired;
+  final int? _serverCashWithTip;
 
   const Trip({
     required this.id,
@@ -142,6 +153,7 @@ class Trip {
     this.rideTypeId,
     this.rideTypeName,
     this.rideTypeIconName,
+    this.rideTypeImageKey,
     required this.pickupAddress,
     required this.dropoffAddress,
     this.pickupLat,
@@ -176,7 +188,18 @@ class Trip {
     this.scheduledAt,
     this.reservedAt,
     this.distanceToPickupMeters,
-  });
+    this.pickupEtaMinutes,
+    this.tipAmount = 0,
+    this.startPin,
+    this.startPinRequired = false,
+    int? serverCashWithTip,
+  }) : _serverCashWithTip = serverCashWithTip;
+
+  /// Vehicle illustration key for this trip's ride type.
+  String? get rideArtKey => rideTypeImageKey ?? rideTypeIconName;
+
+  /// Everything the driver collects: the fare plus any tip.
+  int get totalCash => _serverCashWithTip ?? cashToCollect + tipAmount;
 
   bool get isScheduledRide => scheduledAt != null;
 
@@ -233,6 +256,7 @@ class Trip {
           _asMap(json['ride_types'])?['name'] as String?,
       rideTypeIconName: json['ride_type_icon'] as String? ??
           _asMap(json['ride_types'])?['icon_name'] as String?,
+      rideTypeImageKey: _asMap(json['ride_types'])?['image_key'] as String?,
       pickupAddress: json['pickup_address'] as String? ?? '',
       dropoffAddress: json['dropoff_address'] as String? ?? '',
       pickupLat:
@@ -285,6 +309,11 @@ class Trip {
       scheduledAt: DateTime.tryParse(json['scheduled_at'] as String? ?? ''),
       reservedAt: DateTime.tryParse(json['reserved_at'] as String? ?? ''),
       distanceToPickupMeters: (json['distance_to_pickup_meters'] as num?)?.round(),
+      pickupEtaMinutes: (json['pickup_eta_minutes'] as num?)?.round(),
+      tipAmount: (json['tip_amount'] as num?)?.round() ?? 0,
+      startPin: json['start_pin'] as String?,
+      startPinRequired: json['start_pin_required'] == true,
+      serverCashWithTip: (json['cash_to_collect'] as num?)?.round(),
     );
   }
 }

@@ -1,11 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
+
+import '../booking/booking_map.dart';
+import '../booking/booking_shell.dart';
+import '../booking/trip_parts.dart';
 import '../providers/trip_providers.dart';
-import '../providers/nearby_drivers_provider.dart';
 
 class SearchingScreen extends ConsumerStatefulWidget {
   const SearchingScreen({super.key});
@@ -14,22 +20,44 @@ class SearchingScreen extends ConsumerStatefulWidget {
   ConsumerState<SearchingScreen> createState() => _SearchingScreenState();
 }
 
-class _SearchingScreenState extends ConsumerState<SearchingScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _SearchingScreenState extends ConsumerState<SearchingScreen> {
+  /// How long the "driver found" card stays before the live-trip sheet takes over.
+  static const _matchedHold = Duration(milliseconds: 1600);
+
   String? _error;
   bool _userCancelled = false;
   bool _cancelling = false;
-  double _sheetHeight = 340;
+  Trip? _matched;
+  Timer? _handoff;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2600),
-    )..repeat();
-    _startSearch();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _syncMap();
+      _startSearch();
+    });
+  }
+
+  @override
+  void dispose() {
+    _handoff?.cancel();
+    super.dispose();
+  }
+
+  void _syncMap() {
+    final draft = ref.read(bookingDraftProvider);
+    final trip = ref.read(activeTripProvider).valueOrNull;
+    final lat = draft?.pickupLat ?? trip?.pickupLat;
+    final lng = draft?.pickupLng ?? trip?.pickupLng;
+    if (lat == null || lng == null) return;
+    final dLat = draft?.dropoffLat ?? trip?.dropoffLat;
+    final dLng = draft?.dropoffLng ?? trip?.dropoffLng;
+    ref.read(bookingMapProvider.notifier).showSearching(
+          LatLng(lat, lng),
+          dropoff: dLat == null || dLng == null ? null : LatLng(dLat, dLng),
+        );
   }
 
   Future<void> _startSearch() async {
@@ -39,6 +67,7 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     final tripId = activeTrip?.id ?? ref.read(currentTripIdProvider);
     if (activeTrip != null) {
       ref.read(currentTripIdProvider.notifier).state = activeTrip.id;
+      _syncMap();
       if (activeTrip.status == TripStatus.searching) {
         await _waitForMatch(activeTrip.id);
         return;
@@ -46,16 +75,15 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
       _leaveForStatus(activeTrip);
       return;
     }
-
     if (tripId == null) {
       setState(() => _error = context.l10n.missingTripDetails);
       return;
     }
-
     await _waitForMatch(tripId);
   }
 
   void _leaveForStatus(Trip trip) {
+    if (_matched != null) return;
     if (trip.status == TripStatus.completed) {
       context.go('/trip-complete');
       return;
@@ -72,7 +100,15 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
           : passengerCancellationMessage(context.l10n, trip));
       return;
     }
-    context.go('/active-trip');
+    if (trip.driver == null) {
+      context.go('/active-trip');
+      return;
+    }
+    HapticFeedback.heavyImpact();
+    setState(() => _matched = trip);
+    _handoff = Timer(_matchedHold, () {
+      if (mounted) context.go('/active-trip');
+    });
   }
 
   Future<void> _waitForMatch(String tripId) async {
@@ -80,9 +116,9 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     // so keep polling until the server moves the trip out of `searching`.
     while (true) {
       await ref.read(activeTripProvider.notifier).pollUntilAccepted(tripId);
-      if (!mounted || _userCancelled) return;
+      if (!mounted || _userCancelled || _matched != null) return;
       await ref.read(activeTripProvider.notifier).refresh();
-      if (!mounted || _userCancelled) return;
+      if (!mounted || _userCancelled || _matched != null) return;
       final trip = ref.read(activeTripProvider).valueOrNull;
       if (trip == null || trip.status == TripStatus.cancelled) {
         if (trip != null) {
@@ -106,16 +142,13 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     try {
       final current = ref.read(activeTripProvider).valueOrNull;
       if (current != null && current.status == TripStatus.searching) {
-        await ref.read(tripServiceProvider).cancelRide(
-              current.id,
-              reason: 'Passenger cancelled',
-            );
+        await ref.read(tripServiceProvider).cancelRide(current.id, reason: 'Passenger cancelled');
       }
     } catch (e) {
       if (mounted) {
         showRawanaError(context, e);
+        setState(() => _cancelling = false);
       }
-      if (mounted) setState(() => _cancelling = false);
       return;
     }
     ref.read(activeTripProvider.notifier).tryClearLocalTripState(keepDraft: true);
@@ -126,28 +159,17 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
   }
 
   Future<void> _cancel() async {
-    if (_cancelling) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l10n.cancelSearchTitle),
-        content: Text(ctx.l10n.cancelSearchBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(ctx.l10n.keepRide),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              ctx.l10n.cancelRequest,
-              style: const TextStyle(color: RawanaColors.error),
-            ),
-          ),
-        ],
-      ),
+    if (_cancelling || _matched != null) return;
+    final confirmed = await RawanaActionSheet.confirm(
+      context,
+      title: context.l10n.cancelSearchTitle,
+      message: context.l10n.cancelSearchBody,
+      confirmLabel: context.l10n.cancelRequest,
+      cancelLabel: context.l10n.keepRide,
+      destructive: true,
+      icon: LucideIcons.circleX,
     );
-    if (confirmed != true || !mounted) return;
+    if (!confirmed || !mounted) return;
     setState(() => _cancelling = true);
     try {
       await ref.read(activeTripProvider.notifier).refresh();
@@ -159,14 +181,10 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
       }
       final tripId = trip?.id ?? ref.read(currentTripIdProvider);
       if (tripId != null) {
-        await ref
-            .read(tripServiceProvider)
-            .cancelRide(tripId, reason: 'Passenger cancelled');
+        await ref.read(tripServiceProvider).cancelRide(tripId, reason: 'Passenger cancelled');
       }
     } catch (e) {
-      if (mounted) {
-        showRawanaError(context, e);
-      }
+      if (mounted) showRawanaError(context, e);
       return;
     } finally {
       if (mounted) setState(() => _cancelling = false);
@@ -175,13 +193,6 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
     ref.read(activeTripProvider.notifier).tryClearLocalTripState();
     if (mounted) context.go('/home');
   }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -195,267 +206,235 @@ class _SearchingScreenState extends ConsumerState<SearchingScreen>
         });
       }
     });
+
     final draft = ref.watch(bookingDraftProvider);
     final trip = ref.watch(activeTripProvider).valueOrNull;
-    final nearbyDrivers = ref.watch(nearbyDriversProvider);
-    final rideTypes = ref.watch(rideTypesProvider).valueOrNull ?? const [];
-    final selectedType = rideTypes.cast<RideType?>().firstWhere(
-      (type) => type?.id == draft?.rideTypeId,
-      orElse: () => rideTypes.isEmpty ? null : rideTypes.first,
-    );
-    final vehicleKind = VehicleKind.fromIconName(selectedType?.iconName);
-    final pickupLat = draft?.pickupLat ?? trip?.pickupLat;
-    final pickupLng = draft?.pickupLng ?? trip?.pickupLng;
-    final pickupAddress = draft?.pickupAddress ?? trip?.pickupAddress ?? '';
-    final dropoffAddress = draft?.dropoffAddress ?? trip?.dropoffAddress ?? '';
-    final markers = <RawanaMapMarker>[
-      ...buildNearbyDriverMarkers(nearbyDrivers, vehicleKind: vehicleKind),
-      if (pickupLat != null && pickupLng != null)
-        RawanaMapMarker.pickup(lat: pickupLat, lng: pickupLng, l10n: context.l10n),
-    ];
-    final hasError = _error != null;
-    final title = _error ??
-        ((trip?.rematchCount ?? 0) > 0
-            ? context.l10n.findingAnotherDriver
-            : context.l10n.findingYourDriver);
-    final fare = trip?.cashToCollect;
+    final rideTypes = ref.watch(rideTypesProvider).valueOrNull ?? const <RideType>[];
+    final rideTypeId = draft?.rideTypeId ?? trip?.rideTypeId;
+    RideType? type;
+    for (final t in rideTypes) {
+      if (t.id == rideTypeId) type = t;
+    }
+
+    final Widget body;
+    if (_matched != null) {
+      body = _MatchedBody(key: const ValueKey('matched'), trip: _matched!);
+    } else if (_error != null) {
+      body = _ErrorBody(
+        key: const ValueKey('error'),
+        message: _error!,
+        busy: _cancelling,
+        onRetry: _tryAgain,
+        onCancel: _cancel,
+      );
+    } else {
+      body = _SearchingBody(
+        key: const ValueKey('searching'),
+        rematch: (trip?.rematchCount ?? 0) > 0,
+        artKey: type?.artKey ?? trip?.rideArtKey,
+        rideName: type?.name ?? trip?.rideTypeName,
+        pickupAddress: draft?.pickupAddress ?? trip?.pickupAddress ?? '',
+        dropoffAddress: draft?.dropoffAddress ?? trip?.dropoffAddress ?? '',
+        fare: trip?.cashToCollect,
+        busy: _cancelling,
+        onCancel: _cancel,
+      );
+    }
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _cancel();
       },
-      child: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            Positioned.fill(
-              child: RawanaMap(
-                zoom: 15.5,
-                centerLat: pickupLat,
-                centerLng: pickupLng,
-                markers: markers,
-                gesturesEnabled: false,
-                mapPadding: EdgeInsets.only(bottom: _sheetHeight),
-              ),
-            ),
-            // Radar pulse sits on the pickup: the map centres the pickup in the
-            // area above the sheet, and this overlay uses the same area.
-            if (!hasError && pickupLat != null)
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: _sheetHeight,
-                child: IgnorePointer(
-                  child: Center(
-                    child: RepaintBoundary(
-                      child: _PickupPulse(animation: _controller),
-                    ),
-                  ),
-                ),
-              ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: Align(
-                  alignment: AlignmentDirectional.topStart,
-                  child: RawanaCircleIconButton(
-                    icon: LucideIcons.arrowLeft,
-                    onPressed: _cancel,
-                  ),
-                ),
-              ),
-            ),
-            Align(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: MapInsetReporter(
+          child: RawanaSheetPanel(
+            child: AnimatedSize(
+              duration: RawanaMotion.medium,
+              curve: RawanaMotion.curve,
               alignment: Alignment.bottomCenter,
-              child: MeasureSize(
-                onChange: (size) {
-                  if (!mounted || (size.height - _sheetHeight).abs() < 1) return;
-                  setState(() => _sheetHeight = size.height);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(RawanaSpacing.radiusXl),
-                    ),
-                    boxShadow: RawanaShadows.sheet,
-                  ),
-                  child: SafeArea(
-                    top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const RawanaSheetHandle(),
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 250),
-                            child: Text(
-                              title,
-                              key: ValueKey(title),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.5,
-                                color: hasError
-                                    ? RawanaColors.error
-                                    : RawanaColors.onSurface,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            hasError
-                                ? context.l10n.retryOrCancelBelow
-                                : context.l10n.lookingForDriversNearby,
-                            style: const TextStyle(
-                              color: RawanaColors.onSurfaceMuted,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          if (!hasError)
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: const LinearProgressIndicator(
-                                minHeight: 4,
-                                color: RawanaColors.primary,
-                                backgroundColor: RawanaColors.surfaceAlt,
-                              ),
-                            ),
-                          const SizedBox(height: 16),
-                          if (pickupAddress.isNotEmpty || dropoffAddress.isNotEmpty)
-                            TripRouteAddresses(
-                              pickupAddress: pickupAddress,
-                              dropoffAddress: dropoffAddress,
-                              dense: true,
-                            ),
-                          if (fare != null && fare > 0) ...[
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                const Icon(
-                                  LucideIcons.banknote,
-                                  size: 18,
-                                  color: RawanaColors.success,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  context.l10n.cashFare,
-                                  style: const TextStyle(
-                                    color: RawanaColors.onSurfaceMuted,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  formatTripFare(fare),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                          const SizedBox(height: 16),
-                          if (hasError) ...[
-                            RawanaPrimaryButton(
-                              label: context.l10n.tryAgain,
-                              icon: LucideIcons.refreshCcw,
-                              onPressed: _cancelling ? null : _tryAgain,
-                            ),
-                            const SizedBox(height: 8),
-                          ],
-                          OutlinedButton.icon(
-                            onPressed: _cancelling ? null : _cancel,
-                            icon: const Icon(LucideIcons.x, size: 18),
-                            label: Text(context.l10n.cancelRequest),
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(48),
-                              foregroundColor: RawanaColors.error,
-                              side: BorderSide(
-                                color: RawanaColors.error.withValues(alpha: 0.4),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            context.l10n.noCancellationFee,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: RawanaColors.onSurfaceMuted,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+              child: AnimatedSwitcher(
+                duration: RawanaMotion.medium,
+                switchInCurve: RawanaMotion.curve,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween(begin: const Offset(0, 0.08), end: Offset.zero).animate(animation),
+                    child: child,
                   ),
                 ),
+                child: body,
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Uber-style radar: soft rings that ease out from the pickup point.
-class _PickupPulse extends StatelessWidget {
-  const _PickupPulse({required this.animation});
+class _SearchingBody extends StatelessWidget {
+  const _SearchingBody({
+    super.key,
+    required this.rematch,
+    required this.artKey,
+    required this.rideName,
+    required this.pickupAddress,
+    required this.dropoffAddress,
+    required this.fare,
+    required this.busy,
+    required this.onCancel,
+  });
 
-  final Animation<double> animation;
-
-  static const _size = 240.0;
-  static const _rings = 3;
+  final bool rematch;
+  final String? artKey;
+  final String? rideName;
+  final String pickupAddress;
+  final String dropoffAddress;
+  final int? fare;
+  final bool busy;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: _size,
-      height: _size,
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, _) {
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              for (var i = 0; i < _rings; i++)
-                _ring((animation.value + i / _rings) % 1.0),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _ring(double t) {
-    final eased = Curves.easeOutCubic.transform(t);
-    final opacity = (1 - Curves.easeIn.transform(t)).clamp(0.0, 1.0);
-    return Opacity(
-      opacity: opacity,
-      child: Transform.scale(
-        scale: 0.12 + eased * 0.88,
-        child: Container(
-          width: _size,
-          height: _size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: RawanaColors.primary.withValues(alpha: 0.16),
-            border: Border.all(
-              color: RawanaColors.primary.withValues(alpha: 0.45),
-              width: 1.5,
+    final l10n = context.l10n;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(rematch ? l10n.findingAnotherDriver : l10n.connectingToDriver, style: context.text.headline),
+                  const SizedBox(height: 4),
+                  Text(l10n.searchingNearbyHint, style: context.text.caption),
+                ],
+              ),
             ),
+            const SizedBox(width: 12),
+            RideVehicleArt(imageKey: artKey, width: 72),
+          ],
+        ),
+        const SizedBox(height: 16),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(RawanaSpacing.radiusPill),
+          child: const LinearProgressIndicator(
+            minHeight: 4,
+            color: RawanaColors.primary,
+            backgroundColor: RawanaColors.surfaceAlt,
           ),
         ),
-      ),
+        const SizedBox(height: 16),
+        if (pickupAddress.isNotEmpty || dropoffAddress.isNotEmpty)
+          TripRouteAddresses(pickupAddress: pickupAddress, dropoffAddress: dropoffAddress, dense: true),
+        if (fare != null && fare! > 0) ...[
+          const Divider(height: 24),
+          Row(
+            children: [
+              const Icon(LucideIcons.banknote, size: 18, color: RawanaColors.success),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  rideName == null ? l10n.cashLabel : '$rideName · ${l10n.cashLabel}',
+                  style: context.text.body,
+                ),
+              ),
+              Text(formatTripFare(fare), style: context.text.price),
+            ],
+          ),
+        ],
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: busy ? null : onCancel,
+          style: TextButton.styleFrom(
+            foregroundColor: RawanaColors.error,
+            minimumSize: const Size.fromHeight(48),
+          ),
+          child: busy
+              ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+              : Text(l10n.cancelRequest, style: context.text.button.copyWith(color: RawanaColors.error)),
+        ),
+        Text(l10n.noCancellationFee, textAlign: TextAlign.center, style: context.text.caption),
+      ],
+    );
+  }
+}
+
+class _ErrorBody extends StatelessWidget {
+  const _ErrorBody({
+    super.key,
+    required this.message,
+    required this.busy,
+    required this.onRetry,
+    required this.onCancel,
+  });
+
+  final String message;
+  final bool busy;
+  final VoidCallback onRetry;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Icon(LucideIcons.carTaxiFront, size: 36, color: RawanaColors.onSurfaceMuted),
+        const SizedBox(height: 12),
+        Text(message, textAlign: TextAlign.center, style: context.text.headline),
+        const SizedBox(height: 4),
+        Text(context.l10n.retryOrCancelBelow, textAlign: TextAlign.center, style: context.text.caption),
+        const SizedBox(height: 20),
+        RawanaPrimaryButton(
+          label: context.l10n.tryAgain,
+          icon: LucideIcons.refreshCw,
+          loading: busy,
+          onPressed: busy ? null : onRetry,
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: busy ? null : onCancel,
+          style: TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+          child: Text(context.l10n.cancelRequest),
+        ),
+      ],
+    );
+  }
+}
+
+class _MatchedBody extends StatelessWidget {
+  const _MatchedBody({super.key, required this.trip});
+
+  final Trip trip;
+
+  @override
+  Widget build(BuildContext context) {
+    final eta = trip.pickupEtaMinutes;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: StatusPill(
+            label: context.l10n.driverFound,
+            color: RawanaColors.success,
+            icon: LucideIcons.circleCheck,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          eta != null && eta > 0 ? context.l10n.arrivingIn(eta) : context.l10n.driverOnTheWay,
+          style: context.text.headline,
+        ),
+        const SizedBox(height: 14),
+        TripDriverCard(trip: trip),
+      ],
     );
   }
 }

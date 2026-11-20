@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -49,6 +50,8 @@ class RawanaGoogleMap extends StatefulWidget {
     this.showCompass = true,
     this.compassBottom,
     this.compassTop,
+    this.pulseLat,
+    this.pulseLng,
   });
 
   final double zoom;
@@ -92,6 +95,10 @@ class RawanaGoogleMap extends StatefulWidget {
   /// When set, the compass sits this far from the top instead.
   final double? compassTop;
 
+  /// Draws expanding rings here (e.g. the pickup while finding a driver).
+  final double? pulseLat;
+  final double? pulseLng;
+
   @override
   State<RawanaGoogleMap> createState() => _RawanaGoogleMapState();
 }
@@ -107,6 +114,8 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
   bool _didInitialFit = false;
   final ValueNotifier<double> _bearing = ValueNotifier(0);
   gm.CameraPosition? _camera;
+  Timer? _pulseTimer;
+  double _pulsePhase = 0;
 
   /// Navigation follows the travel direction unless the driver picks north-up.
   bool _northUp = false;
@@ -131,12 +140,28 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
     if (!kIsWeb) {
       _preloadMarkerIcons();
     }
+    _syncPulse();
+  }
+
+  bool get _hasPulse => widget.pulseLat != null && widget.pulseLng != null;
+
+  void _syncPulse() {
+    if (_hasPulse && _pulseTimer == null) {
+      _pulseTimer = Timer.periodic(const Duration(milliseconds: 110), (_) {
+        if (!mounted) return;
+        setState(() => _pulsePhase = (_pulsePhase + 0.045) % 1);
+      });
+    } else if (!_hasPulse && _pulseTimer != null) {
+      _pulseTimer?.cancel();
+      _pulseTimer = null;
+    }
   }
 
   @override
   void dispose() {
     _webMarkerSync = null;
     _webPolylineSync = null;
+    _pulseTimer?.cancel();
     _bearing.dispose();
     super.dispose();
   }
@@ -149,6 +174,7 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
   @override
   void didUpdateWidget(RawanaGoogleMap oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _syncPulse();
 
     if (oldWidget.cameraResetRevision != widget.cameraResetRevision ||
         oldWidget.recenterRevision != widget.recenterRevision) {
@@ -426,8 +452,24 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
     return result;
   }
 
-  Set<gm.Circle> _buildAccuracyCircles() {
+  gm.Circle _pulseRing(int index, double phase) {
+    final fade = 1 - phase;
+    return gm.Circle(
+      circleId: gm.CircleId('pickup_pulse_$index'),
+      center: gm.LatLng(widget.pulseLat!, widget.pulseLng!),
+      radius: 30 + phase * 320,
+      fillColor: RawanaColors.pickupPin.withValues(alpha: 0.16 * fade),
+      strokeColor: RawanaColors.pickupPin.withValues(alpha: 0.45 * fade),
+      strokeWidth: 2,
+      zIndex: 0,
+    );
+  }
+
+  Set<gm.Circle> _buildCircles() {
+    final pulse = _hasPulse && _isValidCoord(widget.pulseLat!, widget.pulseLng!);
     return {
+      if (pulse)
+        for (var i = 0; i < 2; i++) _pulseRing(i, (_pulsePhase + i * 0.5) % 1),
       for (final m in widget.markers)
         if (m.id == 'you' && _isValidCoord(m.lat, m.lng))
           gm.Circle(
@@ -690,7 +732,7 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
             tiltGesturesEnabled: gestures,
             onCameraIdle: widget.onCameraIdle,
             markers: _buildMarkers(),
-            circles: _buildAccuracyCircles(),
+            circles: _buildCircles(),
             polylines: _buildPolylines(),
             onTap: widget.onTap == null
                 ? null
