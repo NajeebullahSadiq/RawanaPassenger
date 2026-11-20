@@ -130,5 +130,21 @@ final appRouter = GoRouter(
       path: '/emergency-contacts',
       builder: (_, _) => const EmergencyContactsScreen(),
     ),
+    GoRoute(
+      path: '/terms',
+      builder: (context, _) => RawanaInfoScreen(
+        title: context.l10n.termsOfService,
+        sections: localizedPassengerTerms(context.l10n),
+        showLegalFooter: true,
+      ),
+    ),
+    GoRoute(
+      path: '/privacy-policy',
+      builder: (context, _) => RawanaInfoScreen(
+        title: context.l10n.privacyPolicy,
+        sections: localizedPrivacyPolicy(context.l10n, driver: false),
+        showLegalFooter: true,
+      ),
+    ),
   ],
 );

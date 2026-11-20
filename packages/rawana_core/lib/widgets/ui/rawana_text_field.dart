@@ -126,12 +126,14 @@ class RawanaPhoneField extends StatelessWidget {
     this.autofocus = false,
     this.enabled = true,
     this.textInputAction = TextInputAction.done,
+    this.validator,
   });
 
   final TextEditingController controller;
   final String? label;
   final String hint;
   final String? errorText;
+  final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final bool autofocus;
@@ -152,6 +154,7 @@ class RawanaPhoneField extends StatelessWidget {
         inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(10)],
         onChanged: onChanged,
         onFieldSubmitted: onSubmitted,
+        validator: validator,
         style: context.text.title,
         decoration: InputDecoration(
           hintText: hint,

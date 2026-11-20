@@ -16,6 +16,30 @@ Future<void> showRawanaError(BuildContext context, Object error) {
   );
 }
 
+/// Brief, non-blocking confirmation ("Saved", "Report sent").
+void showRawanaToast(BuildContext context, String message, {bool error = false, IconData? icon}) {
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  if (messenger == null) return;
+  messenger
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        content: Row(
+          children: [
+            Icon(
+              icon ?? (error ? LucideIcons.circleAlert : LucideIcons.circleCheck),
+              size: 18,
+              color: error ? RawanaColors.errorSoft : RawanaColors.successSoft,
+            ),
+            const SizedBox(width: 10),
+            Expanded(child: Text(message)),
+          ],
+        ),
+      ),
+    );
+}
+
 Future<void> showRawanaMessage(BuildContext context, String message) {
   return RawanaActionSheet.info(
     context,

@@ -63,9 +63,36 @@ extension RawanaUiL10n on AppLocalizations {
         'زنګ وهل اوس مهال شتون نه لري. د اپ دننه چټ وکاروئ.',
       );
 
+  // ---- Legal ----
+  String get termsOfService => _t('Terms of Service', 'شرایط استفاده', 'د کارونې شرایط');
+  String get privacyPolicy => _t('Privacy Policy', 'سیاست حریم خصوصی', 'د محرمیت تګلاره');
+  String get byContinuingYouAgree =>
+      _t('By continuing you agree to the ', 'با ادامه، شما با ', 'په دوام سره تاسو د ');
+  String get andConnector => _t(' and ', ' و ', ' او ');
+  String get agreeSuffix => _t('.', ' موافقت می‌کنید.', ' سره موافق یاست.');
+  String get legalLastUpdated => _t('Last updated: November 2026', 'آخرین به‌روزرسانی: نوامبر ۲۰۲۶', 'وروستی تازه: نومبر ۲۰۲۶');
+  String get legalQuestions => _t(
+        'Questions? Contact support@rawana.af',
+        'سوالی دارید؟ با support@rawana.af تماس بگیرید',
+        'پوښتنه لرئ؟ له support@rawana.af سره اړیکه ونیسئ',
+      );
+
+  // ---- Trip detail ----
+  String get openReceipt => _t('Open receipt', 'باز کردن رسید', 'رسید پرانیزئ');
+  String get receiptNotReady => _t(
+        'The receipt is not ready yet. Try again in a minute.',
+        'رسید هنوز آماده نیست. یک دقیقه بعد دوباره تلاش کنید.',
+        'رسید لا چمتو نه دی. یوه دقیقه وروسته بیا هڅه وکړئ.',
+      );
+
+  // ---- Auth flow ----
+  String get devOtpHintWhatsApp => 'Dev WhatsApp code: 123456';
+  String get devOtpHintSms => 'Dev build: check the Supabase SMS log';
+  String get changeNumber => _t('Change number', 'تغییر شماره', 'شمېره بدله کړئ');
+  String get verifyingCode => _t('Verifying…', 'در حال تأیید…', 'تایيدېږي…');
+
   String get showPassword => _t('Show password', 'نمایش رمز', 'پټنوم ښکاره کړئ');
   String get hidePassword => _t('Hide password', 'پنهان کردن رمز', 'پټنوم پټ کړئ');
-  String get markAllRead => _t('Mark all as read', 'خوانده‌شدن همه', 'ټول لوستل شوي');
   String get justNow => _t('Just now', 'همین حالا', 'همدا اوس');
   String minutesAgo(int n) => _t('$n min ago', '$n دقیقه پیش', '$n دقیقې مخکې');
   String hoursAgo(int n) => _t('$n h ago', '$n ساعت پیش', '$n ساعته مخکې');

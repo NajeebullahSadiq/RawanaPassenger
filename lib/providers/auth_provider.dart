@@ -17,7 +17,9 @@ final authSessionProvider = StreamProvider<Session?>((ref) {
 
 final pendingOtpProvider = StateProvider<({String phone, RawanaOtpChannel channel})?>((ref) => null);
 
-final pendingEmailProvider = StateProvider<String?>((ref) => null);
+/// Email sign-up awaiting confirmation. The password stays in memory only so
+/// the user can continue after tapping the link without retyping it.
+final pendingEmailProvider = StateProvider<({String email, String? password})?>((ref) => null);
 
 /// Local demo session when Supabase is unavailable or email is unverified.
 final demoLoggedInProvider = StateProvider<bool>((ref) => false);

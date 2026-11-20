@@ -36,6 +36,42 @@ class RawanaActionSheet {
   }
 
   /// Yes / no question. Resolves to `true` only when confirmed.
+  /// Any content in the standard sheet panel (forms, menus).
+  static Future<T?> custom<T>(BuildContext context, Widget child, {bool dismissible = true}) => _show<T>(
+        context,
+        Flexible(child: SingleChildScrollView(padding: const EdgeInsets.only(top: 8), child: child)),
+        dismissible: dismissible,
+      );
+
+  /// Tap-to-pick list of actions; resolves to the tapped value or `null`.
+  static Future<T?> menu<T>(
+    BuildContext context, {
+    required String title,
+    required List<RawanaSheetOption<T>> options,
+  }) {
+    return _show<T>(
+      context,
+      Builder(
+        builder: (ctx) => Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(title, style: ctx.text.headline),
+            const SizedBox(height: 12),
+            for (final o in options)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: o.icon == null ? null : Icon(o.icon, color: RawanaColors.primary),
+                title: Text(o.label, style: ctx.text.bodyStrong),
+                subtitle: o.subtitle == null ? null : Text(o.subtitle!, style: ctx.text.caption),
+                onTap: () => Navigator.of(ctx).pop(o.value),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   static Future<bool> confirm(
     BuildContext context, {
     required String title,

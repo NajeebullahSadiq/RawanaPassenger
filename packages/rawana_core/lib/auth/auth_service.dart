@@ -84,6 +84,23 @@ class AuthService {
     }
   }
 
+  /// Finishes an email sign-up after the user tapped the confirmation link.
+  /// Throws [RawanaAuthException] `email_not_verified` while it is still pending.
+  Future<void> completeEmailVerification({String? email, String? password}) async {
+    _requireSupabase();
+    if (session != null) {
+      try {
+        await _client!.auth.refreshSession();
+      } on sb.AuthException catch (e) {
+        throw RawanaAuthException(_mapAuthError(e.message), e.message);
+      }
+      if (!isEmailVerified) throw RawanaAuthException('email_not_verified');
+      return;
+    }
+    if (email == null || password == null) throw RawanaAuthException('email_not_verified');
+    await signInWithEmail(email: email, password: password);
+  }
+
   Future<void> resendEmailVerification(String email) async {
     _requireSupabase();
     await _client!.auth.resend(type: sb.OtpType.signup, email: email.trim());
