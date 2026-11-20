@@ -44,6 +44,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.invalidate(scheduledRidesProvider);
       final loc = ref.read(passengerLiveLocationProvider);
       if (loc != null) unawaited(_syncPickupFromCoords(loc.lat, loc.lng));
+      if (PermissionPromptGate.shouldAsk('passenger_location')) unawaited(_askLocation());
     });
     _scheduledPoll = Timer.periodic(const Duration(seconds: 30), (_) => _pollScheduledRides());
   }
@@ -93,7 +94,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.read(homeMapPickupProvider.notifier).state = (lat: lat, lng: lng, rideTypeId: null);
   }
 
+  Future<bool> _askLocation() async {
+    final granted = await ensureLocationWithRationale(context, reason: context.l10n.locationRationalePassenger);
+    if (granted && mounted) ref.read(passengerLiveLocationProvider.notifier).restart();
+    return granted;
+  }
+
   Future<void> _retryLocation() async {
+    if (!await _askLocation() || !mounted) {
+      if (mounted) setState(() => _locationError = true);
+      return;
+    }
     await ref.read(passengerLiveLocationProvider.notifier).refresh();
     final loc = ref.read(passengerLiveLocationProvider);
     if (loc != null) {

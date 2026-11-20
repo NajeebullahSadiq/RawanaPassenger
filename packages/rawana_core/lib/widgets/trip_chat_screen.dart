@@ -489,6 +489,7 @@ class _Composer extends StatelessWidget {
                   const SizedBox(width: 6),
                   IconButton.filled(
                     onPressed: onSend,
+                    tooltip: context.l10n.sendReply,
                     style: IconButton.styleFrom(
                       backgroundColor: RawanaColors.primary,
                       disabledBackgroundColor: RawanaColors.outline,

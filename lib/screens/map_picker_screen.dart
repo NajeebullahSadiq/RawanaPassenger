@@ -166,6 +166,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
           padding: const EdgeInsets.all(8),
           child: RawanaCircleIconButton(
             icon: RawanaIcons.back,
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             onPressed: () => context.pop(),
           ),
         ),

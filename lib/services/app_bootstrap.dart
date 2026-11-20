@@ -6,7 +6,6 @@ import '../providers/app_providers.dart';
 import '../providers/auth_provider.dart';
 import '../providers/trip_providers.dart';
 import '../router.dart';
-import 'connectivity_service.dart';
 import 'push_setup.dart';
 
 class AppBootstrap extends ConsumerStatefulWidget {
@@ -26,8 +25,17 @@ class _AppBootstrapState extends ConsumerState<AppBootstrap> {
 
   Future<void> _init() async {
     ConnectivityService.init((connected) {
-      ref.read(connectivityProvider.notifier).state = connected;
+      if (mounted) ref.read(connectivityProvider.notifier).state = connected;
     });
+    installSessionExpiryHandler(
+      router: appRouter,
+      navigatorKey: rootNavigatorKey,
+      isLoggedIn: () => ref.read(isAppLoggedInProvider),
+      signOut: () async {
+        ref.read(demoLoggedInProvider.notifier).state = false;
+        await ref.read(authServiceProvider).signOut();
+      },
+    );
     if (AppConfig.hasSupabase) {
       // Supabase is initialized in main() before runApp so splash can see
       // the restored session. Here we only wire API tokens + listeners.

@@ -58,7 +58,8 @@ class RawanaCircleIconButton extends StatelessWidget {
             ],
           );
 
-    if (tooltip == null) return wrapped;
-    return Tooltip(message: tooltip!, child: wrapped);
+    final semantic = Semantics(button: true, enabled: onPressed != null, child: wrapped);
+    if (tooltip == null) return semantic;
+    return Tooltip(message: tooltip!, child: semantic);
   }
 }

@@ -158,6 +158,55 @@ extension RawanaUiL10n on AppLocalizations {
         _ => key,
       };
 
+  String get openSettings => _t('Open settings', 'باز کردن تنظیمات', 'ترتیبات پرانیزئ');
+  String get notNow => _t('Not now', 'حالا نه', 'اوس نه');
+  String get locationPermissionTitle => _t(
+        'Allow location access',
+        'اجازهٔ دسترسی به موقعیت',
+        'موقعیت ته د لاسرسي اجازه',
+      );
+  String get locationRationalePassenger => _t(
+        'Rawana uses your location to set your pickup point and show drivers near you.',
+        'روانا از موقعیت شما برای تعیین نقطهٔ سوار شدن و نمایش راننده‌های نزدیک استفاده می‌کند.',
+        'روانا ستاسو موقعیت د سپرېدو ځای ټاکلو او نږدې چلوونکو ښودلو لپاره کاروي.',
+      );
+  String get locationRationaleDriver => _t(
+        'Rawana needs your location while you are online so riders can find you and you can navigate to them.',
+        'روانا هنگام آنلاین بودن به موقعیت شما نیاز دارد تا مسافران شما را پیدا کنند و شما به آن‌ها مسیریابی کنید.',
+        'روانا د آنلاین کېدو پر مهال ستاسو موقعیت ته اړتیا لري ترڅو سپرلي تاسو ومومي او تاسو ورته لار ومومئ.',
+      );
+  String get locationServicesOffTitle => _t('Location is turned off', 'موقعیت خاموش است', 'موقعیت بند دی');
+  String get locationServicesOffBody => _t(
+        'Turn on location services to continue.',
+        'برای ادامه، خدمات موقعیت را روشن کنید.',
+        'د دوام لپاره د موقعیت خدمات چالان کړئ.',
+      );
+  String get locationBlockedTitle => _t(
+        'Location access is blocked',
+        'دسترسی به موقعیت مسدود است',
+        'موقعیت ته لاسرسی بند دی',
+      );
+  String get locationBlockedBody => _t(
+        'Allow location for Rawana in Settings to continue.',
+        'برای ادامه، در تنظیمات به روانا اجازهٔ موقعیت بدهید.',
+        'د دوام لپاره، په ترتیباتو کې روانا ته د موقعیت اجازه ورکړئ.',
+      );
+  String get notificationsBlockedTitle => _t(
+        'Notifications are off',
+        'اعلان‌ها خاموش هستند',
+        'خبرتیاوې بندې دي',
+      );
+  String get notificationsRationaleDriver => _t(
+        'Turn on notifications so you never miss a ride request.',
+        'اعلان‌ها را روشن کنید تا هیچ درخواست سفری را از دست ندهید.',
+        'خبرتیاوې چالانې کړئ ترڅو هېڅ د سفر غوښتنه له لاسه ورنکړئ.',
+      );
+  String get notificationsRationalePassenger => _t(
+        'Turn on notifications to know when your driver arrives.',
+        'اعلان‌ها را روشن کنید تا از رسیدن راننده باخبر شوید.',
+        'خبرتیاوې چالانې کړئ ترڅو د چلوونکي له رارسېدو خبر شئ.',
+      );
+
   String get onlineTrackingTitle => _t(
         'You are online',
         'شما آنلاین هستید',

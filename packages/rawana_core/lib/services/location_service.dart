@@ -3,12 +3,17 @@ import 'package:geolocator/geolocator.dart';
 import '../constants.dart';
 
 class LocationService {
+  /// When false, background code never triggers the OS prompt; screens ask
+  /// via `ensureLocationWithRationale` instead.
+  static bool autoRequest = true;
+
   static Future<bool> ensurePermission({bool openSettingsIfDeniedForever = false}) async {
     final enabled = await Geolocator.isLocationServiceEnabled();
     if (!enabled) return false;
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
+      if (!autoRequest) return false;
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.deniedForever) {

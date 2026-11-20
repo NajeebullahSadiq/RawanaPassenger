@@ -41,6 +41,13 @@ class PassengerLiveLocationNotifier extends StateNotifier<GeoPoint?> {
     unawaited(_startTracking());
   }
 
+  /// Restart after the user grants permission from a rationale sheet.
+  void restart() {
+    if (!_ref.read(isAppLoggedInProvider)) return;
+    _stop();
+    _start();
+  }
+
   Future<void> _startTracking() async {
     final ok = await LocationService.ensurePermission();
     if (!ok || !mounted) return;

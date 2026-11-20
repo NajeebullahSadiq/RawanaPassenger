@@ -10,6 +10,7 @@ import 'services/app_bootstrap.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppConfig.assertReleaseConfig();
+  LocationService.autoRequest = false;
   final savedLocale = await LocaleStorage.load();
   RawanaLocale.apply(savedLocale);
   await ensureGoogleMapsScriptLoaded(AppConfig.googleMapsWebApiKey);
@@ -49,9 +50,14 @@ class PassengerApp extends ConsumerWidget {
         localeResolutionCallback: (device, supported) =>
             RawanaLocale.resolutionCallback(locale, device, supported),
         builder: (context, child) {
-          return Directionality(
-            textDirection: RawanaLocale.textDirectionOf(locale),
-            child: child ?? const SizedBox.shrink(),
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            // Large system fonts beyond 1.3x break fixed-height map sheets.
+            data: media.copyWith(textScaler: media.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+            child: Directionality(
+              textDirection: RawanaLocale.textDirectionOf(locale),
+              child: child ?? const SizedBox.shrink(),
+            ),
           );
         },
         routerConfig: appRouter,
