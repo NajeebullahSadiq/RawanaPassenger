@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../auth/auth_error_messages.dart';
 import '../auth/auth_exception.dart';
@@ -7,8 +8,12 @@ import '../auth/otp_channel.dart';
 import '../l10n/l10n_extensions.dart';
 import '../theme/rawana_theme.dart';
 import '../utils/profile_registration.dart';
-import '../widgets/rawana_primary_button.dart';
-import '../widgets/show_rawana_error.dart';
+import 'rawana_primary_button.dart';
+import 'show_rawana_error.dart';
+import 'ui/rawana_banner.dart';
+import 'ui/rawana_icons.dart';
+import 'ui/rawana_scaffold.dart';
+import 'ui/rawana_text_field.dart';
 
 /// Login recovery by email link/code or SMS code, then a new password.
 class ForgotPasswordForm extends StatefulWidget {
@@ -41,7 +46,6 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   _ResetChannel _channel = _ResetChannel.email;
   _ResetStep _step = _ResetStep.identify;
   bool _loading = false;
-  bool _showPassword = false;
   String? _error;
 
   @override
@@ -59,23 +63,14 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     super.dispose();
   }
 
-  Future<void> _send() async {
+  Future<void> _run(Future<void> Function() action) async {
+    FocusScope.of(context).unfocus();
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      if (_channel == _ResetChannel.email) {
-        final needsCode = await widget.auth.sendEmailPasswordReset(_identityController.text);
-        if (!mounted) return;
-        setState(() => _step = needsCode ? _ResetStep.code : _ResetStep.emailSent);
-      } else {
-        await widget.auth.sendPhonePasswordReset(
-          normalizeAfPhoneInput(_identityController.text),
-        );
-        if (!mounted) return;
-        setState(() => _step = _ResetStep.code);
-      }
+      await action();
     } on RawanaAuthException catch (e) {
       if (!mounted) return;
       setState(() => _error = authErrorMessage(e.messageKey, l10n: context.l10n));
@@ -87,36 +82,34 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     }
   }
 
-  Future<void> _verifyCode() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      if (_channel == _ResetChannel.email) {
-        await widget.auth.verifyEmailRecoveryCode(
-          email: _identityController.text,
-          code: _codeController.text.trim(),
-        );
-      } else {
-        await widget.auth.verifyPhoneOtp(
-          phoneE164: normalizeAfPhoneInput(_identityController.text),
-          code: _codeController.text.trim(),
-          channel: RawanaOtpChannel.sms,
-        );
-      }
-      if (!mounted) return;
-      setState(() => _step = _ResetStep.password);
-    } on RawanaAuthException catch (e) {
-      if (!mounted) return;
-      setState(() => _error = authErrorMessage(e.messageKey, l10n: context.l10n));
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _error = context.l10n.friendlyApiError(e));
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
+  Future<void> _send() => _run(() async {
+        if (_channel == _ResetChannel.email) {
+          final needsCode = await widget.auth.sendEmailPasswordReset(_identityController.text.trim());
+          if (!mounted) return;
+          setState(() => _step = needsCode ? _ResetStep.code : _ResetStep.emailSent);
+        } else {
+          await widget.auth.sendPhonePasswordReset(normalizeAfPhoneInput(_identityController.text));
+          if (!mounted) return;
+          setState(() => _step = _ResetStep.code);
+        }
+      });
+
+  Future<void> _verifyCode() => _run(() async {
+        if (_channel == _ResetChannel.email) {
+          await widget.auth.verifyEmailRecoveryCode(
+            email: _identityController.text.trim(),
+            code: _codeController.text.trim(),
+          );
+        } else {
+          await widget.auth.verifyPhoneOtp(
+            phoneE164: normalizeAfPhoneInput(_identityController.text),
+            code: _codeController.text.trim(),
+            channel: RawanaOtpChannel.sms,
+          );
+        }
+        if (!mounted) return;
+        setState(() => _step = _ResetStep.password);
+      });
 
   Future<void> _savePassword() async {
     final password = _passwordController.text;
@@ -128,146 +121,145 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
       setState(() => _error = context.l10n.passwordsDoNotMatch);
       return;
     }
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
+    await _run(() async {
       await widget.auth.updatePassword(password);
       if (!mounted) return;
       showRawanaMessage(context, context.l10n.passwordResetSignIn);
       await widget.onSignedIn();
-    } on RawanaAuthException catch (e) {
-      if (!mounted) return;
-      setState(() => _error = authErrorMessage(e.messageKey, l10n: context.l10n));
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _error = context.l10n.friendlyApiError(e));
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+    });
+  }
+
+  void _setChannel(_ResetChannel channel) {
+    setState(() {
+      _channel = channel;
+      _identityController.clear();
+      _error = null;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final identityReady = _channel == _ResetChannel.email
+    final isEmail = _channel == _ResetChannel.email;
+    final identityReady = isEmail
         ? _identityController.text.contains('@')
         : isRegistrationPhoneValid(normalizeAfPhoneInput(_identityController.text));
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(title: Text(l10n.resetPasswordTitle)),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          children: [
-            Text(
-              l10n.resetPasswordHint,
-              style: const TextStyle(color: RawanaColors.onSurfaceMuted, fontSize: 15, height: 1.5),
-            ),
-            const SizedBox(height: 20),
-            SegmentedButton<_ResetChannel>(
-              segments: [
-                ButtonSegment(value: _ResetChannel.email, label: Text(l10n.resetByEmail), icon: const Icon(Icons.mail_outline_rounded, size: 16)),
-                ButtonSegment(value: _ResetChannel.sms, label: Text(l10n.resetBySms), icon: const Icon(Icons.sms_outlined, size: 16)),
-              ],
-              selected: {_channel},
-              onSelectionChanged: _loading || _step != _ResetStep.identify
-                  ? null
-                  : (value) => setState(() {
-                        _channel = value.first;
-                        _error = null;
-                      }),
-            ),
-            const SizedBox(height: 20),
-            if (_step == _ResetStep.identify) ...[
-              TextField(
+    return RawanaScaffold(
+      title: l10n.resetPasswordTitle,
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        children: [
+          RawanaPageHeader(
+            icon: LucideIcons.keyRound,
+            title: l10n.resetPasswordTitle,
+            subtitle: l10n.resetPasswordHint,
+          ),
+          const SizedBox(height: 20),
+          SegmentedButton<_ResetChannel>(
+            segments: [
+              ButtonSegment(
+                value: _ResetChannel.email,
+                label: Text(l10n.resetByEmail),
+                icon: const Icon(LucideIcons.mail, size: 16),
+              ),
+              ButtonSegment(
+                value: _ResetChannel.sms,
+                label: Text(l10n.resetBySms),
+                icon: const Icon(LucideIcons.messageSquare, size: 16),
+              ),
+            ],
+            selected: {_channel},
+            onSelectionChanged:
+                _loading || _step != _ResetStep.identify ? null : (value) => _setChannel(value.first),
+          ),
+          const SizedBox(height: 20),
+          if (_step == _ResetStep.identify) ...[
+            if (isEmail)
+              RawanaTextField(
                 controller: _identityController,
-                keyboardType: _channel == _ResetChannel.email
-                    ? TextInputType.emailAddress
-                    : TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: _channel == _ResetChannel.email ? l10n.emailLabel : l10n.phoneNumberRequired,
-                  prefixIcon: Icon(
-                    _channel == _ResetChannel.email ? Icons.mail_outline_rounded : Icons.phone_outlined,
-                    size: 18,
-                  ),
-                ),
+                label: l10n.emailLabel,
+                prefixIcon: LucideIcons.mail,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.email],
+                textDirection: TextDirection.ltr,
                 onChanged: (_) => setState(() {}),
-              ),
-              const SizedBox(height: 24),
-              RawanaPrimaryButton(
-                label: _channel == _ResetChannel.email ? l10n.sendResetLink : l10n.sendResetCode,
-                icon: Icons.arrow_forward_rounded,
-                loading: _loading,
-                onPressed: _loading || !identityReady ? null : _send,
-              ),
-            ],
-            if (_step == _ResetStep.emailSent)
-              Text(
-                l10n.resetLinkSent,
-                style: const TextStyle(fontSize: 16, height: 1.5, fontWeight: FontWeight.w600),
-              ),
-            if (_step == _ResetStep.code) ...[
-              TextField(
-                controller: _codeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: l10n.enterTheCode,
-                  prefixIcon: const Icon(Icons.verified_user_outlined, size: 18),
-                ),
+                onSubmitted: (_) => identityReady && !_loading ? _send() : null,
+              )
+            else
+              RawanaPhoneField(
+                controller: _identityController,
+                label: l10n.phoneNumberRequired,
                 onChanged: (_) => setState(() {}),
+                onSubmitted: (_) => identityReady && !_loading ? _send() : null,
               ),
-              const SizedBox(height: 24),
-              RawanaPrimaryButton(
-                label: l10n.continueAction,
-                loading: _loading,
-                onPressed: _loading || _codeController.text.trim().length < 6 ? null : _verifyCode,
-              ),
-            ],
-            if (_step == _ResetStep.password) ...[
-              Text(
-                l10n.setNewPassword,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _passwordController,
-                obscureText: !_showPassword,
-                decoration: InputDecoration(
-                  labelText: l10n.newPassword,
-                  prefixIcon: const Icon(Icons.lock_outline_rounded, size: 18),
-                  suffixIcon: IconButton(
-                    icon: Icon(_showPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
-                    onPressed: () => setState(() => _showPassword = !_showPassword),
-                  ),
-                ),
-                onChanged: (_) => setState(() {}),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _confirmController,
-                obscureText: !_showPassword,
-                decoration: InputDecoration(
-                  labelText: l10n.confirmPassword,
-                  prefixIcon: const Icon(Icons.lock_outline_rounded, size: 18),
-                ),
-                onChanged: (_) => setState(() {}),
-              ),
-              const SizedBox(height: 24),
-              RawanaPrimaryButton(
-                label: l10n.updatePassword,
-                loading: _loading,
-                onPressed: _loading ? null : _savePassword,
-              ),
-            ],
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: RawanaColors.error, fontWeight: FontWeight.w600)),
-            ],
+            const SizedBox(height: 24),
+            RawanaPrimaryButton(
+              label: isEmail ? l10n.sendResetLink : l10n.sendResetCode,
+              icon: RawanaIcons.forward,
+              loading: _loading,
+              onPressed: _loading || !identityReady ? null : _send,
+            ),
           ],
-        ),
+          if (_step == _ResetStep.emailSent)
+            RawanaBanner(
+              tone: RawanaBannerTone.success,
+              icon: LucideIcons.mailCheck,
+              message: l10n.resetLinkSent,
+            ),
+          if (_step == _ResetStep.code) ...[
+            RawanaTextField(
+              controller: _codeController,
+              label: l10n.enterTheCode,
+              prefixIcon: LucideIcons.shieldCheck,
+              keyboardType: TextInputType.number,
+              autofillHints: const [AutofillHints.oneTimeCode],
+              textDirection: TextDirection.ltr,
+              maxLength: 8,
+              onChanged: (_) => setState(() {}),
+            ),
+            const SizedBox(height: 24),
+            RawanaPrimaryButton(
+              label: l10n.continueAction,
+              loading: _loading,
+              onPressed: _loading || _codeController.text.trim().length < 6 ? null : _verifyCode,
+            ),
+          ],
+          if (_step == _ResetStep.password) ...[
+            Text(l10n.setNewPassword, style: context.text.title),
+            const SizedBox(height: 16),
+            RawanaTextField(
+              controller: _passwordController,
+              label: l10n.newPassword,
+              prefixIcon: LucideIcons.lock,
+              obscure: true,
+              autofillHints: const [AutofillHints.newPassword],
+              textInputAction: TextInputAction.next,
+              onChanged: (_) => setState(() {}),
+            ),
+            const SizedBox(height: 12),
+            RawanaTextField(
+              controller: _confirmController,
+              label: l10n.confirmPassword,
+              prefixIcon: LucideIcons.lock,
+              obscure: true,
+              autofillHints: const [AutofillHints.newPassword],
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) => _loading ? null : _savePassword(),
+            ),
+            const SizedBox(height: 24),
+            RawanaPrimaryButton(
+              label: l10n.updatePassword,
+              loading: _loading,
+              onPressed: _loading ? null : _savePassword,
+            ),
+          ],
+          if (_error != null) ...[
+            const SizedBox(height: 16),
+            RawanaBanner.error(message: _error!),
+          ],
+        ],
       ),
     );
   }

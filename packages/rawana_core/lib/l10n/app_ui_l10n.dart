@@ -85,6 +85,12 @@ extension RawanaUiL10n on AppLocalizations {
         'رسید لا چمتو نه دی. یوه دقیقه وروسته بیا هڅه وکړئ.',
       );
 
+  // ---- Photos ----
+  String get addPhoto => _t('Add a photo', 'افزودن عکس', 'انځور زیات کړئ');
+  String get takePhoto => _t('Take a photo', 'گرفتن عکس', 'انځور واخلئ');
+  String get chooseFromGallery => _t('Choose from gallery', 'انتخاب از گالری', 'له ګالري وټاکئ');
+  String get changePhoto => _t('Change photo', 'تغییر عکس', 'انځور بدل کړئ');
+
   // ---- Auth flow ----
   String get devOtpHintWhatsApp => 'Dev WhatsApp code: 123456';
   String get devOtpHintSms => 'Dev build: check the Supabase SMS log';

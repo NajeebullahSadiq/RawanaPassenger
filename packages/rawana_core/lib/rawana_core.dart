@@ -35,6 +35,7 @@ export 'content/rawana_legal_content.dart';
 export 'screens/language_view.dart';
 export 'screens/notifications_view.dart';
 export 'screens/trip_detail_view.dart';
+export 'utils/pick_image.dart';
 export 'screens/auth/auth_entry_view.dart';
 export 'screens/auth/auth_failure.dart';
 export 'screens/auth/phone_sign_in_view.dart';

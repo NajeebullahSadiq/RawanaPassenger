@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../theme/rawana_theme.dart';
 
@@ -61,6 +62,62 @@ class RawanaAvatar extends StatelessWidget {
           ? BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: RawanaShadows.low)
           : null,
       child: image,
+    );
+  }
+}
+
+/// [RawanaAvatar] with a camera badge, for editing a profile photo.
+class RawanaAvatarPicker extends StatelessWidget {
+  const RawanaAvatarPicker({
+    super.key,
+    required this.name,
+    required this.onTap,
+    this.photoUrl,
+    this.uploading = false,
+    this.size = 96,
+    this.semanticLabel,
+  });
+
+  final String name;
+  final String? photoUrl;
+  final bool uploading;
+  final double size;
+  final VoidCallback? onTap;
+  final String? semanticLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: GestureDetector(
+        onTap: uploading ? null : onTap,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            RawanaAvatar(name: name.isEmpty ? '?' : name, photoUrl: photoUrl, size: size, ring: true),
+            PositionedDirectional(
+              end: -2,
+              bottom: -2,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: RawanaColors.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: uploading
+                    ? const Padding(
+                        padding: EdgeInsets.all(7),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(LucideIcons.camera, color: Colors.white, size: 15),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
