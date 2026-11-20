@@ -7,7 +7,10 @@ import 'otp_channel.dart';
 
 /// Supabase Auth wrapper — email/password (testing) + phone OTP (SMS & WhatsApp).
 class AuthService {
-  AuthService({ApiClient? apiClient}) : _api = apiClient;
+  AuthService({ApiClient? apiClient, this.role = 'passenger'}) : _api = apiClient;
+
+  /// `passenger` or `driver`; sent when verifying WhatsApp OTP sign-ins.
+  final String role;
 
   final ApiClient? _api;
 
@@ -161,7 +164,7 @@ class AuthService {
       'phone': phone,
       'channel': channel.value,
       'code': code,
-      'role': AppConfig.defaultAuthRole,
+      'role': role,
     });
     final tokenHash = result['token_hash'] as String?;
     if (tokenHash == null) {
@@ -296,7 +299,7 @@ class AuthService {
 
   /// One-tap demo login: sign in, or sign up then sign in. Returns false if Supabase is not configured.
   Future<bool> demoLogin({required String role}) async {
-    if (_client == null) return false;
+    if (_client == null || !AppConfig.enableDemoLogin) return false;
 
     final email = DemoCredentials.emailForRole(role);
     const password = DemoCredentials.mobilePassword;

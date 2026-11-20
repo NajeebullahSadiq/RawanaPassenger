@@ -14,6 +14,18 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
+// Kept out of git: set MAPS_API_KEY in android/local.properties or the environment.
+val mapsApiKey: String = localProperties.getProperty("MAPS_API_KEY") ?: System.getenv("MAPS_API_KEY") ?: ""
+
+// CI smoke builds may opt into debug signing; real releases must use key.properties.
+val allowDebugSigning = System.getenv("RAWANA_ALLOW_DEBUG_SIGNING") == "true"
+
 android {
     namespace = "com.rawana.passenger_app"
     compileSdk = flutter.compileSdkVersion
@@ -31,6 +43,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
     signingConfigs {
@@ -46,12 +59,27 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
+            signingConfig = when {
+                keystorePropertiesFile.exists() -> signingConfigs.getByName("release")
+                allowDebugSigning -> signingConfigs.getByName("debug")
+                else -> null
             }
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val releasing = allTasks.any {
+        (it.name.startsWith("assemble") || it.name.startsWith("bundle")) && it.name.endsWith("Release")
+    }
+    if (releasing && !keystorePropertiesFile.exists() && !allowDebugSigning) {
+        throw GradleException(
+            "android/key.properties is missing. Release builds must be signed with the upload key " +
+                "(see key.properties.example), or set RAWANA_ALLOW_DEBUG_SIGNING=true for a local smoke build."
+        )
     }
 }
 
@@ -97,4 +125,5 @@ dependencies {
 
 if (file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }

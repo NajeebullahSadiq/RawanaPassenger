@@ -9,13 +9,12 @@ import 'services/app_bootstrap.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Load runtime config from `.env` BEFORE Firebase / Supabase so the keys are
-  // available to AppConfig getters during bootstrap.
-  await RawanaEnv.load();
+  AppConfig.assertReleaseConfig();
   final savedLocale = await LocaleStorage.load();
   RawanaLocale.apply(savedLocale);
   await ensureGoogleMapsScriptLoaded(AppConfig.googleMapsWebApiKey);
-  await initializeFirebaseApp(options: DefaultFirebaseOptions.currentPlatform);
+  final firebaseReady = await initializeFirebaseApp(options: DefaultFirebaseOptions.currentPlatform);
+  await CrashReporting.install(firebaseReady: firebaseReady);
   if (AppConfig.hasSupabase) {
     await Supabase.initialize(
       url: AppConfig.supabaseUrl,

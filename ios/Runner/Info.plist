@@ -15,7 +15,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Rawana Taxi</string>
 	<key>GMSApiKey</key>
-	<string>AIzaSyAetBB0X94f69K1WgTKwVw_55ie5SlKFec</string>
+	<string>$(MAPS_API_KEY)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

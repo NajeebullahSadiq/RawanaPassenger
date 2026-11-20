@@ -25,7 +25,7 @@ dependencies:
   supabase_flutter: ^2.9.0
   crypto: ^3.0.6
   url_launcher: ^6.3.1
-  flutter_dotenv: ^5.2.1
+  firebase_crashlytics: ^4.3.10
   flutter_svg: ^2.2.0
   shared_preferences: ^2.5.3
   lucide_icons_flutter: 3.1.14+2
