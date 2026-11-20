@@ -176,6 +176,20 @@ class PassengerService {
     });
   }
 
+  Future<Map<String, dynamic>> updateSavedAddress(
+    String id, {
+    String? label,
+    String? address,
+    double? lat,
+    double? lng,
+  }) {
+    return _api.patch('/passengers/addresses/$id', data: {
+      'label': ?label,
+      'address': ?address,
+      if (lat != null && lng != null) ...{'lat': lat, 'lng': lng},
+    });
+  }
+
   Future<void> deleteSavedAddress(String id) async {
     await _api.delete('/passengers/addresses/$id');
   }
