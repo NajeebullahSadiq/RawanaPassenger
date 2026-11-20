@@ -59,5 +59,8 @@ flutter build appbundle --release --dart-define-from-file=env/prod.json --obfusc
 - Gradle refuses to build a release without `android/key.properties` (see `key.properties.example`).
   For a local smoke build only, set `RAWANA_ALLOW_DEBUG_SIGNING=true`.
 - Crash reports go to Firebase Crashlytics when `google-services.json` / `GoogleService-Info.plist` are present.
+- Upload `build/symbols` to Crashlytics after each release build, and keep it with the release tag.
+- Store submission, owner actions and the device test matrix: `backend_api/Docs/RELEASE_CHECKLIST.md` and `backend_api/Docs/DEVICE_TEST_MATRIX.md`.
+- Changes per version: `CHANGELOG.md`.
 
 Firebase Android/iOS config can be generated from the backend repo (`npm run firebase:provision`) when this folder sits next to `backend_api`.
