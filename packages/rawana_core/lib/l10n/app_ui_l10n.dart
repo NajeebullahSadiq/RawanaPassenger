@@ -135,6 +135,11 @@ extension RawanaUiL10n on AppLocalizations {
       );
   String get removeLabel => _t('Remove', 'حذف', 'لرې کول');
 
+  // ---- Driver onboarding ----
+  String get reviewerNote => _t('Note from our review team', 'یادداشت تیم بررسی ما', 'زموږ د بیاکتنې ټیم یادښت');
+  String get statusAutoRefresh =>
+      _t('This page updates automatically.', 'این صفحه به‌طور خودکار به‌روز می‌شود.', 'دا پاڼه په خپله تازه کېږي.');
+
   // ---- Support ----
   String get ticketStatusInProgress => _t('In progress', 'در حال بررسی', 'د څېړنې لاندې');
   String get ticketStatusResolved => _t('Resolved', 'حل شد', 'حل شو');
