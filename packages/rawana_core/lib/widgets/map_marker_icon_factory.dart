@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gm;
 
+import '../theme/rawana_theme.dart';
+
 /// Renders a branded map pin for Google Maps without the default flag shadow.
 Future<gm.BitmapDescriptor> createRawanaMapMarkerIcon({
   required IconData icon,
@@ -21,7 +23,7 @@ Future<gm.BitmapDescriptor> createRawanaMapMarkerIcon({
     );
   }
   if (_isCurrentLocationIcon(icon)) {
-    return _createCurrentLocationIcon(size: size);
+    return _createCurrentLocationIcon(color: color, size: size);
   }
   if (_isRiderIcon(icon)) {
     return _createRiderMarkerIcon(color: color, size: size);
@@ -121,9 +123,10 @@ Future<gm.BitmapDescriptor> _createTaxiMarkerIcon({
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
   final center = Offset(width / 2, height / 2);
-  final teal = premium ? const Color(0xFF1F6F6A) : const Color(0xFF2A9B94);
-  final tealDark = premium ? const Color(0xFF134844) : const Color(0xFF1A6F6A);
-  final tealLight = premium ? const Color(0xFF3D8F89) : const Color(0xFF4EC4BB);
+  final bodyMid = premium ? RawanaColors.vehiclePremiumBody : RawanaColors.vehicleBody;
+  final bodyDark = premium ? const Color(0xFF0A1626) : RawanaColors.vehicleBodyShade;
+  final bodyLight = premium ? const Color(0xFF2A3D57) : RawanaColors.vehicleBody;
+  final roofTint = premium ? const Color(0xFF0A1626) : RawanaColors.vehicleTrim;
 
   canvas.save();
   canvas.translate(center.dx, center.dy);
@@ -152,9 +155,16 @@ Future<gm.BitmapDescriptor> _createTaxiMarkerIcon({
       ..shader = ui.Gradient.linear(
         Offset(-carWidth / 2, -carLength / 2),
         Offset(carWidth / 2, carLength / 2),
-        [tealLight, teal, tealDark],
+        [bodyLight, bodyMid, bodyDark],
         const [0, 0.45, 1],
       ),
+  );
+  canvas.drawRRect(
+    body,
+    Paint()
+      ..color = RawanaColors.vehicleTrim.withValues(alpha: premium ? 0.5 : 0.28)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2 * dpr,
   );
 
   canvas.drawRRect(
@@ -173,13 +183,13 @@ Future<gm.BitmapDescriptor> _createTaxiMarkerIcon({
     ),
     Radius.circular(8 * dpr),
   );
-  canvas.drawRRect(roof, Paint()..color = tealDark.withValues(alpha: 0.55));
+  canvas.drawRRect(roof, Paint()..color = roofTint.withValues(alpha: premium ? 0.55 : 0.08));
 
   final glass = Paint()
     ..shader = ui.Gradient.linear(
       Offset(0, -carLength * 0.36),
       Offset(0, carLength * 0.28),
-      const [Color(0xFF1B2833), Color(0xFF3A4A55)],
+      const [RawanaColors.vehicleGlass, Color(0xFF3A4A55)],
     );
   canvas.drawRRect(
     RRect.fromRectAndRadius(
@@ -260,12 +270,26 @@ Future<gm.BitmapDescriptor> _createTaxiMarkerIcon({
     2.2 * dpr,
     Paint()..color = const Color(0xFFFFF3C4),
   );
+  if (!premium) {
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(0, carLength * 0.02),
+          width: carWidth * 0.34,
+          height: carLength * 0.08,
+        ),
+        Radius.circular(2 * dpr),
+      ),
+      Paint()..color = RawanaColors.primary,
+    );
+  }
   canvas.restore();
 
   return _descriptorFromPicture(recorder, width, height, dpr);
 }
 
 Future<gm.BitmapDescriptor> _createCurrentLocationIcon({
+  required Color color,
   required double size,
 }) async {
   final dpr = _devicePixelRatio();
@@ -273,7 +297,7 @@ Future<gm.BitmapDescriptor> _createCurrentLocationIcon({
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
   final center = Offset(pixelSize / 2, pixelSize / 2);
-  const fill = Color(0xFF1A73E8);
+  final fill = color;
 
   canvas.drawCircle(
     center,
@@ -383,8 +407,8 @@ Future<gm.BitmapDescriptor> _createBikeMarkerIcon({
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
   final center = Offset(width / 2, height / 2);
-  const teal = Color(0xFF2A9B94);
-  const tealDark = Color(0xFF1A6F6A);
+  const teal = RawanaColors.primary;
+  const tealDark = RawanaColors.primaryDeep;
 
   canvas.save();
   canvas.translate(center.dx, center.dy);
@@ -417,7 +441,7 @@ Future<gm.BitmapDescriptor> _createBikeMarkerIcon({
       ..shader = ui.Gradient.linear(
         Offset(-8 * dpr, -12 * dpr),
         Offset(8 * dpr, 12 * dpr),
-        const [Color(0xFF4EC4BB), teal, tealDark],
+        const [RawanaColors.primaryBright, teal, tealDark],
         const [0, 0.5, 1],
       ),
   );

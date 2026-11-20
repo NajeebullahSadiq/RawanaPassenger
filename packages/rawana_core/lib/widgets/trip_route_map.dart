@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/l10n_extensions.dart';
 import '../services/maps_service.dart';
@@ -37,6 +38,8 @@ class TripRouteMap extends StatefulWidget {
     this.routeSelectorBottomInset = 220,
     this.followHeading,
     this.mapPadding = EdgeInsets.zero,
+    this.onReroutingChanged,
+    this.showRecenterButton = true,
   });
 
   final MapsService mapsService;
@@ -64,6 +67,10 @@ class TripRouteMap extends StatefulWidget {
 
   /// Area hidden behind the screen's overlays (trip sheet, banners).
   final EdgeInsets mapPadding;
+
+  /// `true` while a new route is fetched because the vehicle left the route.
+  final ValueChanged<bool>? onReroutingChanged;
+  final bool showRecenterButton;
 
   @override
   State<TripRouteMap> createState() => TripRouteMapState();
@@ -107,6 +114,7 @@ class TripRouteMapState extends State<TripRouteMap> {
   late final String _mapSessionId;
   NavigationGuidance? _guidance;
   bool _rerouting = false;
+  bool _offRouteReroute = false;
   int _routeLoadToken = 0;
   DateTime? _lastRerouteAt;
 
@@ -174,6 +182,10 @@ class TripRouteMapState extends State<TripRouteMap> {
           offRouteLongEnough;
       if (shouldRefresh) {
         _lastRerouteAt = DateTime.now();
+        if (offRouteLongEnough) {
+          _offRouteReroute = true;
+          widget.onReroutingChanged?.call(true);
+        }
         _loadRoute(force: true, silent: true);
       }
     }
@@ -386,6 +398,10 @@ class TripRouteMapState extends State<TripRouteMap> {
       }
     } finally {
       _rerouting = false;
+      if (_offRouteReroute) {
+        _offRouteReroute = false;
+        widget.onReroutingChanged?.call(false);
+      }
       if (mounted && _pendingRouteReload) {
         _pendingRouteReload = false;
         _loadRoute(force: true, silent: true);
@@ -533,7 +549,7 @@ class TripRouteMapState extends State<TripRouteMap> {
                   color: RawanaColors.surfaceAlt,
                   child: Center(
                     child: Icon(
-                      Icons.map_outlined,
+                      LucideIcons.map,
                       size: 48,
                       color: RawanaColors.onSurfaceMuted.withValues(alpha: 0.35),
                     ),
@@ -541,18 +557,19 @@ class TripRouteMapState extends State<TripRouteMap> {
                 ),
           ),
         ),
-        Positioned(
-          left: 16,
-          bottom: controlsBottom,
-          child: SafeArea(
-            top: false,
-            child: MapRecenterButton(
-              onPressed: widget.navigationMode || !widget.fitRouteBounds
-                  ? recenterOnCurrentLocation
-                  : refitRoute,
+        if (widget.showRecenterButton)
+          PositionedDirectional(
+            start: 16,
+            bottom: controlsBottom,
+            child: SafeArea(
+              top: false,
+              child: MapRecenterButton(
+                onPressed: widget.navigationMode || !widget.fitRouteBounds
+                    ? recenterOnCurrentLocation
+                    : refitRoute,
+              ),
             ),
           ),
-        ),
         if (widget.showRouteSelector && _routes.length > 1)
           Positioned(
             left: 12,
@@ -566,17 +583,12 @@ class TripRouteMapState extends State<TripRouteMap> {
           ),
         if (_loading)
           const Positioned(
-            top: 16,
-            right: 16,
-            child: Card(
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: LinearProgressIndicator(minHeight: 3),
             ),
           ),
       ],
@@ -632,7 +644,7 @@ class _RouteSelector extends StatelessWidget {
               color: selected ? RawanaColors.primary : Colors.white,
               borderRadius: BorderRadius.circular(RawanaSpacing.radiusPill),
               elevation: selected ? 5 : 2,
-              shadowColor: const Color(0x260A2540),
+              shadowColor: RawanaColors.primaryDeep.withValues(alpha: 0.15),
               child: InkWell(
                 borderRadius: BorderRadius.circular(RawanaSpacing.radiusPill),
                 onTap: () => onSelected(index),
@@ -645,9 +657,7 @@ class _RouteSelector extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        selected
-                            ? Icons.check_rounded
-                            : Icons.alt_route_rounded,
+                        selected ? LucideIcons.check : LucideIcons.route,
                         size: 16,
                         color: selected ? Colors.white : RawanaColors.primary,
                       ),

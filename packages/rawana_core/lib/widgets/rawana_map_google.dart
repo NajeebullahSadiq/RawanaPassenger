@@ -434,8 +434,8 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
             circleId: const gm.CircleId('you_accuracy'),
             center: gm.LatLng(m.lat, m.lng),
             radius: 42,
-            fillColor: const Color(0x331A73E8),
-            strokeColor: const Color(0x661A73E8),
+            fillColor: RawanaColors.locationDot.withValues(alpha: 0.2),
+            strokeColor: RawanaColors.locationDot.withValues(alpha: 0.4),
             strokeWidth: 1,
             zIndex: 1,
           ),
@@ -479,6 +479,17 @@ class _RawanaGoogleMapState extends State<RawanaGoogleMap> {
     if (mainPoints.length >= 2) {
       polylines.add(
         gm.Polyline(
+          polylineId: gm.PolylineId('route_casing_${widget.fitRouteRevision}'),
+          points: mainPoints,
+          color: Colors.white,
+          width: widget.polylineWidth + 4,
+          geodesic: true,
+          zIndex: 2,
+        ),
+      );
+      polylines.add(
+        gm.Polyline(
+          zIndex: 3,
           polylineId: gm.PolylineId('route_${widget.fitRouteRevision}'),
           points: mainPoints,
           color: widget.polylineColor,

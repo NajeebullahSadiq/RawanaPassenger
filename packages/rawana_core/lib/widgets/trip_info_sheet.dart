@@ -536,7 +536,7 @@ class _EtaRow extends StatelessWidget {
           ),
         if (etaMinutes != null)
           Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 6),
+            padding: const EdgeInsetsDirectional.only(start: 4, bottom: 6),
             child: Text(
               context.l10n.minutesShort,
               style: const TextStyle(
@@ -760,13 +760,8 @@ class _PartyRow extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            context.l10n.whatsApp,
-                            style: const TextStyle(
-                              color: RawanaColors.onSurfaceMuted,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.1,
-                            ),
+                            context.l10n.phone,
+                            style: context.text.label,
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -819,7 +814,7 @@ class _QuickActions extends StatelessWidget {
   final VoidCallback? onShare;
   final String shareLabel;
 
-  static const _whatsAppGreen = Color(0xFF128C4A);
+  static const _whatsAppGreen = RawanaColors.whatsApp;
 
   @override
   Widget build(BuildContext context) {

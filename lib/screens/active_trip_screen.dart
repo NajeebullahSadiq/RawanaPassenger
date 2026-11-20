@@ -152,16 +152,7 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
 
   Future<void> _contactDriver(String tripId, {required bool call}) async {
     if (call) {
-      final trip = ref.read(activeTripProvider).valueOrNull;
-      await Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => TripCallScreen(
-            api: ref.read(apiClientProvider),
-            tripId: tripId,
-            partyName: trip?.driver?.name ?? context.l10n.yourDriver,
-          ),
-        ),
-      );
+      await callTripContact(context, api: ref.read(apiClientProvider), tripId: tripId);
       return;
     }
     final api = ref.read(apiClientProvider);

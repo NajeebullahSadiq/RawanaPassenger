@@ -1,46 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../l10n/l10n_extensions.dart';
+import '../theme/rawana_theme.dart';
 
-/// Google Maps-style “Re-center” pill for live maps.
+/// “Re-center” pill for live maps.
 class MapRecenterButton extends StatelessWidget {
   const MapRecenterButton({super.key, required this.onPressed});
 
   final VoidCallback onPressed;
 
-  static const _teal = Color(0xFF1B7A7A);
-
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      elevation: 5,
-      shadowColor: const Color(0x33000000),
-      borderRadius: BorderRadius.circular(28),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(28),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: const Color(0xFFD0D5DD)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.navigation_rounded, size: 18, color: _teal),
-              const SizedBox(width: 8),
-              Text(
-                context.l10n.recenter,
-                style: const TextStyle(
-                  color: _teal,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  letterSpacing: -0.2,
-                ),
+    final radius = BorderRadius.circular(RawanaSpacing.radiusPill);
+    return DecoratedBox(
+      decoration: BoxDecoration(borderRadius: radius, boxShadow: RawanaShadows.floating),
+      child: Material(
+        color: Colors.white,
+        borderRadius: radius,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: radius,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 16, 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(LucideIcons.navigation, size: 18, color: RawanaColors.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    context.l10n.recenter,
+                    style: context.text.subtitle.copyWith(color: RawanaColors.primary),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../api/api_client.dart';
 import '../l10n/l10n_extensions.dart';
+import '../theme/rawana_theme.dart';
+import '../widgets/ui/place_row.dart';
+import '../widgets/ui/rawana_map_sheet.dart';
 
 /// Opens turn-by-turn navigation in the **native** Google Maps app (Android/iOS).
 ///
@@ -57,13 +61,19 @@ Future<void> showExternalMapsChooser({
   if (kIsWeb) return;
   await showModalBottomSheet<void>(
     context: context,
-    builder: (ctx) => SafeArea(
+    backgroundColor: Colors.transparent,
+    builder: (ctx) => RawanaSheetPanel(
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ListTile(
-            leading: const Icon(Icons.map_outlined),
-            title: Text(ctx.l10n.openInGoogleMaps),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(ctx.l10n.chooseMapsApp, style: ctx.text.headline),
+          ),
+          PlaceRow(
+            icon: LucideIcons.map,
+            title: ctx.l10n.openInGoogleMaps,
             onTap: () {
               Navigator.pop(ctx);
               openExternalMapsNavigation(
@@ -75,9 +85,10 @@ Future<void> showExternalMapsChooser({
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.navigation_outlined),
-            title: Text(ctx.l10n.openInWaze),
+          const PlaceRowDivider(),
+          PlaceRow(
+            icon: LucideIcons.navigation,
+            title: ctx.l10n.openInWaze,
             onTap: () {
               Navigator.pop(ctx);
               openWazeNavigation(destLat: destLat, destLng: destLng);
