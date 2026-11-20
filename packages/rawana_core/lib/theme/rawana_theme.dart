@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Core brand color tokens. Designed for a premium ride-hailing experience
 /// inspired by modern fintech and RideCap-style UI references.
@@ -330,12 +329,15 @@ class RawanaTheme {
     // Bahij Zar (Bahij Virtual Academy) for Dari (fa) and Pashto (ps).
     // Family string includes the package prefix so glyphs resolve from rawana_core.
     const bahijFamily = 'packages/rawana_core/Bahij Zar';
+    // Bundled rather than fetched at runtime so text renders correctly offline.
+    const interFamily = 'packages/rawana_core/Inter';
     final scriptTheme = isRtl
         ? baseTheme.textTheme.apply(
             fontFamily: bahijFamily,
             fontFamilyFallback: const ['Tahoma'],
           )
-        : GoogleFonts.interTextTheme(baseTheme.textTheme).apply(
+        : baseTheme.textTheme.apply(
+            fontFamily: interFamily,
             fontFamilyFallback: const [bahijFamily, 'Tahoma'],
           );
     final scriptPrimary = isRtl
@@ -343,10 +345,10 @@ class RawanaTheme {
             fontFamily: bahijFamily,
             fontFamilyFallback: const ['Tahoma'],
           )
-        : GoogleFonts.interTextTheme(baseTheme.primaryTextTheme).apply(
+        : baseTheme.primaryTextTheme.apply(
+            fontFamily: interFamily,
             fontFamilyFallback: const [bahijFamily, 'Tahoma'],
           );
-    final latinFamily = GoogleFonts.inter().fontFamily;
 
     TextStyle script({
       Color? color,
@@ -361,7 +363,7 @@ class RawanaTheme {
         fontWeight: fontWeight,
         letterSpacing: letterSpacing,
         height: height,
-        fontFamily: isRtl ? bahijFamily : latinFamily,
+        fontFamily: isRtl ? bahijFamily : interFamily,
         fontFamilyFallback: isRtl ? const ['Tahoma'] : const [bahijFamily, 'Tahoma'],
       );
     }

@@ -48,11 +48,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 12, 0),
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 12, 0),
               child: Row(
                 children: [
-                  const RawanaLogoRow(iconSize: 36),
-                  const Spacer(),
+                  const Expanded(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: RawanaLogoRow(iconSize: 36),
+                    ),
+                  ),
                   if (!last) TextButton(onPressed: () => context.go('/language'), child: Text(l10n.skip)),
                 ],
               ),

@@ -27,7 +27,7 @@ void main() {
     expect(rtl.snackBarTheme.contentTextStyle?.fontFamily, bahij);
 
     final ltr = RawanaTheme.light(isRtl: false);
-    expect(ltr.textTheme.bodyLarge?.fontFamily, isNot(bahij));
+    expect(ltr.textTheme.bodyLarge?.fontFamily, 'packages/rawana_core/Inter');
     expect(ltr.textTheme.bodyLarge?.fontFamilyFallback, contains(bahij));
   });
 
