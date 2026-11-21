@@ -52,7 +52,7 @@ class RawanaMapMarker {
     label: label ?? l10n?.passenger,
   );
 
-  /// Google Maps-style blue “you are here” dot for the device owner.
+  /// Brand-blue “you are here” dot for the device owner.
   factory RawanaMapMarker.you({
     required double lat,
     required double lng,
@@ -63,7 +63,7 @@ class RawanaMapMarker {
     lat: lat,
     lng: lng,
     icon: Icons.my_location,
-    color: const Color(0xFF1A73E8),
+    color: RawanaColors.locationDot,
     size: 36,
     label: label ?? l10n?.you,
   );

@@ -97,6 +97,10 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
       return 'That file is too large (max 10 MB).';
     case 'empty_file':
       return 'The selected file is empty.';
+    case 'unsupported_file_type':
+      return 'Use a JPG, PNG, WEBP or PDF file.';
+    case 'invalid_id':
+      return 'That item could not be found.';
     case 'upload_failed':
       return 'Upload failed. Please try again.';
     case 'active_trip_exists':
@@ -138,7 +142,9 @@ String apiErrorMessage(Object error, {String fallback = 'Something went wrong. P
     case 'session_failed':
       return 'Sign-in could not be completed. Please try again.';
     case 'driver_account_on_passenger_app':
-      return 'This account is a driver account. Open the driver app to sign in.';
+      return 'This account is a driver account. Open the driver app to sign in, or create a passenger account.';
+    case 'passenger_account_on_driver_app':
+      return 'This account is not a driver account. Open the passenger app to ride, or create a driver account.';
     case 'internal_error':
       return 'The server hit a problem. Please try again shortly.';
     case 'scheduled_too_soon':

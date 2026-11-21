@@ -40,6 +40,8 @@ class RawanaMap extends StatelessWidget {
     this.showCompass = true,
     this.compassBottom,
     this.compassTop,
+    this.pulseLat,
+    this.pulseLng,
   });
 
   final double zoom;
@@ -73,6 +75,10 @@ class RawanaMap extends StatelessWidget {
 
   /// When set, the compass sits this far from the top instead.
   final double? compassTop;
+
+  /// Expanding rings drawn at this point (pickup while finding a driver).
+  final double? pulseLat;
+  final double? pulseLng;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +114,8 @@ class RawanaMap extends StatelessWidget {
       showCompass: showCompass,
       compassBottom: compassBottom,
       compassTop: compassTop,
+      pulseLat: pulseLat,
+      pulseLng: pulseLng,
     ),
     );
   }

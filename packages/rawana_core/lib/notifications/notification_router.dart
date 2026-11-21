@@ -62,9 +62,8 @@ class NotificationRouter {
         return '/incoming-request';
       case 'driver_arriving':
       case 'trip_started':
-        return '/trip-in-progress';
       case 'ride_accepted':
-        return '/navigate-pickup';
+        return '/driver-trip';
       case 'trip_completed':
         return '/fare-summary';
       case 'trip_cancelled':

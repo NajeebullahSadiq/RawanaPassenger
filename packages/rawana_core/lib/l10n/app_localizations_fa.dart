@@ -12,7 +12,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get appName => 'روانا';
 
   @override
-  String get appTitlePassenger => 'روانا مسافر';
+  String get appTitlePassenger => 'روانا تکسی';
 
   @override
   String get appTitleDriver => 'روانا راننده';
@@ -1188,6 +1188,12 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get endNavigation => 'پایان ناوبری';
+
+  @override
+  String get muteVoice => 'بی‌صدا کردن راهنما';
+
+  @override
+  String get unmuteVoice => 'روشن کردن راهنما';
 
   @override
   String get navigating => 'در حال مسیریابی';
@@ -2848,4 +2854,73 @@ class AppLocalizationsFa extends AppLocalizations {
   String requestAtPrice(String price) {
     return 'درخواست با $price';
   }
+
+  @override
+  String get forgotPassword => 'رمز عبور را فراموش کرده‌اید؟';
+
+  @override
+  String get resetPasswordTitle => 'بازنشانی رمز عبور';
+
+  @override
+  String get resetPasswordHint =>
+      'با ایمیل یا شماره تلفن، لینک یا کد می‌فرستیم تا رمز تازه بگذارید.';
+
+  @override
+  String get resetByEmail => 'ایمیل';
+
+  @override
+  String get resetBySms => 'پیامک';
+
+  @override
+  String get sendResetLink => 'فرستادن لینک';
+
+  @override
+  String get resetLinkSent => 'ایمیل خود را برای لینک رمز تازه ببینید.';
+
+  @override
+  String get sendResetCode => 'فرستادن کد';
+
+  @override
+  String get enterTheCode => 'کد ۶ رقمی را وارد کنید';
+
+  @override
+  String get setNewPassword => 'رمز تازه بگذارید';
+
+  @override
+  String get passwordResetSignIn =>
+      'رمز عبور به‌روز شد. دفعه بعد با همین رمز وارد شوید.';
+
+  @override
+  String get registrationLanguage => 'زبان';
+
+  @override
+  String inDistance(String distance) {
+    return 'تا $distance';
+  }
+
+  @override
+  String distanceRemaining(String distance) {
+    return '$distance مانده';
+  }
+
+  @override
+  String callingName(String name) {
+    return 'در حال تماس با $name';
+  }
+
+  @override
+  String get callPassenger => 'تماس با مسافر';
+
+  @override
+  String get callDriver => 'تماس با راننده';
+
+  @override
+  String get couldNotStartCall => 'تماس شروع نشد';
+
+  @override
+  String get callConnectedHint =>
+      'تماس از خط امن روانه روی گوشی شما باز می‌شود.';
+
+  @override
+  String get endCall => 'پایان تماس';
 }

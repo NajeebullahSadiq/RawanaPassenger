@@ -16,251 +16,154 @@ class RideHistoryScreen extends ConsumerStatefulWidget {
 
 class _RideHistoryScreenState extends ConsumerState<RideHistoryScreen> {
   final List<Trip> _extra = [];
+  int _nextPage = 2;
   bool _loadingMore = false;
+  Object? _loadMoreError;
 
-  Color _statusColor(TripStatus s) => switch (s) {
-        TripStatus.completed => RawanaColors.success,
-        TripStatus.cancelled => RawanaColors.error,
-        _ => RawanaColors.warning,
-      };
-
-  IconData _statusIcon(TripStatus s) => switch (s) {
-        TripStatus.completed => LucideIcons.check,
-        TripStatus.cancelled => LucideIcons.x,
-        _ => LucideIcons.timer,
-      };
-
-  Future<void> _pickDate(BuildContext context, WidgetRef ref, {required bool isFrom}) async {
-    final filter = ref.read(historyFilterProvider);
-    final initial = (isFrom ? filter.from : filter.to) ?? DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: DateTime(2024),
-      lastDate: DateTime.now(),
-    );
-    if (picked == null) return;
-    ref.read(historyFilterProvider.notifier).state = isFrom
-        ? filter.copyWith(from: picked)
-        : filter.copyWith(to: picked);
+  void _resetPaging() {
+    _extra.clear();
+    _nextPage = 2;
+    _loadMoreError = null;
   }
 
-  String _dateLabel(DateTime? value, String fallback) {
-    if (value == null) return fallback;
-    return DateFormat.yMMMd().format(value);
+  void _setFilter(HistoryFilter next) {
+    setState(_resetPaging);
+    ref.read(historyFilterProvider.notifier).state = next;
+  }
+
+  Future<void> _refresh() {
+    setState(_resetPaging);
+    return ref.refresh(tripHistoryProvider.future);
+  }
+
+  Future<void> _loadMore() async {
+    if (_loadingMore) return;
+    final filter = ref.read(historyFilterProvider);
+    setState(() {
+      _loadingMore = true;
+      _loadMoreError = null;
+    });
+    try {
+      final next = await ref.read(passengerServiceProvider).getTripHistory(
+            page: _nextPage,
+            status: filter.status,
+            from: filter.from,
+            to: filter.to,
+          );
+      if (!mounted || !identical(filter, ref.read(historyFilterProvider))) return;
+      setState(() {
+        _extra.addAll(next.trips);
+        _nextPage++;
+      });
+    } catch (e) {
+      if (mounted) setState(() => _loadMoreError = e);
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
+  Future<void> _pickDate({required bool isFrom}) async {
+    final filter = ref.read(historyFilterProvider);
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: (isFrom ? filter.from : filter.to) ?? now,
+      firstDate: isFrom ? DateTime(2024) : (filter.from ?? DateTime(2024)),
+      lastDate: isFrom ? (filter.to ?? now) : now,
+    );
+    if (picked == null) return;
+    _setFilter(isFrom ? filter.copyWith(from: picked) : filter.copyWith(to: picked));
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(historyFilterProvider, (_, _) {
-      _extra.clear();
-    });
+    final l10n = context.l10n;
     final historyAsync = ref.watch(tripHistoryProvider);
     final filter = ref.watch(historyFilterProvider);
-    return Scaffold(
-      backgroundColor: RawanaColors.surface,
-      appBar: AppBar(title: Text(context.l10n.rideHistory)),
+    final dateFormat = DateFormat.yMMMd(l10n.localeName);
+    final hasFilters = filter.status != null || filter.from != null || filter.to != null;
+    return RawanaScaffold(
+      title: l10n.rideHistory,
       body: Column(
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Row(
               children: [
                 _FilterChip(
-                  label: context.l10n.allTrips,
+                  label: l10n.allTrips,
                   selected: filter.status == null,
-                  onTap: () => ref.read(historyFilterProvider.notifier).state =
-                      filter.copyWith(clearStatus: true),
+                  onTap: () => _setFilter(filter.copyWith(clearStatus: true)),
                 ),
-                const SizedBox(width: 8),
                 _FilterChip(
-                  label: context.l10n.statusCompleted,
+                  label: l10n.statusCompleted,
                   selected: filter.status == 'completed',
-                  onTap: () => ref.read(historyFilterProvider.notifier).state =
-                      filter.copyWith(status: 'completed'),
+                  onTap: () => _setFilter(filter.copyWith(status: 'completed')),
                 ),
-                const SizedBox(width: 8),
                 _FilterChip(
-                  label: context.l10n.statusCancelled,
+                  label: l10n.statusCancelled,
                   selected: filter.status == 'cancelled',
-                  onTap: () => ref.read(historyFilterProvider.notifier).state =
-                      filter.copyWith(status: 'cancelled'),
+                  onTap: () => _setFilter(filter.copyWith(status: 'cancelled')),
                 ),
-                const SizedBox(width: 8),
                 _FilterChip(
-                  label: _dateLabel(filter.from, context.l10n.filterFrom),
+                  icon: LucideIcons.calendar,
+                  label: filter.from == null ? l10n.filterFrom : dateFormat.format(filter.from!),
                   selected: filter.from != null,
-                  onTap: () => _pickDate(context, ref, isFrom: true),
+                  onTap: () => _pickDate(isFrom: true),
                 ),
-                const SizedBox(width: 8),
                 _FilterChip(
-                  label: _dateLabel(filter.to, context.l10n.filterTo),
+                  icon: LucideIcons.calendar,
+                  label: filter.to == null ? l10n.filterTo : dateFormat.format(filter.to!),
                   selected: filter.to != null,
-                  onTap: () => _pickDate(context, ref, isFrom: false),
+                  onTap: () => _pickDate(isFrom: false),
                 ),
-                if (filter.status != null || filter.from != null || filter.to != null) ...[
-                  const SizedBox(width: 8),
+                if (hasFilters)
                   _FilterChip(
-                    label: context.l10n.clearFilters,
+                    icon: LucideIcons.x,
+                    label: l10n.clearFilters,
                     selected: false,
-                    onTap: () => ref.read(historyFilterProvider.notifier).state =
-                        const HistoryFilter(),
+                    onTap: () => _setFilter(const HistoryFilter()),
                   ),
-                ],
               ],
             ),
           ),
           Expanded(
-            child: historyAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
-              data: (page) {
+            child: RawanaAsyncBody<({List<Trip> trips, int total})>(
+              data: historyAsync.isLoading && !historyAsync.isRefreshing ? null : historyAsync.valueOrNull,
+              error: historyAsync.error,
+              onRetry: () => ref.invalidate(tripHistoryProvider),
+              onRefresh: _refresh,
+              isEmpty: (page) => page.trips.isEmpty,
+              empty: RawanaEmptyState(
+                icon: LucideIcons.history,
+                title: l10n.noTripsYet,
+                message: l10n.pastRidesHint,
+                action: hasFilters
+                    ? OutlinedButton(onPressed: () => _setFilter(const HistoryFilter()), child: Text(l10n.clearFilters))
+                    : null,
+              ),
+              builder: (context, page) {
                 final trips = [...page.trips, ..._extra];
-                if (trips.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 88,
-                            height: 88,
-                            decoration: BoxDecoration(
-                              color: RawanaColors.primary.withValues(alpha: 0.10),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(LucideIcons.clock, color: RawanaColors.primary, size: 38),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            context.l10n.noTripsYet,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            context.l10n.pastRidesHint,
-                            style: const TextStyle(color: RawanaColors.onSurfaceMuted),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
                 final hasMore = trips.length < page.total;
                 return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                   itemCount: trips.length + (hasMore ? 1 : 0),
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (_, i) {
+                  itemBuilder: (context, i) {
                     if (i >= trips.length) {
-                      return TextButton(
-                        onPressed: _loadingMore
-                            ? null
-                            : () async {
-                                setState(() => _loadingMore = true);
-                                try {
-                                  final filter = ref.read(historyFilterProvider);
-                                  final next = await ref.read(passengerServiceProvider).getTripHistory(
-                                        page: (trips.length ~/ 20) + 1,
-                                        status: filter.status,
-                                        from: filter.from,
-                                        to: filter.to,
-                                      );
-                                  if (mounted) {
-                                    setState(() => _extra.addAll(next.trips));
-                                  }
-                                } finally {
-                                  if (mounted) setState(() => _loadingMore = false);
-                                }
-                              },
-                        child: Text(_loadingMore ? '…' : context.l10n.loadMore),
-                      );
+                      return _LoadMore(loading: _loadingMore, error: _loadMoreError, onLoad: _loadMore);
                     }
                     final trip = trips[i];
-                    final fare = trip.cashToCollect;
-                    final color = _statusColor(trip.status);
-                    final when = trip.createdAt;
-                    return Material(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-                        onTap: () => context.push('/trip/${trip.id}'),
-                        child: Ink(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-                            border: Border.all(color: RawanaColors.divider),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: color.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Icon(_statusIcon(trip.status), color: color, size: 18),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          trip.dropoffAddress,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-                                        ),
-                                        Text(
-                                          context.l10n.fromAddress(trip.pickupAddress),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(color: RawanaColors.onSurfaceMuted, fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    AfnFormatter.format(fare),
-                                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  StatusChip(
-                                    label: context.l10n.tripStatusLabel(trip.status.apiValue),
-                                    color: color,
-                                    icon: _statusIcon(trip.status),
-                                  ),
-                                  if (when != null) ...[
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      DateFormat.yMMMd().format(when.toLocal()),
-                                      style: const TextStyle(
-                                        color: RawanaColors.onSurfaceMuted,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                  const Spacer(),
-                                  const Icon(LucideIcons.arrowRight, size: 16, color: RawanaColors.onSurfaceFaint),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    final when = trip.createdAt?.toLocal();
+                    return RawanaTripRow(
+                      pickup: trip.pickupAddress,
+                      dropoff: trip.dropoffAddress,
+                      when: when == null ? null : '${dateFormat.format(when)} · ${DateFormat.jm(l10n.localeName).format(when)}',
+                      amount: AfnFormatter.format(trip.cashToCollect),
+                      status: TripStatusPill(status: trip.status),
+                      onTap: () => context.push('/trip/${trip.id}'),
                     );
                   },
                 );
@@ -273,28 +176,59 @@ class _RideHistoryScreenState extends ConsumerState<RideHistoryScreen> {
   }
 }
 
+class _LoadMore extends StatelessWidget {
+  const _LoadMore({required this.loading, required this.error, required this.onLoad});
+
+  final bool loading;
+  final Object? error;
+  final VoidCallback onLoad;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    if (loading) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2))),
+      );
+    }
+    if (error != null) {
+      return RawanaBanner.error(
+        message: l10n.friendlyApiError(error!),
+        action: TextButton(onPressed: onLoad, child: Text(l10n.tryAgain)),
+      );
+    }
+    return Center(
+      child: TextButton.icon(
+        onPressed: onLoad,
+        icon: const Icon(LucideIcons.chevronDown, size: 18),
+        label: Text(l10n.loadMore),
+      ),
+    );
+  }
+}
+
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+  const _FilterChip({required this.label, required this.selected, required this.onTap, this.icon});
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
-    return FilterChip(
-      label: Text(label),
-      selected: selected,
-      onSelected: (_) => onTap(),
-      showCheckmark: false,
-      selectedColor: RawanaColors.primary.withValues(alpha: 0.14),
-      labelStyle: TextStyle(
-        fontWeight: FontWeight.w700,
-        color: selected ? RawanaColors.primary : RawanaColors.onSurfaceMuted,
+    final color = selected ? RawanaColors.primary : RawanaColors.onSurfaceMuted;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: 8),
+      child: FilterChip(
+        avatar: icon == null ? null : Icon(icon, size: 16, color: color),
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => onTap(),
+        showCheckmark: false,
+        selectedColor: RawanaColors.primary.withValues(alpha: 0.14),
+        labelStyle: context.text.label.copyWith(color: color),
       ),
     );
   }

@@ -1,0 +1,11 @@
+{
+  "APP_ENV": "prod",
+  "API_URL": "https://api.rawana.af/api",
+  "SUPABASE_URL": "https://YOUR_PROJECT.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_xxx",
+  "USE_EMAIL_AUTH": "true",
+  "ENABLE_PHONE_OTP": "true",
+  "ENABLE_DEMO_LOGIN": "false",
+  "DEV_MODE_HINT": "false",
+  "GOOGLE_MAPS_WEB_API_KEY": ""
+}

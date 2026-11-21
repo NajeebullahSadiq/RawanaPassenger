@@ -47,10 +47,11 @@ class TripTurnBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final text = context.text;
     return Material(
-      color: const Color(0xFF1A73E8),
+      color: RawanaColors.primaryDeep,
       elevation: 10,
-      shadowColor: const Color(0x661A73E8),
+      shadowColor: RawanaColors.primaryDeep.withValues(alpha: 0.4),
       borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 16, 12),
@@ -77,23 +78,15 @@ class TripTurnBanner extends StatelessWidget {
                 children: [
                   Text(
                     formatDistance(guidance.distanceToManeuverM, l10n),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.6,
-                      height: 1.1,
-                    ),
+                    style: text.headline.copyWith(color: Colors.white, height: 1.1),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     guidance.localizedInstruction(l10n),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: text.subtitle.copyWith(
                       color: Colors.white.withValues(alpha: 0.92),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],

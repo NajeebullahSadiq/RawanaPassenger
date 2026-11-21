@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Core brand color tokens. Designed for a premium ride-hailing experience
 /// inspired by modern fintech and RideCap-style UI references.
@@ -31,16 +30,37 @@ class RawanaColors {
 
   // Semantic
   static const success = Color(0xFF16A34A);
+  static const successBright = Color(0xFF22C55E);
   static const successSoft = Color(0xFFE6F4EA);
   static const warning = Color(0xFFF59E0B);
   static const warningSoft = Color(0xFFFEF3C7);
   static const error = Color(0xFFDC2626);
   static const errorSoft = Color(0xFFFEE2E2);
 
-  // Map / route
+  // Third-party brand (only where the action opens that app)
+  static const whatsApp = Color(0xFF128C4A);
+
+  // Map / route (see DESIGN.md: pickup = primary blue, destination = navy)
   static const routeLine = Color(0xFF0058BC);
-  static const pickupPin = Color(0xFF16A34A);
-  static const dropoffPin = Color(0xFFFFC857);
+  static const routeLineMuted = Color(0xFF98A2B3);
+  static const pickupPin = primary;
+  static const dropoffPin = primaryDeep;
+  static const locationDot = primaryBright;
+  static const vehicleBody = Colors.white;
+  static const vehicleBodyShade = Color(0xFFDDE4F2);
+  static const vehicleTrim = ink;
+  static const vehicleGlass = Color(0xFF1B2833);
+  static const vehiclePremiumBody = Color(0xFF14243A);
+
+  /// Dimmed backdrop behind modal sheets (40% black per DESIGN.md).
+  static const scrim = Color(0x66000000);
+
+  /// Positive confirmation (arrived, start, complete, cash collected).
+  static const LinearGradient successGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [success, successBright],
+  );
 
   /// Primary CTA gradient.
   static const LinearGradient primaryGradient = LinearGradient(
@@ -84,6 +104,19 @@ class RawanaSpacing {
   static const buttonHeight = 56.0;
   static const buttonHeightCompact = 48.0;
   static const inputHeight = 56.0;
+
+  /// Minimum height for controls used while driving.
+  static const driveTarget = 64.0;
+
+  /// Horizontal page margin for sheets and floating cards.
+  static const page = 16.0;
+}
+
+class RawanaMotion {
+  static const fast = Duration(milliseconds: 160);
+  static const medium = Duration(milliseconds: 260);
+  static const slow = Duration(milliseconds: 420);
+  static const curve = Curves.easeOutCubic;
 }
 
 class RawanaShadows {
@@ -180,6 +213,79 @@ class RawanaTextStyles {
   }
 }
 
+/// Semantic type scale for screens. Use `context.text.title` instead of
+/// hand-written `TextStyle(fontSize: ...)` so every screen shares one scale
+/// and the right script font (Inter / Bahij Zar) is always applied.
+class RawanaText {
+  RawanaText._(this._base, this._isRtl);
+
+  factory RawanaText.of(BuildContext context) {
+    final theme = Theme.of(context);
+    final isRtl = Directionality.maybeOf(context) == TextDirection.rtl;
+    return RawanaText._(theme.textTheme.bodyMedium ?? const TextStyle(), isRtl);
+  }
+
+  final TextStyle _base;
+  final bool _isRtl;
+
+  TextStyle _style(
+    double size,
+    FontWeight weight, {
+    Color color = RawanaColors.onSurface,
+    double? tracking,
+    double height = 1.3,
+  }) {
+    return _base.copyWith(
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+      height: height,
+      letterSpacing: _isRtl ? 0 : (tracking ?? 0),
+    );
+  }
+
+  /// Hero numbers and screen headlines (fare collected, "Where to?").
+  TextStyle get display => _style(30, FontWeight.w800, tracking: -0.8, height: 1.15);
+
+  /// Sheet headings ("Choose a ride", "Driver is on the way").
+  TextStyle get headline => _style(22, FontWeight.w800, tracking: -0.4, height: 1.2);
+
+  /// Card titles, driver names, ride type names.
+  TextStyle get title => _style(17, FontWeight.w700, tracking: -0.2);
+
+  /// Secondary titles and list row primary text.
+  TextStyle get subtitle => _style(15, FontWeight.w600);
+
+  TextStyle get body => _style(15, FontWeight.w400, height: 1.45);
+
+  TextStyle get bodyStrong => _style(15, FontWeight.w600, height: 1.45);
+
+  /// Supporting text under titles.
+  TextStyle get caption =>
+      _style(13, FontWeight.w500, color: RawanaColors.onSurfaceMuted, height: 1.35);
+
+  /// Small section labels. Never upper-cased so Dari / Pashto read naturally.
+  TextStyle get label =>
+      _style(12, FontWeight.w700, color: RawanaColors.onSurfaceMuted, tracking: 0.3);
+
+  /// Prices on rows and cards.
+  TextStyle get price => _style(17, FontWeight.w800, tracking: -0.2).copyWith(
+        fontFeatures: const [FontFeature.tabularFigures()],
+      );
+
+  /// Large hero price / ETA / timer.
+  TextStyle get priceLarge => _style(34, FontWeight.w800, tracking: -1, height: 1.1).copyWith(
+        fontFeatures: const [FontFeature.tabularFigures()],
+      );
+
+  /// Text on filled buttons.
+  TextStyle get button => _style(16, FontWeight.w700, color: Colors.white, tracking: -0.1);
+}
+
+extension RawanaTextContext on BuildContext {
+  RawanaText get text => RawanaText.of(this);
+}
+
 class RawanaTheme {
   static ThemeData light({bool isRtl = false}) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -223,12 +329,15 @@ class RawanaTheme {
     // Bahij Zar (Bahij Virtual Academy) for Dari (fa) and Pashto (ps).
     // Family string includes the package prefix so glyphs resolve from rawana_core.
     const bahijFamily = 'packages/rawana_core/Bahij Zar';
+    // Bundled rather than fetched at runtime so text renders correctly offline.
+    const interFamily = 'packages/rawana_core/Inter';
     final scriptTheme = isRtl
         ? baseTheme.textTheme.apply(
             fontFamily: bahijFamily,
             fontFamilyFallback: const ['Tahoma'],
           )
-        : GoogleFonts.interTextTheme(baseTheme.textTheme).apply(
+        : baseTheme.textTheme.apply(
+            fontFamily: interFamily,
             fontFamilyFallback: const [bahijFamily, 'Tahoma'],
           );
     final scriptPrimary = isRtl
@@ -236,10 +345,10 @@ class RawanaTheme {
             fontFamily: bahijFamily,
             fontFamilyFallback: const ['Tahoma'],
           )
-        : GoogleFonts.interTextTheme(baseTheme.primaryTextTheme).apply(
+        : baseTheme.primaryTextTheme.apply(
+            fontFamily: interFamily,
             fontFamilyFallback: const [bahijFamily, 'Tahoma'],
           );
-    final latinFamily = GoogleFonts.inter().fontFamily;
 
     TextStyle script({
       Color? color,
@@ -254,7 +363,7 @@ class RawanaTheme {
         fontWeight: fontWeight,
         letterSpacing: letterSpacing,
         height: height,
-        fontFamily: isRtl ? bahijFamily : latinFamily,
+        fontFamily: isRtl ? bahijFamily : interFamily,
         fontFamilyFallback: isRtl ? const ['Tahoma'] : const [bahijFamily, 'Tahoma'],
       );
     }
@@ -388,6 +497,7 @@ class RawanaTheme {
       bottomSheetTheme: const BottomSheetThemeData(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
+        modalBarrierColor: RawanaColors.scrim,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(RawanaSpacing.radiusXl)),

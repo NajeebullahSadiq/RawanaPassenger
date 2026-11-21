@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../l10n/l10n_extensions.dart';
 import '../services/trip_chat_service.dart';
@@ -197,7 +198,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
               padding: const EdgeInsetsDirectional.only(end: 4),
               child: TextButton.icon(
                 onPressed: widget.onWhatsApp,
-                icon: const Icon(Icons.chat_rounded, size: 18, color: _whatsAppGreen),
+                icon: const Icon(LucideIcons.messageCircle, size: 18, color: _whatsAppGreen),
                 label: Text(
                   l10n.whatsApp,
                   style: const TextStyle(
@@ -211,7 +212,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
             IconButton(
               onPressed: widget.onCall,
               tooltip: l10n.call,
-              icon: const Icon(Icons.phone_rounded, color: RawanaColors.success),
+              icon: const Icon(LucideIcons.phone, color: RawanaColors.success),
             ),
           const SizedBox(width: 4),
         ],
@@ -271,7 +272,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
   }
 }
 
-const _whatsAppGreen = Color(0xFF128C4A);
+const _whatsAppGreen = RawanaColors.whatsApp;
 
 class _EmptyChat extends StatelessWidget {
   const _EmptyChat({required this.text});
@@ -287,7 +288,7 @@ class _EmptyChat extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.forum_outlined,
+              LucideIcons.messagesSquare,
               size: 48,
               color: RawanaColors.onSurfaceMuted.withValues(alpha: 0.5),
             ),
@@ -369,7 +370,7 @@ class _Bubble extends StatelessWidget {
                   if (message.failed)
                     const Padding(
                       padding: EdgeInsetsDirectional.only(end: 4),
-                      child: Icon(Icons.refresh_rounded, size: 12, color: RawanaColors.error),
+                      child: Icon(LucideIcons.refreshCw, size: 12, color: RawanaColors.error),
                     ),
                   Text(
                     meta,
@@ -387,8 +388,8 @@ class _Bubble extends StatelessWidget {
                     const SizedBox(width: 4),
                     Icon(
                       message.readAt != null
-                          ? Icons.done_all_rounded
-                          : Icons.done_rounded,
+                          ? LucideIcons.checkCheck
+                          : LucideIcons.check,
                       size: 14,
                       color: Colors.white70,
                     ),
@@ -488,11 +489,12 @@ class _Composer extends StatelessWidget {
                   const SizedBox(width: 6),
                   IconButton.filled(
                     onPressed: onSend,
+                    tooltip: context.l10n.sendReply,
                     style: IconButton.styleFrom(
                       backgroundColor: RawanaColors.primary,
                       disabledBackgroundColor: RawanaColors.outline,
                     ),
-                    icon: const Icon(Icons.send_rounded, color: Colors.white),
+                    icon: const Icon(LucideIcons.sendHorizontal, color: Colors.white),
                   ),
                 ],
               ),

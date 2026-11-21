@@ -1,13 +1,21 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
 import 'package:share_plus/share_plus.dart';
-import '../providers/trip_providers.dart';
+
+import '../booking/booking_map.dart';
+import '../booking/booking_shell.dart';
+import '../booking/places.dart';
+import '../booking/trip_parts.dart';
 import '../providers/app_providers.dart';
 import '../providers/live_location_providers.dart';
+import '../providers/trip_providers.dart';
 
 class ActiveTripScreen extends ConsumerStatefulWidget {
   const ActiveTripScreen({super.key});
@@ -18,42 +26,49 @@ class ActiveTripScreen extends ConsumerStatefulWidget {
 
 class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
   Timer? _pollTimer;
-  Timer? _clockTimer;
   bool _cancelling = false;
-  int? _etaMinutes;
-  double? _distanceKm;
-  int _routeRefitToken = 0;
-  TripStatus? _lastTripStatus;
-  String? _driverPhone;
-  String? _loadedPhoneTripId;
-  double? _lastDriverLat;
-  double? _lastDriverLng;
+  bool _detailsOpen = false;
+  TripStatus? _lastStatus;
+  LatLng? _lastDriver;
   CancellationPolicy? _policy;
   DateTime _policyFetchedAt = DateTime.now();
   String? _policyTripKey;
   late final TripChatUnreadPoller _chatPoller;
   int _chatUnread = 0;
-  double _sheetHeight = 320;
 
   @override
   void initState() {
     super.initState();
-    _chatPoller = TripChatUnreadPoller(ref.read(tripChatServiceProvider))
-      ..unread.addListener(_onUnreadChanged);
+    _chatPoller = TripChatUnreadPoller(ref.read(tripChatServiceProvider))..unread.addListener(_onUnreadChanged);
     _pollTimer = Timer.periodic(const Duration(seconds: 4), (_) => _refresh());
-    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted) setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final trip = ref.read(activeTripProvider).valueOrNull;
+      if (trip != null) _syncMap(trip);
+      _refresh();
     });
-    _refresh();
   }
 
   @override
   void dispose() {
     _pollTimer?.cancel();
-    _clockTimer?.cancel();
     _chatPoller.unread.removeListener(_onUnreadChanged);
     _chatPoller.dispose();
     super.dispose();
+  }
+
+  void _syncMap(Trip trip) {
+    if (trip.pickupLat == null || trip.pickupLng == null || trip.dropoffLat == null || trip.dropoffLng == null) {
+      return;
+    }
+    final loc = ref.read(driverLocationProvider);
+    final driver = loc?.lat != null && loc?.lng != null ? LatLng(loc!.lat!, loc.lng!) : _lastDriver;
+    ref.read(bookingMapProvider.notifier).showTrip(
+          pickup: LatLng(trip.pickupLat!, trip.pickupLng!),
+          dropoff: LatLng(trip.dropoffLat!, trip.dropoffLng!),
+          started: trip.status == TripStatus.tripStarted,
+          driver: driver,
+        );
   }
 
   void _onUnreadChanged() {
@@ -64,17 +79,13 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     final trip = ref.read(activeTripProvider).valueOrNull;
     if (!increased || trip == null) return;
     final name = trip.driver?.name ?? context.l10n.yourDriver;
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.newMessageFrom(name)),
-          action: SnackBarAction(
-            label: context.l10n.openChat,
-            onPressed: () => _openChat(trip),
-          ),
-        ),
-      );
+    showRawanaToast(
+      context,
+      context.l10n.newMessageFrom(name),
+      icon: LucideIcons.messageCircle,
+      actionLabel: context.l10n.openChat,
+      onAction: () => _openChat(trip),
+    );
   }
 
   Future<void> _openChat(Trip trip) async {
@@ -82,20 +93,18 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     _chatPoller.pause();
     setState(() => _chatUnread = 0);
     _chatPoller.clear();
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => TripChatScreen(
-          tripId: trip.id,
-          service: ref.read(tripChatServiceProvider),
-          myRole: 'passenger',
-          partyName: driver?.name ?? context.l10n.yourDriver,
-          partySubtitle: [
-            _driverSubtitle(driver),
-            driver?.plateNumber,
-          ].where((e) => e != null && e.isNotEmpty).join(' · '),
-          onCall: () => _contactDriver(trip.id, call: true),
-          onWhatsApp: () => _contactDriver(trip.id, call: false),
-        ),
+    await showTallSheet<void>(
+      context,
+      TripChatScreen(
+        tripId: trip.id,
+        service: ref.read(tripChatServiceProvider),
+        myRole: 'passenger',
+        partyName: driver?.name ?? context.l10n.yourDriver,
+        partySubtitle: [vehicleLabelOf(driver), driver?.plateNumber]
+            .where((e) => e != null && e.isNotEmpty)
+            .join(' · '),
+        onCall: () => _callDriver(trip.id),
+        onWhatsApp: () => _whatsAppDriver(trip.id),
       ),
     );
     if (mounted) _chatPoller.resume();
@@ -109,13 +118,10 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
       context.go('/trip-complete');
     } else if (trip?.status == TripStatus.cancelled) {
       // Explain why the ride disappeared (driver / support / no drivers).
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(passengerCancellationMessage(context.l10n, trip!))),
-      );
+      showRawanaToast(context, passengerCancellationMessage(context.l10n, trip!), icon: LucideIcons.circleX);
       ref.read(activeTripProvider.notifier).tryClearLocalTripState();
       context.go('/home');
     } else if (trip?.driver != null && trip!.status != TripStatus.searching) {
-      await _loadDriverPhone(trip.id);
       await _loadCancellationPolicy(trip);
     }
   }
@@ -137,108 +143,56 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     } catch (_) {}
   }
 
-  Future<void> _loadDriverPhone(String tripId) async {
-    if (_loadedPhoneTripId == tripId && _driverPhone != null) return;
-    final phone = await fetchTripDialNumber(
-      ref.read(apiClientProvider),
-      tripId,
-    );
-    if (!mounted) return;
-    setState(() {
-      _driverPhone = phone;
-      _loadedPhoneTripId = tripId;
-    });
-  }
+  Future<void> _callDriver(String tripId) =>
+      callTripContact(context, api: ref.read(apiClientProvider), tripId: tripId);
 
-  Future<void> _contactDriver(String tripId, {required bool call}) async {
-    final api = ref.read(apiClientProvider);
-    final ok = call
-        ? await callTripParty(api, tripId)
-        : await messageTripParty(api, tripId);
+  Future<void> _whatsAppDriver(String tripId) async {
+    final ok = await messageTripParty(ref.read(apiClientProvider), tripId);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            call
-                ? context.l10n.couldNotOpenWhatsAppCall
-                : context.l10n.couldNotOpenWhatsAppMessages,
-          ),
-        ),
-      );
+      showRawanaToast(context, context.l10n.couldNotOpenWhatsAppMessages, error: true);
     }
-  }
-
-  void _onDriverLocationUpdate(DriverLocation? loc) {
-    if (loc?.lat == null || loc?.lng == null) return;
-    _lastDriverLat = loc!.lat;
-    _lastDriverLng = loc.lng;
   }
 
   Future<void> _cancelTrip(String tripId) async {
     var feeLine = context.l10n.cancelRideWarning;
     try {
-      final policy = await ref
-          .read(tripServiceProvider)
-          .getCancellationPolicy(tripId);
+      final policy = await ref.read(tripServiceProvider).getCancellationPolicy(tripId);
       if (!mounted) return;
       feeLine = policy.feeApplies
-          ? context.l10n.cancellationFeeAmount(
-              AfnFormatter.format(policy.cancellationFee),
-            )
+          ? context.l10n.cancellationFeeAmount(AfnFormatter.format(policy.cancellationFee))
           : context.l10n.noCancellationFee;
       if (policy.graceSeconds > 0) {
-        feeLine =
-            '$feeLine\n\n${context.l10n.cancelGraceSeconds('${policy.graceSeconds}')}';
+        feeLine = '$feeLine\n\n${context.l10n.cancelGraceSeconds('${policy.graceSeconds}')}';
       }
     } catch (_) {}
     if (!mounted) return;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l10n.cancelThisRide),
-        content: Text(feeLine),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(ctx.l10n.keepRide),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              ctx.l10n.cancelRide,
-              style: const TextStyle(color: RawanaColors.error),
-            ),
-          ),
-        ],
-      ),
+    final confirm = await RawanaActionSheet.confirm(
+      context,
+      title: context.l10n.cancelThisRide,
+      message: feeLine,
+      confirmLabel: context.l10n.cancelRide,
+      cancelLabel: context.l10n.keepRide,
+      destructive: true,
+      icon: LucideIcons.circleX,
     );
-    if (confirm != true) return;
+    if (!confirm || !mounted) return;
     setState(() => _cancelling = true);
     try {
-      final result = await ref
-          .read(tripServiceProvider)
-          .cancelRide(tripId, reason: 'Passenger cancelled');
+      final result = await ref.read(tripServiceProvider).cancelRide(tripId, reason: 'Passenger cancelled');
       if (!mounted) return;
       if (result.cancellationFee > 0) {
         // Cash-first: the fee is collected on the next ride, so say so now.
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              context.l10n.cancellationFeeChargedNextRide(
-                AfnFormatter.format(result.cancellationFee),
-              ),
-            ),
-            duration: const Duration(seconds: 5),
-          ),
+        showRawanaToast(
+          context,
+          context.l10n.cancellationFeeChargedNextRide(AfnFormatter.format(result.cancellationFee)),
+          icon: LucideIcons.banknote,
+          duration: const Duration(seconds: 6),
         );
       }
     } catch (e) {
-      // Most likely the trip already moved on (e.g. driver started the ride);
-      // resync so the screen reflects reality instead of a stale cancel button.
+      // Most likely the trip already moved on (e.g. driver started the ride).
       await ref.read(activeTripProvider.notifier).refresh();
-      if (mounted) {
-        showRawanaError(context, e);
-      }
+      if (mounted) showRawanaError(context, e);
       return;
     } finally {
       if (mounted) setState(() => _cancelling = false);
@@ -247,25 +201,21 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     if (mounted) context.go('/home');
   }
 
-  Future<void> _shareTrip(Trip trip, double? driverLat, double? driverLng) async {
+  Future<void> _shareTrip(Trip trip) async {
     final driver = trip.driver;
-    final vehicle = [
-      driver?.vehicleMake,
-      driver?.vehicleModel,
-      driver?.vehicleColour,
-    ].where((e) => e != null && e.isNotEmpty).join(' ');
-    final liveLocationUrl = driverLat != null && driverLng != null
-        ? 'https://maps.google.com/?q=$driverLat,$driverLng'
-        : null;
+    final loc = ref.read(driverLocationProvider);
+    final lat = loc?.lat ?? _lastDriver?.latitude;
+    final lng = loc?.lng ?? _lastDriver?.longitude;
+    final vehicle = vehicleLabelOf(driver);
     final l10n = context.l10n;
     final lines = [
       l10n.shareTripIntro,
       if (driver?.name != null) l10n.shareDriver(driver!.name!),
-      if (vehicle.isNotEmpty) l10n.shareVehicle(vehicle),
+      if (vehicle != null) l10n.shareVehicle(vehicle),
       if (driver?.plateNumber != null) l10n.sharePlate(driver!.plateNumber!),
       l10n.shareFrom(trip.pickupAddress),
       l10n.shareTo(trip.dropoffAddress),
-      if (liveLocationUrl != null) l10n.shareCurrentLocation(liveLocationUrl),
+      if (lat != null && lng != null) l10n.shareCurrentLocation('https://maps.google.com/?q=$lat,$lng'),
     ];
     await Share.share(lines.join('\n'), subject: l10n.shareTripSubject);
   }
@@ -274,467 +224,314 @@ class _ActiveTripScreenState extends ConsumerState<ActiveTripScreen> {
     final contacts = await ref.read(passengerServiceProvider).getEmergencyContacts();
     if (!mounted) return;
     if (contacts.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.sosNoContacts)),
-      );
+      showRawanaToast(context, context.l10n.sosNoContacts, icon: LucideIcons.shieldAlert);
       context.push('/emergency-contacts');
       return;
     }
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l10n.sos),
-        content: Text(ctx.l10n.sosConfirm),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(ctx.l10n.sendSos)),
-        ],
-      ),
+    final ok = await RawanaActionSheet.confirm(
+      context,
+      title: context.l10n.sos,
+      message: context.l10n.sosConfirm,
+      confirmLabel: context.l10n.sendSos,
+      cancelLabel: context.l10n.cancel,
+      destructive: true,
+      icon: LucideIcons.siren,
     );
-    if (ok != true || !mounted) return;
+    if (!ok || !mounted) return;
+    HapticFeedback.heavyImpact();
     final loc = ref.read(passengerLiveLocationProvider);
     try {
-      final result = await ref.read(passengerServiceProvider).sendSos(
-            tripId: trip.id,
-            lat: loc?.lat,
-            lng: loc?.lng,
-          );
+      final result = await ref.read(passengerServiceProvider).sendSos(tripId: trip.id, lat: loc?.lat, lng: loc?.lng);
       if (!mounted) return;
       final stub = result['stub'] == true;
       if (stub) {
-        await _shareTrip(trip, loc?.lat, loc?.lng);
+        await _shareTrip(trip);
         if (!mounted) return;
       }
-      final l10n = context.l10n;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(stub ? l10n.sosFailed : l10n.sosSent)),
-      );
-    } catch (e) {
+      showRawanaToast(context, stub ? context.l10n.sosFailed : context.l10n.sosSent, error: stub);
+    } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.sosFailed)),
-      );
+      showRawanaToast(context, context.l10n.sosFailed, error: true);
     }
   }
 
-  ({String label, Color color, IconData icon}) _statusInfo(
-    TripStatus status,
-    AppLocalizations l10n,
-  ) =>
-      switch (status) {
-        TripStatus.accepted => (
-          label: l10n.driverOnTheWay,
-          color: RawanaColors.primary,
-          icon: LucideIcons.navigation,
+  Future<void> _openSafety(Trip trip) async {
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      builder: (ctx) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const RawanaGrabber(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                child: Row(
+                  children: [
+                    const Icon(LucideIcons.shieldCheck, color: RawanaColors.primary),
+                    const SizedBox(width: 10),
+                    Text(ctx.l10n.safetyToolkit, style: ctx.text.headline),
+                  ],
+                ),
+              ),
+              PlaceRow(
+                icon: LucideIcons.share2,
+                title: ctx.l10n.shareTrip,
+                subtitle: ctx.l10n.safetyShareHint,
+                onTap: () => Navigator.pop(ctx, 'share'),
+              ),
+              const PlaceRowDivider(),
+              PlaceRow(
+                icon: LucideIcons.siren,
+                title: ctx.l10n.sos,
+                subtitle: ctx.l10n.safetySosHint,
+                highlight: true,
+                onTap: () => Navigator.pop(ctx, 'sos'),
+              ),
+              const PlaceRowDivider(),
+              PlaceRow(
+                icon: LucideIcons.users,
+                title: ctx.l10n.emergencyContacts,
+                subtitle: ctx.l10n.emergencyContactsHint,
+                onTap: () => Navigator.pop(ctx, 'contacts'),
+              ),
+            ],
+          ),
         ),
-        TripStatus.driverArriving => (
-          label: l10n.driverIsAtPickup,
-          color: RawanaColors.warning,
-          icon: LucideIcons.mapPinCheck,
-        ),
-        TripStatus.tripStarted => (
-          label: l10n.onTripToDestination,
-          color: RawanaColors.success,
-          icon: LucideIcons.car,
-        ),
-        _ => (
-          label: l10n.connecting,
-          color: RawanaColors.onSurfaceMuted,
-          icon: LucideIcons.loader,
-        ),
-      };
+      ),
+    );
+    if (!mounted) return;
+    switch (action) {
+      case 'share':
+        await _shareTrip(trip);
+      case 'sos':
+        await _sendSos(trip);
+      case 'contacts':
+        context.push('/emergency-contacts');
+    }
+  }
 
-  String? _driverSubtitle(TripParty? driver) {
-    if (driver == null) return null;
-    return [
-      driver.vehicleMake,
-      driver.vehicleModel,
-    ].where((e) => e != null && e.isNotEmpty).join(' ');
+  ({String title, String subtitle}) _header(Trip trip, int? routeMinutes) {
+    final l10n = context.l10n;
+    switch (trip.status) {
+      case TripStatus.tripStarted:
+        final (place, _) = splitAddress(trip.dropoffAddress);
+        final minutes = routeMinutes ?? trip.durationMinutes;
+        return (
+          title: l10n.headingTo(place),
+          subtitle: minutes == null ? l10n.onYourWay : l10n.arriveAt(l10n.clockTime(DateTime.now().add(Duration(minutes: minutes)))),
+        );
+      case TripStatus.driverArriving:
+        return (title: l10n.driverHereTitle, subtitle: l10n.meetDriverHint);
+      default:
+        final eta = routeMinutes ?? trip.pickupEtaMinutes;
+        return (
+          title: eta == null
+              ? l10n.driverOnTheWay
+              : eta <= 0
+                  ? l10n.lessThanAMinute
+                  : l10n.arrivingIn(eta),
+          subtitle: [vehicleLabelOf(trip.driver), trip.driver?.plateNumber]
+              .where((e) => e != null && e.isNotEmpty)
+              .join(' · '),
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final tripAsync = ref.watch(activeTripProvider);
-    final driverLoc = ref.watch(driverLocationProvider);
-    ref.listen<DriverLocation?>(driverLocationProvider, (_, next) {
-      _onDriverLocationUpdate(next);
+    ref.listen<AsyncValue<Trip?>>(activeTripProvider, (prev, next) {
+      final trip = next.valueOrNull;
+      if (trip == null) return;
+      if (_lastStatus != trip.status) {
+        if (_lastStatus != null && trip.status == TripStatus.driverArriving) HapticFeedback.mediumImpact();
+        _lastStatus = trip.status;
+      }
+      _syncMap(trip);
+    });
+    ref.listen<DriverLocation?>(driverLocationProvider, (_, loc) {
+      if (loc?.lat == null || loc?.lng == null) return;
+      _lastDriver = LatLng(loc!.lat!, loc.lng!);
+      final trip = ref.read(activeTripProvider).valueOrNull;
+      if (trip != null) _syncMap(trip);
     });
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: tripAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
-        data: (trip) {
-          if (trip == null) {
-            return Center(
-              child: ElevatedButton(
-                onPressed: () => context.go('/home'),
-                child: Text(context.l10n.backToHome),
+    final tripAsync = ref.watch(activeTripProvider);
+    final trip = tripAsync.valueOrNull;
+    if (trip == null) {
+      if (!tripAsync.isLoading) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.go('/home');
+        });
+      }
+      return const SizedBox.shrink();
+    }
+    if (trip.status == TripStatus.searching) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.go('/searching');
+      });
+      return const SizedBox.shrink();
+    }
+
+    _chatPoller.track(trip.driver != null ? trip.id : null);
+    final map = ref.watch(bookingMapProvider);
+    final started = trip.status == TripStatus.tripStarted;
+    final canCancel = trip.status == TripStatus.accepted || trip.status == TripStatus.driverArriving;
+    final header = _header(trip, map.route?.durationMinutes);
+    final arrived = trip.status == TripStatus.driverArriving;
+    final pin = trip.startPin;
+
+    return Stack(
+      children: [
+        PositionedDirectional(
+          top: 0,
+          end: 0,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: RawanaCircleIconButton(
+                icon: LucideIcons.shieldCheck,
+                iconColor: RawanaColors.primary,
+                tooltip: context.l10n.safetyToolkit,
+                onPressed: () => _openSafety(trip),
               ),
-            );
-          }
-          if (trip.status == TripStatus.searching) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) context.go('/searching');
-            });
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          _chatPoller.track(trip.driver != null ? trip.id : null);
-          final passengerLoc = ref.watch(passengerLiveLocationProvider);
-          final passengerLat = passengerLoc?.lat ?? trip.pickupLat;
-          final passengerLng = passengerLoc?.lng ?? trip.pickupLng;
-          final driverLat = driverLoc?.lat ?? _lastDriverLat;
-          final driverLng = driverLoc?.lng ?? _lastDriverLng;
-          final driverHeading = driverLoc?.heading;
-          final vehicleKind = VehicleKind.fromIconName(trip.rideTypeIconName);
-          final driverArrived = trip.status == TripStatus.driverArriving ||
-              trip.driverArrivedAt != null;
-
-          final tripStarted = trip.status == TripStatus.tripStarted;
-          final driverConfirmed = trip.status == TripStatus.accepted ||
-              trip.status == TripStatus.driverArriving;
-
-          final markers = buildTripLiveMarkers(
-            passengerLat: passengerLat,
-            passengerLng: passengerLng,
-            driverLat: driverLat,
-            driverLng: driverLng,
-            pickupLat: trip.pickupLat,
-            pickupLng: trip.pickupLng,
-            dropoffLat: trip.dropoffLat,
-            dropoffLng: trip.dropoffLng,
-            passengerLabel: context.l10n.you,
-            driverLabel: context.l10n.yourDriver,
-            showPickup: trip.pickupLat != null && trip.pickupLng != null,
-            showDropoff: true,
-            passengerIsCurrentUser: true,
-            driverHeading: driverHeading,
-            vehicleKind: vehicleKind,
-            l10n: context.l10n,
-          );
-
-          final route = resolveTripRouteEndpoints(
-            status: trip.status,
-            driverLat: driverLat,
-            driverLng: driverLng,
-            pickupLat: trip.pickupLat,
-            pickupLng: trip.pickupLng,
-            dropoffLat: trip.dropoffLat,
-            dropoffLng: trip.dropoffLng,
-          );
-          final mapRoute = route;
-          final navFollowIcon = vehicleKind.mapIcon;
-
-          final centerLat = driverLat ?? passengerLat ?? trip.pickupLat;
-          final centerLng = driverLng ?? passengerLng ?? trip.pickupLng;
-          final driver = trip.driver;
-          final canCancel =
-              trip.status == TripStatus.accepted ||
-              trip.status == TripStatus.driverArriving ||
-              trip.status == TripStatus.searching;
-          final status = _statusInfo(trip.status, context.l10n);
-          final displayEta = _etaMinutes ?? trip.durationMinutes;
-
-          if (_lastTripStatus != trip.status) {
-            _lastTripStatus = trip.status;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) setState(() => _routeRefitToken++);
-            });
-          }
-
-          final topInset = MediaQuery.paddingOf(context).top;
-          final bottomInset = MediaQuery.paddingOf(context).bottom;
-          final mapPadding = EdgeInsets.only(
-            top: topInset + (driverConfirmed ? 150 : 70),
-            bottom: _sheetHeight + bottomInset + 16,
-          );
-
-          return Stack(
-            fit: StackFit.expand,
-            children: [
-              if (mapRoute != null)
-                Positioned.fill(
-                  child: TripRouteMap(
-                    key: ValueKey('route_${trip.id}'),
-                    refitToken: _routeRefitToken,
-                    navigationMode: false,
-                    navigationFollowIcon: navFollowIcon,
-                    followHeading: driverHeading,
-                    mapsService: ref.read(mapsServiceProvider),
-                    originLat: mapRoute.originLat,
-                    originLng: mapRoute.originLng,
-                    destLat: mapRoute.destLat,
-                    destLng: mapRoute.destLng,
-                    zoom: 15,
-                    markers: markers,
-                    showRouteSelector: true,
-                    fitRouteBounds: true,
-                    routeSelectorBottomInset: _sheetHeight + bottomInset + 28,
-                    mapPadding: mapPadding,
-                    myLocationEnabled: true,
-                    refreshOriginAfterMeters: tripStarted ? 80 : 50,
-                    onGuidanceChanged: (g) {
-                      if (!mounted) return;
-                      setState(() {
-                        _etaMinutes = g.remainingMinutes;
-                        _distanceKm = g.remainingDistanceKm;
-                      });
-                    },
-                    onRouteLoaded: (r) {
-                      if (!mounted) return;
-                      setState(() {
-                        _etaMinutes = r.durationMinutes;
-                        _distanceKm = r.distanceKm;
-                      });
-                    },
-                  ),
-                )
-              else
-                Positioned.fill(
-                  child: RawanaMap(
-                    zoom: 15,
-                    centerLat: centerLat,
-                    centerLng: centerLng,
-                    markers: markers,
-                    myLocationEnabled: true,
-                    mapPadding: mapPadding,
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: MapInsetReporter(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 16, bottom: 12),
+                  child: RawanaCircleIconButton(
+                    icon: LucideIcons.locateFixed,
+                    tooltip: context.l10n.recenter,
+                    onPressed: () => ref.read(bookingMapProvider.notifier).fit(),
                   ),
                 ),
-              SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                RawanaSheetPanel(
+                  child: AnimatedSize(
+                    duration: RawanaMotion.medium,
+                    curve: RawanaMotion.curve,
+                    alignment: Alignment.bottomCenter,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
                           children: [
                             Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 11,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(
-                                    RawanaSpacing.radiusPill,
-                                  ),
-                                  border: Border.all(
-                                    color: RawanaColors.outline
-                                        .withValues(alpha: 0.35),
-                                  ),
-                                  boxShadow: RawanaShadows.floating,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      width: 30,
-                                      height: 30,
-                                      decoration: BoxDecoration(
-                                        color: status.color
-                                            .withValues(alpha: 0.14),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        status.icon,
-                                        size: 15,
-                                        color: status.color,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AnimatedSwitcher(
+                                    duration: RawanaMotion.fast,
+                                    child: Text(
+                                      header.title,
+                                      key: ValueKey(header.title),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.text.headline.copyWith(
+                                        color: arrived ? RawanaColors.success : null,
                                       ),
                                     ),
-                                    const SizedBox(width: 10),
-                                    Flexible(
-                                      child: Text(
-                                        status.label,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 14,
-                                          color: RawanaColors.onSurface,
-                                          letterSpacing: -0.2,
-                                        ),
-                                      ),
+                                  ),
+                                  if (header.subtitle.isNotEmpty)
+                                    Text(
+                                      header.subtitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.text.caption,
                                     ),
-                                  ],
-                                ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 12),
-                            RawanaCircleIconButton(
-                              icon: LucideIcons.shieldAlert,
-                              iconColor: RawanaColors.error,
-                              onPressed: () => _sendSos(trip),
-                              tooltip: context.l10n.sos,
-                            ),
+                            if (arrived)
+                              StatusPill(
+                                label: context.l10n.driverIsAtPickup,
+                                color: RawanaColors.success,
+                                icon: LucideIcons.mapPin,
+                                pulse: true,
+                              ),
                           ],
                         ),
-                        if (driverConfirmed) ...[
-                          const SizedBox(height: 10),
-                          _PickupSpotBanner(address: trip.pickupAddress),
+                        const SizedBox(height: 14),
+                        TripDriverCard(
+                          trip: trip,
+                          onCall: trip.driver == null ? null : () => _callDriver(trip.id),
+                          onChat: trip.driver == null ? null : () => _openChat(trip),
+                          chatUnread: _chatUnread,
+                        ),
+                        if (pin != null && pin.isNotEmpty && !started) ...[
+                          const SizedBox(height: 12),
+                          TripPinBadge(pin: pin),
+                        ],
+                        const SizedBox(height: 4),
+                        InkWell(
+                          onTap: () => setState(() => _detailsOpen = !_detailsOpen),
+                          borderRadius: BorderRadius.circular(RawanaSpacing.radiusMd),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+                            child: Row(
+                              children: [
+                                const Icon(LucideIcons.banknote, size: 18, color: RawanaColors.success),
+                                const SizedBox(width: 10),
+                                Expanded(child: Text(context.l10n.tripDetailsTitle, style: context.text.bodyStrong)),
+                                Text(formatTripFare(trip.totalCash), style: context.text.price),
+                                const SizedBox(width: 6),
+                                AnimatedRotation(
+                                  turns: _detailsOpen ? 0.5 : 0,
+                                  duration: RawanaMotion.fast,
+                                  child: const Icon(LucideIcons.chevronDown, size: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (_detailsOpen) ...[
+                          TripRouteAddresses(
+                            pickupAddress: trip.pickupAddress,
+                            dropoffAddress: trip.dropoffAddress,
+                            dense: true,
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: () => _shareTrip(trip),
+                            icon: const Icon(LucideIcons.share2, size: 18),
+                            label: Text(context.l10n.shareTrip),
+                            style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                          ),
+                        ],
+                        if (canCancel) ...[
+                          TextButton(
+                            onPressed: _cancelling ? null : () => _cancelTrip(trip.id),
+                            style: TextButton.styleFrom(
+                              foregroundColor: RawanaColors.error,
+                              minimumSize: const Size.fromHeight(44),
+                            ),
+                            child: _cancelling
+                                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                                : Text(context.l10n.cancelRide),
+                          ),
+                          FreeCancelCountdown(trip: trip, policy: _policy, fetchedAt: _policyFetchedAt),
                         ],
                       ],
                     ),
                   ),
                 ),
-              if (!tripStarted && driverArrived)
-                const Positioned(
-                  left: 16,
-                  right: 16,
-                  top: 130,
-                  child: SafeArea(child: _DriverArrivedNotice()),
-                ),
-              Positioned(
-                left: 16,
-                right: 16,
-                bottom: 16,
-                child: SafeArea(
-                  top: false,
-                  child: MeasureSize(
-                    onChange: (size) {
-                      if (!mounted || (size.height - _sheetHeight).abs() < 1) return;
-                      setState(() => _sheetHeight = size.height);
-                    },
-                    child: TripInfoSheet(
-                    statusLabel: status.label,
-                    statusColor: status.color,
-                    statusIcon: status.icon,
-                    etaMinutes: displayEta,
-                    distanceKm: _distanceKm,
-                    partyName: driver?.name ?? context.l10n.yourDriver,
-                    partySubtitle: _driverSubtitle(driver),
-                    plateNumber: driver?.plateNumber,
-                    vehicleColour: driver?.vehicleColour,
-                    profilePhotoUrl: driver?.profilePhotoUrl,
-                    partyPhone: _driverPhone,
-                    rating: driver?.ratingAverage,
-                    pickupAddress: trip.pickupAddress,
-                    dropoffAddress: trip.dropoffAddress,
-                    currentLabel: tripStarted
-                        ? context.l10n.driverLiveLocation
-                        : context.l10n.yourPickupSpot,
-                    fareFormatted: formatTripFare(trip.cashToCollect),
-                    fareLabel: context.l10n.cashFare,
-                    hintText: [
-                      if (freeCancelSecondsRemaining(trip, _policy, _policyFetchedAt) > 0)
-                        context.l10n.cancelWithoutFeeIn(
-                          '${freeCancelSecondsRemaining(trip, _policy, _policyFetchedAt)}s',
-                        ),
-                      if (tripStarted)
-                        context.l10n.hintFollowLiveRoute
-                      else if (driverArrived)
-                        context.l10n.driverArrivedNotice
-                      else
-                        context.l10n.hintWatchDriverApproach,
-                    ].join('\n'),
-                    onCall: driver != null
-                        ? () => _contactDriver(trip.id, call: true)
-                        : null,
-                    callLabel: context.l10n.call,
-                    onChat: driver != null ? () => _openChat(trip) : null,
-                    chatUnread: _chatUnread,
-                    onWhatsApp: driver != null
-                        ? () => _contactDriver(trip.id, call: false)
-                        : null,
-                    onShare: () => _shareTrip(trip, driverLat, driverLng),
-                    shareLabel: context.l10n.shareTrip,
-                    onCancel: canCancel && !_cancelling
-                        ? () => _cancelTrip(trip.id)
-                        : null,
-                    cancelLoading: _cancelling,
-                    onExpandedChanged: (_) {
-                      // Re-fit once the new sheet height reaches the map padding.
-                      Future<void>.delayed(const Duration(milliseconds: 260), () {
-                        if (mounted) setState(() => _routeRefitToken++);
-                      });
-                    },
-                  ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _PickupSpotBanner extends StatelessWidget {
-  const _PickupSpotBanner({required this.address});
-
-  final String address;
-
-  @override
-  Widget build(BuildContext context) {
-    return RawanaSurfaceCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      gradient: const LinearGradient(
-        colors: [RawanaColors.primary, Color(0xFF1E40AF)],
-      ),
-      shadows: RawanaShadows.floating,
-      child: Row(
-        children: [
-          const Icon(LucideIcons.mapPin, color: Colors.white, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.yourPickupSpot,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                  ),
-                ),
-                Text(
-                  address,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.85),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DriverArrivedNotice extends StatelessWidget {
-  const _DriverArrivedNotice();
-
-  @override
-  Widget build(BuildContext context) {
-    return RawanaSurfaceCard(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      gradient: const LinearGradient(
-        colors: [RawanaColors.success, Color(0xFF22C55E)],
-      ),
-      shadows: RawanaShadows.floating,
-      child: Row(
-        children: [
-          const Icon(LucideIcons.mapPinCheck, color: Colors.white, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              context.l10n.driverArrivedNotice,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

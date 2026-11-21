@@ -2,81 +2,92 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../l10n/app_ui_l10n.dart';
 import '../l10n/l10n_extensions.dart';
-import '../theme/rawana_theme.dart';
 import 'show_rawana_error.dart';
+import 'ui/rawana_action_sheet.dart';
+import 'ui/rawana_settings.dart';
 
-class AccountPrivacyActions extends StatelessWidget {
+/// "Your data" settings section: export account data and delete the account.
+class AccountPrivacyActions extends StatefulWidget {
   const AccountPrivacyActions({
     super.key,
     required this.onExport,
     required this.onDelete,
+    this.title,
   });
 
   final Future<Map<String, dynamic>> Function() onExport;
   final Future<void> Function() onDelete;
 
-  Future<void> _export(BuildContext context) async {
+  /// Section heading; defaults to "Your data".
+  final String? title;
+
+  @override
+  State<AccountPrivacyActions> createState() => _AccountPrivacyActionsState();
+}
+
+class _AccountPrivacyActionsState extends State<AccountPrivacyActions> {
+  bool _busy = false;
+
+  Future<void> _export() async {
+    if (_busy) return;
+    setState(() => _busy = true);
     try {
-      final data = await onExport();
-      await Clipboard.setData(
-        ClipboardData(text: const JsonEncoder.withIndent('  ').convert(data)),
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.dataExported)),
-        );
-      }
+      final data = await widget.onExport();
+      await Clipboard.setData(ClipboardData(text: const JsonEncoder.withIndent('  ').convert(data)));
+      if (mounted) showRawanaToast(context, context.l10n.dataExported, icon: LucideIcons.clipboardCheck);
     } catch (e) {
-      if (context.mounted) {
-        showRawanaError(context, e);
-      }
+      if (mounted) showRawanaError(context, e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
-  Future<void> _delete(BuildContext context) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l10n.deleteAccount),
-        content: Text('${ctx.l10n.deleteAccountConfirm}\n\n${ctx.l10n.deleteAccountWarning}'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(ctx.l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(ctx.l10n.deleteAccount)),
-        ],
-      ),
+  Future<void> _delete() async {
+    if (_busy) return;
+    final l10n = context.l10n;
+    final ok = await RawanaActionSheet.confirm(
+      context,
+      title: l10n.deleteAccount,
+      message: '${l10n.deleteAccountConfirm}\n\n${l10n.deleteAccountWarning}',
+      confirmLabel: l10n.deleteAccount,
+      cancelLabel: l10n.cancel,
+      destructive: true,
+      icon: LucideIcons.triangleAlert,
     );
-    if (ok != true || !context.mounted) return;
+    if (!ok || !mounted) return;
+    setState(() => _busy = true);
     try {
-      await onDelete();
+      await widget.onDelete();
     } catch (e) {
-      // The server refuses deletion while a ride is live or cash is unsettled;
-      // surface that instead of an unhandled exception.
-      if (context.mounted) {
-        showRawanaError(context, e);
-      }
+      // The server refuses deletion while a ride is live or cash is unsettled.
+      if (mounted) showRawanaError(context, e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final l10n = context.l10n;
+    return RawanaSettingsSection(
+      title: widget.title ?? l10n.yourData,
       children: [
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.download_outlined, color: RawanaColors.primary),
-          title: Text(context.l10n.exportMyData, style: const TextStyle(fontWeight: FontWeight.w700)),
-          onTap: () => _export(context),
+        RawanaSettingsTile(
+          icon: LucideIcons.download,
+          title: l10n.exportMyData,
+          subtitle: l10n.exportMyDataHint,
+          onTap: _busy ? null : _export,
         ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.delete_outline, color: RawanaColors.error),
-          title: Text(
-            context.l10n.deleteAccount,
-            style: const TextStyle(fontWeight: FontWeight.w700, color: RawanaColors.error),
-          ),
-          onTap: () => _delete(context),
+        RawanaSettingsTile(
+          icon: LucideIcons.trash2,
+          title: l10n.deleteAccount,
+          subtitle: l10n.deleteAccountHint,
+          destructive: true,
+          onTap: _busy ? null : _delete,
         ),
       ],
     );

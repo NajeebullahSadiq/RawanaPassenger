@@ -12,7 +12,7 @@ class AppLocalizationsPs extends AppLocalizations {
   String get appName => 'روانا';
 
   @override
-  String get appTitlePassenger => 'روانا مسافر';
+  String get appTitlePassenger => 'روانا ټکسي';
 
   @override
   String get appTitleDriver => 'روانا چلوونکی';
@@ -1184,6 +1184,12 @@ class AppLocalizationsPs extends AppLocalizations {
 
   @override
   String get endNavigation => 'نیویګیشن پای';
+
+  @override
+  String get muteVoice => 'لارښود بې غږه کړئ';
+
+  @override
+  String get unmuteVoice => 'لارښود فعال کړئ';
 
   @override
   String get navigating => 'لارښوونه کېږي';
@@ -2831,4 +2837,72 @@ class AppLocalizationsPs extends AppLocalizations {
   String requestAtPrice(String price) {
     return 'په $price غوښتنه';
   }
+
+  @override
+  String get forgotPassword => 'پټنوم مو هېر شوی؟';
+
+  @override
+  String get resetPasswordTitle => 'پټنوم بیا تنظیم کړئ';
+
+  @override
+  String get resetPasswordHint =>
+      'برېښنالیک یا تلیفون وکاروئ. د نوي پټنوم لپاره لینک یا کوډ درلیږو.';
+
+  @override
+  String get resetByEmail => 'برېښنالیک';
+
+  @override
+  String get resetBySms => 'اس ام اس';
+
+  @override
+  String get sendResetLink => 'لینک ولېږئ';
+
+  @override
+  String get resetLinkSent => 'د نوي پټنوم لینک لپاره خپل برېښنالیک وګورئ.';
+
+  @override
+  String get sendResetCode => 'کوډ ولېږئ';
+
+  @override
+  String get enterTheCode => '۶ عددي کوډ ولیکئ';
+
+  @override
+  String get setNewPassword => 'نوی پټنوم کېږدئ';
+
+  @override
+  String get passwordResetSignIn => 'پټنوم تازه شو. بل ځل په همدې پټنوم ننوځئ.';
+
+  @override
+  String get registrationLanguage => 'ژبه';
+
+  @override
+  String inDistance(String distance) {
+    return 'په $distance کې';
+  }
+
+  @override
+  String distanceRemaining(String distance) {
+    return '$distance پاتې';
+  }
+
+  @override
+  String callingName(String name) {
+    return 'له $name سره اړیکه';
+  }
+
+  @override
+  String get callPassenger => 'له مسافر سره اړیکه';
+
+  @override
+  String get callDriver => 'له چلوونکي سره اړیکه';
+
+  @override
+  String get couldNotStartCall => 'اړیکه پیل نه شوه';
+
+  @override
+  String get callConnectedHint =>
+      'اړیکه د روانه په خوندي کرښه ستاسو په تلیفون کې خلاصیږي.';
+
+  @override
+  String get endCall => 'اړیکه بنده کړئ';
 }

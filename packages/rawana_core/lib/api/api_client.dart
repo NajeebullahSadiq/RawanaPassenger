@@ -11,10 +11,17 @@ import '../config/app_config.dart';
 /// `token` parameter remains supported for non-Supabase flows (admin portal,
 /// tests).
 class ApiClient {
+  /// Called when the backend still rejects the session after a refresh
+  /// attempt; apps sign out and return to the auth screen.
+  static void Function()? onSessionExpired;
+
+  static const _retryDelays = [Duration(milliseconds: 600), Duration(milliseconds: 1500)];
+
   ApiClient({required String baseUrl, String? token}) : _dio = Dio(BaseOptions(
           baseUrl: baseUrl,
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 15),
+          sendTimeout: const Duration(seconds: 30),
         )) {
     if (token != null) _explicitToken = token;
     _dio.interceptors.add(
@@ -45,6 +52,20 @@ class ApiClient {
             } catch (_) {
               // Fall through — caller handles missing/invalid session.
             }
+            if (error.requestOptions.headers.containsKey('Authorization')) {
+              onSessionExpired?.call();
+            }
+          }
+          if (_isRetryable(error)) {
+            final req = error.requestOptions;
+            final attempt = (req.extra['_retryAttempt'] as int?) ?? 0;
+            await Future<void>.delayed(_retryDelays[attempt]);
+            req.extra['_retryAttempt'] = attempt + 1;
+            try {
+              return handler.resolve(await _dio.fetch(req));
+            } on DioException catch (e) {
+              return handler.next(e);
+            }
           }
           handler.next(error);
         },
@@ -54,6 +75,19 @@ class ApiClient {
 
   final Dio _dio;
   String? _explicitToken;
+
+  /// Only idempotent GETs are retried, and only for transient failures.
+  static bool _isRetryable(DioException error) {
+    final req = error.requestOptions;
+    if (req.method.toUpperCase() != 'GET') return false;
+    if (((req.extra['_retryAttempt'] as int?) ?? 0) >= _retryDelays.length) return false;
+    final status = error.response?.statusCode;
+    return switch (error.type) {
+      DioExceptionType.connectionError || DioExceptionType.connectionTimeout || DioExceptionType.receiveTimeout => true,
+      DioExceptionType.badResponse => status == 502 || status == 503 || status == 504,
+      _ => false,
+    };
+  }
 
   Future<String?> _resolveToken() async {
     if (AppConfig.hasSupabase) {

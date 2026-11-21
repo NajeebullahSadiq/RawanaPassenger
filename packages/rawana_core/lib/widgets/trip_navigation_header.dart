@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../l10n/booking_l10n.dart';
 import '../l10n/l10n_extensions.dart';
 import '../theme/rawana_theme.dart';
 import '../utils/navigation_guidance.dart';
 import 'trip_turn_banner.dart';
 
-/// Top bar shown during in-app navigation (Google Maps-style guidance + ETA).
+/// Top of the screen during in-app navigation: next maneuver, plus a slim
+/// row with exit and voice controls. Shows a "Recalculating" strip while the
+/// route is being rebuilt after leaving it.
 class TripNavigationHeader extends StatelessWidget {
   const TripNavigationHeader({
     super.key,
@@ -13,6 +18,9 @@ class TripNavigationHeader extends StatelessWidget {
     this.etaMinutes,
     this.distanceKm,
     this.guidance,
+    this.voiceMuted = false,
+    this.onToggleVoice,
+    this.recalculating = false,
   });
 
   final String destinationLabel;
@@ -20,6 +28,9 @@ class TripNavigationHeader extends StatelessWidget {
   final int? etaMinutes;
   final double? distanceKm;
   final NavigationGuidance? guidance;
+  final bool voiceMuted;
+  final VoidCallback? onToggleVoice;
+  final bool recalculating;
 
   @override
   Widget build(BuildContext context) {
@@ -30,89 +41,103 @@ class TripNavigationHeader extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (guidance != null) ...[
-              TripTurnBanner(guidance: guidance!),
-              const SizedBox(height: 8),
-            ],
-            Material(
-          elevation: 8,
-          shadowColor: const Color(0x330A2540),
-          borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(4, 6, 14, 6),
-            child: Row(
+            AnimatedSwitcher(
+              duration: RawanaMotion.fast,
+              child: recalculating
+                  ? _RecalculatingBanner(key: const ValueKey('recalc'), label: l10n.recalculatingRoute)
+                  : guidance != null
+                      ? TripTurnBanner(key: const ValueKey('turn'), guidance: guidance!)
+                      : const SizedBox.shrink(key: ValueKey('none')),
+            ),
+            const SizedBox(height: 8),
+            Row(
               children: [
-                IconButton(
-                  onPressed: onEndNavigation,
+                _RoundControl(
+                  icon: LucideIcons.x,
                   tooltip: l10n.endNavigation,
-                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                  color: RawanaColors.onSurface,
+                  onPressed: onEndNavigation,
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        destinationLabel,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                      if (etaMinutes != null || distanceKm != null)
-                        Text(
-                          [
-                            if (etaMinutes != null) l10n.etaMinutes('$etaMinutes'),
-                            if (distanceKm != null)
-                              l10n.distanceKm(distanceKm!.toStringAsFixed(1)),
-                          ].join(' · '),
-                          style: const TextStyle(
-                            color: RawanaColors.primary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 12,
-                          ),
-                        ),
-                    ],
+                const Spacer(),
+                if (onToggleVoice != null)
+                  _RoundControl(
+                    icon: voiceMuted ? LucideIcons.volumeOff : LucideIcons.volume2,
+                    tooltip: voiceMuted ? l10n.unmuteVoice : l10n.muteVoice,
+                    onPressed: onToggleVoice!,
+                    active: !voiceMuted,
                   ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: RawanaColors.primary.withValues(alpha: 0.12),
-                    borderRadius:
-                        BorderRadius.circular(RawanaSpacing.radiusPill),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.navigation_rounded,
-                        size: 14,
-                        color: RawanaColors.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        l10n.navigating,
-                        style: const TextStyle(
-                          color: RawanaColors.primary,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundControl extends StatelessWidget {
+  const _RoundControl({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.active = false,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: DecoratedBox(
+        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: RawanaShadows.floating),
+        child: Material(
+          color: Colors.white,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onPressed,
+            child: SizedBox.square(
+              dimension: 52,
+              child: Icon(
+                icon,
+                size: 22,
+                color: active ? RawanaColors.primary : RawanaColors.onSurface,
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RecalculatingBanner extends StatelessWidget {
+  const _RecalculatingBanner({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: RawanaColors.warning,
+      borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
+          children: [
+            const SizedBox.square(
+              dimension: 22,
+              child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(label, style: context.text.title.copyWith(color: Colors.white)),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rawana_core/rawana_core.dart';
 import '../providers/profile_providers.dart';
 import '../providers/trip_providers.dart';
@@ -10,21 +11,25 @@ class NotificationsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final inbox = ref.watch(notificationsInboxProvider);
-    return Scaffold(
-      backgroundColor: RawanaColors.surface,
-      appBar: AppBar(title: Text(context.l10n.notifications)),
-      body: inbox.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
-        data: (items) => NotificationInboxList(
-          notifications: items,
-          onOpen: (_) {},
-          onMarkRead: (id) async {
-            await ref.read(passengerServiceProvider).markNotificationRead(id);
-            ref.invalidate(notificationsInboxProvider);
-          },
-        ),
-      ),
+    final service = ref.read(passengerServiceProvider);
+    return RawanaNotificationsView(
+      items: inbox.valueOrNull,
+      error: inbox.hasError ? inbox.error : null,
+      role: 'passenger',
+      onRefresh: () => ref.refresh(notificationsInboxProvider.future),
+      onMarkRead: (id) async {
+        await service.markNotificationRead(id);
+        ref.invalidate(notificationsInboxProvider);
+      },
+      onMarkAllRead: () async {
+        try {
+          await service.markAllNotificationsRead();
+        } catch (e) {
+          if (context.mounted) showRawanaError(context, e);
+        }
+        ref.invalidate(notificationsInboxProvider);
+      },
+      onOpenRoute: (route) => context.push(route),
     );
   }
 }

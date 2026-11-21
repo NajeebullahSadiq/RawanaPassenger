@@ -208,6 +208,10 @@ class DriverService {
     await _api.patch('/drivers/notifications/$id/read');
   }
 
+  Future<void> markAllNotificationsRead() async {
+    await _api.post('/drivers/notifications/read-all');
+  }
+
   Future<List<Map<String, dynamic>>> getBanners() async {
     final data = await _api.getList('/drivers/banners');
     if (data is List) return data.cast<Map<String, dynamic>>();

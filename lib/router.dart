@@ -1,9 +1,13 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:rawana_core/rawana_core.dart';
+import 'booking/booking_shell.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/language_screen.dart';
 import 'screens/auth_entry_screen.dart';
 import 'screens/email_auth_screen.dart';
+import 'screens/forgot_password_screen.dart';
 import 'screens/email_verify_screen.dart';
 import 'screens/phone_screen.dart';
 import 'screens/otp_screen.dart';
@@ -24,14 +28,29 @@ import 'screens/emergency_contacts_screen.dart';
 import 'screens/saved_addresses_screen.dart';
 import 'screens/scheduled_rides_screen.dart';
 
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+final bookingShellNavigatorKey = GlobalKey<NavigatorState>();
+
 final appRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
   initialLocation: '/',
   routes: [
     GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
     GoRoute(path: '/onboarding', builder: (_, _) => const OnboardingScreen()),
     GoRoute(path: '/language', builder: (_, _) => const LanguageScreen()),
     GoRoute(path: '/auth', builder: (_, _) => const AuthEntryScreen()),
-    GoRoute(path: '/email-auth', builder: (_, _) => const EmailAuthScreen()),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (_, state) => ForgotPasswordScreen(
+        initialSms: state.uri.queryParameters['channel'] == 'sms',
+      ),
+    ),
+    GoRoute(
+      path: '/email-auth',
+      builder: (_, state) => EmailAuthScreen(
+        startAsSignUp: state.uri.queryParameters['mode'] == 'signup',
+      ),
+    ),
     GoRoute(
       path: '/email-verify',
       builder: (_, _) => const EmailVerifyScreen(),
@@ -42,28 +61,51 @@ final appRouter = GoRouter(
       path: '/profile-setup',
       builder: (_, _) => const ProfileSetupScreen(),
     ),
-    GoRoute(path: '/home', builder: (_, _) => const HomeScreen()),
-    GoRoute(
-      path: '/destination',
-      builder: (_, _) => const DestinationSearchScreen(),
+    // One map for the whole booking: each step is a sheet on top of it.
+    ShellRoute(
+      navigatorKey: bookingShellNavigatorKey,
+      builder: (_, _, child) => BookingShell(child: child),
+      routes: [
+        GoRoute(
+          path: '/home',
+          pageBuilder: (_, s) => MapShellPage(key: s.pageKey, child: const HomeScreen()),
+        ),
+        GoRoute(
+          path: '/ride-selection',
+          pageBuilder: (_, s) =>
+              MapShellPage(key: s.pageKey, child: const RideSelectionScreen()),
+        ),
+        GoRoute(
+          path: '/searching',
+          pageBuilder: (_, s) => MapShellPage(key: s.pageKey, child: const SearchingScreen()),
+        ),
+        GoRoute(
+          path: '/active-trip',
+          pageBuilder: (_, s) => MapShellPage(key: s.pageKey, child: const ActiveTripScreen()),
+        ),
+      ],
     ),
     GoRoute(
-      path: '/map-picker',
-      builder: (_, s) => MapPickerScreen(
-        mode: s.uri.queryParameters['mode'] ?? 'dropoff',
-        initialLat: double.tryParse(s.uri.queryParameters['lat'] ?? ''),
-        initialLng: double.tryParse(s.uri.queryParameters['lng'] ?? ''),
+      path: '/destination',
+      pageBuilder: (_, s) => sheetUpPage(
+        key: s.pageKey,
+        child: DestinationSearchScreen(focusPickup: s.uri.queryParameters['focus'] == 'pickup'),
       ),
     ),
     GoRoute(
-      path: '/ride-selection',
-      builder: (_, _) => const RideSelectionScreen(),
+      path: '/map-picker',
+      pageBuilder: (_, s) => fadeThroughPage(
+        key: s.pageKey,
+        child: MapPickerScreen(
+          mode: s.uri.queryParameters['mode'] ?? 'dropoff',
+          initialLat: double.tryParse(s.uri.queryParameters['lat'] ?? ''),
+          initialLng: double.tryParse(s.uri.queryParameters['lng'] ?? ''),
+        ),
+      ),
     ),
-    GoRoute(path: '/searching', builder: (_, _) => const SearchingScreen()),
-    GoRoute(path: '/active-trip', builder: (_, _) => const ActiveTripScreen()),
     GoRoute(
       path: '/trip-complete',
-      builder: (_, _) => const TripCompleteScreen(),
+      pageBuilder: (_, s) => fadeThroughPage(key: s.pageKey, child: const TripCompleteScreen()),
     ),
     GoRoute(path: '/history', builder: (_, _) => const RideHistoryScreen()),
     GoRoute(
@@ -87,6 +129,22 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/emergency-contacts',
       builder: (_, _) => const EmergencyContactsScreen(),
+    ),
+    GoRoute(
+      path: '/terms',
+      builder: (context, _) => RawanaInfoScreen(
+        title: context.l10n.termsOfService,
+        sections: localizedPassengerTerms(context.l10n),
+        showLegalFooter: true,
+      ),
+    ),
+    GoRoute(
+      path: '/privacy-policy',
+      builder: (context, _) => RawanaInfoScreen(
+        title: context.l10n.privacyPolicy,
+        sections: localizedPrivacyPolicy(context.l10n, driver: false),
+        showLegalFooter: true,
+      ),
     ),
   ],
 );

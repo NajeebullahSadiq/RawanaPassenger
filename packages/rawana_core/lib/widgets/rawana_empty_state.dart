@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '../l10n/l10n_extensions.dart';
 import '../theme/rawana_theme.dart';
 
@@ -25,7 +27,7 @@ class RawanaEmptyState extends StatelessWidget {
   }) {
     return RawanaEmptyState(
       key: key,
-      icon: Icons.error_outline,
+      icon: LucideIcons.circleAlert,
       title: title ?? '',
       message: message,
       tone: RawanaColors.error,
@@ -42,8 +44,8 @@ class RawanaEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double iconBox = dense ? 72 : 96;
-    final double iconSize = dense ? 28 : 38;
+    final double iconBox = dense ? 64 : 80;
+    final double iconSize = dense ? 26 : 32;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(dense ? 24 : 40),
@@ -63,21 +65,18 @@ class RawanaEmptyState extends StatelessWidget {
             Text(
               title.isEmpty ? context.l10n.somethingWentWrong : title,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: dense ? 16 : 18,
-                fontWeight: FontWeight.w800,
-              ),
+              style: dense ? context.text.subtitle : context.text.title,
             ),
             if (message != null) ...[
               const SizedBox(height: 6),
-              Text(
-                message!,
-                textAlign: TextAlign.center,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: RawanaColors.onSurfaceMuted,
-                  height: 1.45,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320),
+                child: Text(
+                  message!,
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text.body.copyWith(color: RawanaColors.onSurfaceMuted),
                 ),
               ),
             ],

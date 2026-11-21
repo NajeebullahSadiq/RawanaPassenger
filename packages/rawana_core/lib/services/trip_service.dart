@@ -91,8 +91,27 @@ class TripService {
     await _postProximity('/rides/$tripId/arrived', proximityOverride);
   }
 
-  Future<void> startTrip(String tripId) async {
-    await _api.post('/rides/$tripId/start');
+  /// Throws [StartPinException] when the server rejects or needs the rider's PIN.
+  Future<void> startTrip(String tripId, {String? pin}) async {
+    try {
+      await _api.post('/rides/$tripId/start', data: {
+        if (pin != null && pin.isNotEmpty) 'pin': pin,
+      });
+    } on DioException catch (e) {
+      final body = e.response?.data;
+      final key = body is Map ? body['message_key'] : null;
+      if (key == 'start_pin_required' || key == 'start_pin_incorrect') {
+        throw StartPinException(required: key == 'start_pin_required');
+      }
+      rethrow;
+    }
+  }
+
+  /// Passenger tip in whole AFN; `0` removes it. Allowed until the driver
+  /// confirms the cash.
+  Future<int> setTip(String tripId, int amount) async {
+    final data = await _api.post('/rides/$tripId/tip', data: {'amount': amount});
+    return (data['tip_amount'] as num?)?.round() ?? amount;
   }
 
   Future<CompletedRide> completeTrip(
@@ -122,11 +141,17 @@ class TripService {
     return CancellationPolicy.fromJson(data);
   }
 
-  Future<({String? cashCollectedAt, int finalFare})> confirmCash(String tripId) async {
+  Future<({String? cashCollectedAt, int finalFare, int tipAmount, int cashTotal})> confirmCash(
+    String tripId,
+  ) async {
     final data = await _api.post('/rides/$tripId/confirm-cash');
+    final finalFare = (data['finalFare'] as num?)?.round() ?? 0;
+    final tip = (data['tip_amount'] as num?)?.round() ?? 0;
     return (
       cashCollectedAt: data['cash_collected_at'] as String?,
-      finalFare: (data['finalFare'] as num?)?.round() ?? 0,
+      finalFare: finalFare,
+      tipAmount: tip,
+      cashTotal: (data['cash_total'] as num?)?.round() ?? finalFare + tip,
     );
   }
 

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rawana_core/rawana_core.dart';
-import 'live_location_providers.dart';
 import 'trip_providers.dart';
 import 'auth_provider.dart';
 
@@ -11,16 +10,11 @@ typedef MapPickupCenter = ({double lat, double lng, String? rideTypeId});
 /// Home-screen pickup point (set when GPS resolves).
 final homeMapPickupProvider = StateProvider<MapPickupCenter?>((ref) => null);
 
-/// Pickup point from the active booking draft + live passenger GPS.
+/// Pickup point from the active booking draft.
 final bookingMapPickupProvider = Provider<MapPickupCenter?>((ref) {
   final draft = ref.watch(bookingDraftProvider);
   if (draft == null) return null;
-  final loc = ref.watch(passengerLiveLocationProvider);
-  return (
-    lat: loc?.lat ?? draft.pickupLat,
-    lng: loc?.lng ?? draft.pickupLng,
-    rideTypeId: draft.rideTypeId,
-  );
+  return (lat: draft.pickupLat, lng: draft.pickupLng, rideTypeId: draft.rideTypeId);
 });
 
 /// Pickup point used to load nearby driver markers on the map.

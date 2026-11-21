@@ -9,13 +9,13 @@ import 'services/app_bootstrap.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Load runtime config from `.env` BEFORE Firebase / Supabase so the keys are
-  // available to AppConfig getters during bootstrap.
-  await RawanaEnv.load();
+  AppConfig.assertReleaseConfig();
+  LocationService.autoRequest = false;
   final savedLocale = await LocaleStorage.load();
   RawanaLocale.apply(savedLocale);
   await ensureGoogleMapsScriptLoaded(AppConfig.googleMapsWebApiKey);
-  await initializeFirebaseApp(options: DefaultFirebaseOptions.currentPlatform);
+  final firebaseReady = await initializeFirebaseApp(options: DefaultFirebaseOptions.currentPlatform);
+  await CrashReporting.install(firebaseReady: firebaseReady);
   if (AppConfig.hasSupabase) {
     await Supabase.initialize(
       url: AppConfig.supabaseUrl,
@@ -38,7 +38,6 @@ class PassengerApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     final isRtl = LocaleStorage.isRtl(locale);
     final l10n = lookupAppLocalizations(locale);
-    final textDirection = RawanaLocale.textDirectionOf(locale);
 
     return AppBootstrap(
       child: MaterialApp.router(
@@ -51,10 +50,14 @@ class PassengerApp extends ConsumerWidget {
         localeResolutionCallback: (device, supported) =>
             RawanaLocale.resolutionCallback(locale, device, supported),
         builder: (context, child) {
-          RawanaLocale.apply(locale);
-          return Directionality(
-            textDirection: textDirection,
-            child: child ?? const SizedBox.shrink(),
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            // Large system fonts beyond 1.3x break fixed-height map sheets.
+            data: media.copyWith(textScaler: media.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+            child: Directionality(
+              textDirection: RawanaLocale.textDirectionOf(locale),
+              child: child ?? const SizedBox.shrink(),
+            ),
           );
         },
         routerConfig: appRouter,

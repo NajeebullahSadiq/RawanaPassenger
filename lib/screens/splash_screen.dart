@@ -155,21 +155,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         const SizedBox(height: 28),
                         Text(
                           context.l10n.appName,
-                          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -1.2,
-                              ),
+                          style: context.text.display.copyWith(color: Colors.white, fontSize: 36),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           context.l10n.splashTagline,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.1,
-                          ),
+                          style: context.text.body.copyWith(color: Colors.white70),
                         ),
                       ],
                     ),
@@ -193,12 +184,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     const SizedBox(height: 14),
                     Text(
                       context.l10n.splashLoading,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.6,
-                      ),
+                      style: context.text.caption.copyWith(color: Colors.white.withValues(alpha: 0.7)),
                     ),
                   ],
                 ),

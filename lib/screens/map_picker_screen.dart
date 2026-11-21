@@ -147,7 +147,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
         : _isSaved
             ? context.l10n.useThisLocation
             : context.l10n.useThisDestination;
-    final pinColor = _isPickup ? RawanaColors.primary : RawanaColors.dropoffPin;
+    final pinColor = _isPickup ? RawanaColors.pickupPin : RawanaColors.dropoffPin;
     final addressText = _moving
         ? context.l10n.movingMap
         : _address.isEmpty
@@ -165,7 +165,8 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
         leading: Padding(
           padding: const EdgeInsets.all(8),
           child: RawanaCircleIconButton(
-            icon: LucideIcons.arrowLeft,
+            icon: RawanaIcons.back,
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             onPressed: () => context.pop(),
           ),
         ),
@@ -192,7 +193,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                 ),
                 IgnorePointer(
                   child: Center(
-                    child: _CenterPin(lifted: _moving, color: pinColor, isPickup: _isPickup),
+                    child: RawanaCenterPin(lifted: _moving, color: pinColor, square: !_isPickup),
                   ),
                 ),
                 Positioned(
@@ -244,11 +245,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                                   addressText,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w800,
-                                    height: 1.35,
-                                  ),
+                                  style: context.text.title,
                                 ),
                               ),
                               const SizedBox(height: 6),
@@ -258,10 +255,7 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                                     : _isPickup
                                     ? context.l10n.pickupSpotHint
                                     : context.l10n.tapOrDragMap,
-                                style: const TextStyle(
-                                  color: RawanaColors.onSurfaceMuted,
-                                  fontSize: 12,
-                                ),
+                                style: context.text.caption,
                               ),
                               const SizedBox(height: 16),
                               RawanaPrimaryButton(
@@ -281,55 +275,6 @@ class _MapPickerScreenState extends ConsumerState<MapPickerScreen> {
                 ),
               ],
             ),
-    );
-  }
-}
-
-/// Fixed pin at the map centre. It lifts while the map is moving and drops
-/// back onto the chosen point when the camera settles.
-class _CenterPin extends StatelessWidget {
-  const _CenterPin({
-    required this.lifted,
-    required this.color,
-    required this.isPickup,
-  });
-
-  final bool lifted;
-  final Color color;
-  final bool isPickup;
-
-  static const _pinSize = 44.0;
-
-  @override
-  Widget build(BuildContext context) {
-    // The pin's tip sits exactly on the map centre.
-    return SizedBox(
-      width: _pinSize,
-      height: _pinSize * 2,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 160),
-            width: lifted ? 14 : 8,
-            height: lifted ? 6 : 4,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: lifted ? 0.18 : 0.3),
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          AnimatedSlide(
-            duration: const Duration(milliseconds: 160),
-            curve: Curves.easeOut,
-            offset: Offset(0, lifted ? -0.75 : -0.5),
-            child: Icon(
-              isPickup ? LucideIcons.mapPin : LucideIcons.flag,
-              size: _pinSize,
-              color: color,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

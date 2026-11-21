@@ -7,7 +7,10 @@ import 'otp_channel.dart';
 
 /// Supabase Auth wrapper — email/password (testing) + phone OTP (SMS & WhatsApp).
 class AuthService {
-  AuthService({ApiClient? apiClient}) : _api = apiClient;
+  AuthService({ApiClient? apiClient, this.role = 'passenger'}) : _api = apiClient;
+
+  /// `passenger` or `driver`; sent when verifying WhatsApp OTP sign-ins.
+  final String role;
 
   final ApiClient? _api;
 
@@ -84,6 +87,23 @@ class AuthService {
     }
   }
 
+  /// Finishes an email sign-up after the user tapped the confirmation link.
+  /// Throws [RawanaAuthException] `email_not_verified` while it is still pending.
+  Future<void> completeEmailVerification({String? email, String? password}) async {
+    _requireSupabase();
+    if (session != null) {
+      try {
+        await _client!.auth.refreshSession();
+      } on sb.AuthException catch (e) {
+        throw RawanaAuthException(_mapAuthError(e.message), e.message);
+      }
+      if (!isEmailVerified) throw RawanaAuthException('email_not_verified');
+      return;
+    }
+    if (email == null || password == null) throw RawanaAuthException('email_not_verified');
+    await signInWithEmail(email: email, password: password);
+  }
+
   Future<void> resendEmailVerification(String email) async {
     _requireSupabase();
     await _client!.auth.resend(type: sb.OtpType.signup, email: email.trim());
@@ -144,7 +164,7 @@ class AuthService {
       'phone': phone,
       'channel': channel.value,
       'code': code,
-      'role': AppConfig.defaultAuthRole,
+      'role': role,
     });
     final tokenHash = result['token_hash'] as String?;
     if (tokenHash == null) {
@@ -158,6 +178,67 @@ class AuthService {
 
   Future<void> signOut() async {
     await _client?.auth.signOut();
+  }
+
+  /// SMS reset for an existing phone account. Does not create a user.
+  Future<void> sendPhonePasswordReset(String phoneE164) async {
+    _requireSupabase();
+    final phone = _normalizeAfPhone(phoneE164);
+    try {
+      await _client!.auth.signInWithOtp(
+        phone: phone,
+        shouldCreateUser: false,
+      );
+    } on sb.AuthException catch (e) {
+      throw RawanaAuthException(_mapAuthError(e.message), e.message);
+    }
+  }
+
+  /// Sends an email reset. Returns true when the user should enter a code
+  /// in the app, and false when Supabase only emailed a link.
+  Future<bool> sendEmailPasswordReset(String email) async {
+    _requireSupabase();
+    final trimmed = email.trim();
+    try {
+      await _client!.auth.signInWithOtp(
+        email: trimmed,
+        shouldCreateUser: false,
+      );
+      return true;
+    } on sb.AuthException {
+      try {
+        await _client!.auth.resetPasswordForEmail(trimmed);
+        return false;
+      } on sb.AuthException catch (e) {
+        throw RawanaAuthException(_mapAuthError(e.message), e.message);
+      }
+    }
+  }
+
+  Future<void> verifyEmailRecoveryCode({
+    required String email,
+    required String code,
+  }) async {
+    _requireSupabase();
+    final trimmed = email.trim();
+    try {
+      await _client!.auth.verifyOTP(
+        type: sb.OtpType.email,
+        email: trimmed,
+        token: code,
+      );
+      return;
+    } on sb.AuthException {
+      try {
+        await _client!.auth.verifyOTP(
+          type: sb.OtpType.recovery,
+          email: trimmed,
+          token: code,
+        );
+      } on sb.AuthException catch (e) {
+        throw RawanaAuthException(_mapAuthError(e.message), e.message);
+      }
+    }
   }
 
   Future<void> updatePassword(String newPassword) async {
@@ -193,7 +274,11 @@ class AuthService {
   String _mapAuthError(String? message) {
     if (message == null) return 'auth_error';
     final m = message.toLowerCase();
-    if (m.contains('invalid login')) return 'invalid_credentials';
+    if (m.contains('invalid login') ||
+        m.contains('user not found') ||
+        m.contains('signups not allowed')) {
+      return 'invalid_credentials';
+    }
     if (m.contains('email not confirmed')) return 'email_not_verified';
     if (m.contains('already registered') || m.contains('already been registered') || m.contains('user already exists')) {
       return 'email_already_exists';
@@ -214,7 +299,7 @@ class AuthService {
 
   /// One-tap demo login: sign in, or sign up then sign in. Returns false if Supabase is not configured.
   Future<bool> demoLogin({required String role}) async {
-    if (_client == null) return false;
+    if (_client == null || !AppConfig.enableDemoLogin) return false;
 
     final email = DemoCredentials.emailForRole(role);
     const password = DemoCredentials.mobilePassword;

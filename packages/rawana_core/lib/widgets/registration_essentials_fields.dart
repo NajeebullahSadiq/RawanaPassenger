@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../l10n/l10n_extensions.dart';
 import '../theme/rawana_theme.dart';
 import '../utils/profile_registration.dart';
+import 'ui/rawana_text_field.dart';
 
 /// Shared name, phone, and email fields for passenger/driver registration.
 class RegistrationEssentialsFields extends StatelessWidget {
@@ -14,6 +16,8 @@ class RegistrationEssentialsFields extends StatelessWidget {
     this.phoneReadOnly = false,
     this.phoneVerified = false,
     this.onChanged,
+    this.languageCode,
+    this.onLanguageChanged,
   });
 
   final TextEditingController nameController;
@@ -22,76 +26,74 @@ class RegistrationEssentialsFields extends StatelessWidget {
   final bool phoneReadOnly;
   final bool phoneVerified;
   final VoidCallback? onChanged;
+  final String? languageCode;
+  final ValueChanged<String>? onLanguageChanged;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TextField(
+        RawanaTextField(
           controller: nameController,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          label: l10n.fullNameRequired,
+          prefixIcon: LucideIcons.user,
           textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            labelText: context.l10n.fullNameRequired,
-            prefixIcon: const Icon(Icons.person_outline_rounded, size: 20),
-          ),
+          textInputAction: TextInputAction.next,
+          autofillHints: const [AutofillHints.name],
           onChanged: (_) => onChanged?.call(),
         ),
         const SizedBox(height: 16),
-        if (phoneReadOnly) ...[
-          InputDecorator(
-            decoration: InputDecoration(
-              labelText: context.l10n.phoneNumberRequired,
-              prefixIcon: const Icon(Icons.phone_outlined, size: 20),
-              suffixIcon: phoneVerified
-                  ? const Icon(Icons.verified_rounded, size: 20, color: RawanaColors.success)
-                  : null,
-            ),
-            child: Text(
-              phoneController.text,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
+        if (phoneReadOnly)
+          RawanaTextField(
+            key: ValueKey(phoneController.text),
+            initialValue: phoneController.text,
+            label: l10n.phoneNumberRequired,
+            prefixIcon: LucideIcons.phone,
+            enabled: false,
+            textDirection: TextDirection.ltr,
+            suffix: phoneVerified ? const Icon(LucideIcons.badgeCheck, size: 20, color: RawanaColors.success) : null,
+          )
+        else
+          RawanaPhoneField(
+            controller: phoneController,
+            label: l10n.phoneNumberRequired,
+            hint: l10n.phoneHint,
+            textInputAction: TextInputAction.next,
+            onChanged: (_) => onChanged?.call(),
           ),
-        ] else ...[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        const SizedBox(height: 16),
+        RawanaTextField(
+          controller: emailController,
+          label: l10n.emailOptional,
+          prefixIcon: LucideIcons.mail,
+          keyboardType: TextInputType.emailAddress,
+          textDirection: TextDirection.ltr,
+          autofillHints: const [AutofillHints.email],
+          onChanged: (_) => onChanged?.call(),
+        ),
+        if (languageCode != null && onLanguageChanged != null) ...[
+          const SizedBox(height: 20),
+          Text(l10n.registrationLanguage, style: context.text.label.copyWith(color: RawanaColors.onSurfaceMuted)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
-                decoration: BoxDecoration(
-                  color: RawanaColors.surfaceAlt,
-                  borderRadius: BorderRadius.circular(RawanaSpacing.radiusMd),
+              for (final option in [
+                ('en', l10n.languageEnglish),
+                ('fa', l10n.languageDari),
+                ('ps', l10n.languagePashto),
+              ])
+                ChoiceChip(
+                  label: Text(option.$2),
+                  selected: languageCode == option.$1,
+                  onSelected: (_) => onLanguageChanged!(option.$1),
                 ),
-                child: Text(context.l10n.afPhonePrefix, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  decoration: InputDecoration(
-                    labelText: context.l10n.phoneNumberRequired,
-                    hintText: context.l10n.phoneHint,
-                  ),
-                  onChanged: (_) => onChanged?.call(),
-                ),
-              ),
             ],
           ),
         ],
-        const SizedBox(height: 16),
-        TextField(
-          controller: emailController,
-          keyboardType: TextInputType.emailAddress,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          decoration: InputDecoration(
-            labelText: context.l10n.emailOptional,
-            prefixIcon: const Icon(Icons.mail_outline_rounded, size: 20),
-          ),
-          onChanged: (_) => onChanged?.call(),
-        ),
       ],
     );
   }

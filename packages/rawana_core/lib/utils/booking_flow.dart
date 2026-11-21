@@ -1,13 +1,15 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../config/app_config.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/l10n_extensions.dart';
 import '../models/booking_errors.dart';
 import '../models/trip.dart';
-import '../theme/rawana_theme.dart';
+import '../widgets/show_rawana_error.dart';
+import '../widgets/ui/rawana_action_sheet.dart';
 
 /// What the driver should read when a trip they were on is cancelled.
 String driverCancellationMessage(AppLocalizations l10n, Trip trip) {
@@ -98,32 +100,17 @@ Future<bool> confirmProximityOverride(
   ProximityRequiredException error,
 ) async {
   if (!AppConfig.devModeHint) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(proximityErrorMessage(context, error))),
-    );
+    showRawanaToast(context, proximityErrorMessage(context, error), error: true, icon: LucideIcons.mapPinOff);
     return false;
   }
   final l10n = context.l10n;
   final distance = '${error.distanceMeters ?? 0}';
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(l10n.continueAnyway),
-      content: Text(l10n.tooFarContinueAnyway(distance)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: Text(l10n.keepDriving),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: Text(
-            l10n.continueAnyway,
-            style: const TextStyle(color: RawanaColors.primary),
-          ),
-        ),
-      ],
-    ),
+  return RawanaActionSheet.confirm(
+    context,
+    title: l10n.continueAnyway,
+    message: l10n.tooFarContinueAnyway(distance),
+    confirmLabel: l10n.continueAnyway,
+    cancelLabel: l10n.keepDriving,
+    icon: LucideIcons.mapPinOff,
   );
-  return ok == true;
 }

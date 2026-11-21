@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:rawana_core/rawana_core.dart';
 import '../providers/locale_provider.dart';
@@ -19,29 +18,20 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _uploadingPhoto = false;
 
-  String? _mimeForFileName(String name) {
-    final lower = name.toLowerCase();
-    if (lower.endsWith('.png')) return 'image/png';
-    if (lower.endsWith('.webp')) return 'image/webp';
-    return 'image/jpeg';
-  }
-
   Future<void> _pickPhoto() async {
-    final image = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (image == null) return;
+    final image = await pickRawanaImage(context, frontCamera: true);
+    if (image == null || !mounted) return;
     setState(() => _uploadingPhoto = true);
     try {
-      final fileName = image.name.isNotEmpty ? image.name : 'photo.jpg';
-      final url = await ref.read(passengerServiceProvider).uploadProfilePhoto(
-            bytes: await image.readAsBytes(),
-            fileName: fileName,
-            contentType: _mimeForFileName(fileName),
-          );
-      await ref.read(passengerServiceProvider).updateProfile(profilePhotoUrl: url);
+      final service = ref.read(passengerServiceProvider);
+      final url = await service.uploadProfilePhoto(
+        bytes: await image.readAsBytes(),
+        fileName: image.name.isNotEmpty ? image.name : 'photo.jpg',
+        contentType: image.mimeType,
+      );
+      await service.updateProfile(profilePhotoUrl: url);
       ref.invalidate(passengerProfileProvider);
+      if (mounted) showRawanaToast(context, context.l10n.profileUpdated, icon: LucideIcons.circleCheck);
     } catch (e) {
       if (mounted) showRawanaError(context, e);
     } finally {
@@ -50,44 +40,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _editName(String current) async {
-    final controller = TextEditingController(text: current);
-    final next = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(ctx.l10n.editName),
-        content: TextField(
-          controller: controller,
-          textCapitalization: TextCapitalization.words,
-          autofocus: true,
-          decoration: InputDecoration(labelText: ctx.l10n.fullName),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(ctx.l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: Text(ctx.l10n.save),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (next == null || next.length < 2) return;
+    final next = await RawanaActionSheet.custom<String>(context, _EditNameSheet(initial: current));
+    if (next == null || next == current || !mounted) return;
     try {
       await ref.read(passengerServiceProvider).updateProfile(name: next);
       ref.invalidate(passengerProfileProvider);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.profileUpdated)),
-        );
-      }
+      if (mounted) showRawanaToast(context, context.l10n.profileUpdated, icon: LucideIcons.circleCheck);
     } catch (e) {
-      if (mounted) {
-        showRawanaError(context, e);
-      }
+      if (mounted) showRawanaError(context, e);
     }
+  }
+
+  Future<void> _signOut() async {
+    final l10n = context.l10n;
+    final ok = await RawanaActionSheet.confirm(
+      context,
+      title: l10n.signOutQuestion,
+      message: l10n.signOutNeedSignBackIn,
+      confirmLabel: l10n.logOut,
+      cancelLabel: l10n.cancel,
+      destructive: true,
+      icon: LucideIcons.logOut,
+    );
+    if (!ok) return;
+    await ref.read(authServiceProvider).signOut();
+    if (mounted) context.go('/auth');
   }
 
   String _memberLabel(Map<String, dynamic> profile) {
@@ -99,253 +76,133 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final profileAsync = ref.watch(passengerProfileProvider);
-    return Scaffold(
-      backgroundColor: RawanaColors.surface,
-      appBar: AppBar(
-        title: Text(context.l10n.account),
-        centerTitle: true,
-      ),
-      body: profileAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(context.l10n.friendlyApiError(e))),
-        data: (profile) {
-          final name = profile['name'] as String? ?? context.l10n.passengerFallbackName;
+    return RawanaScaffold(
+      title: l10n.account,
+      body: RawanaAsyncBody<Map<String, dynamic>>(
+        data: profileAsync.valueOrNull,
+        error: profileAsync.error,
+        onRetry: () => ref.invalidate(passengerProfileProvider),
+        onRefresh: () => ref.refresh(passengerProfileProvider.future),
+        skeleton: const RawanaSkeletonList(count: 5),
+        builder: (context, profile) {
+          final name = (profile['name'] as String?)?.trim();
+          final displayName = name == null || name.isEmpty ? l10n.passengerFallbackName : name;
           final phone = profile['phone'] as String? ?? '';
-          final email = profile['email'] as String? ?? '';
-          final photoUrl = profile['profile_photo_url'] as String?;
+          final email = registrationEmailForDisplay(profile['email'] as String?);
           final tripCount = profile['trip_count'];
           final rating = profile['rating_average'];
           return ListView(
-            padding: const EdgeInsets.only(bottom: 32),
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: RawanaScaffold.pagePadding,
             children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: RawanaSurfaceCard(
-                  padding: const EdgeInsets.all(20),
-                  gradient: RawanaColors.inkGradient,
-                  shadows: const [],
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: _uploadingPhoto ? null : _pickPhoto,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: 64,
-                                  height: 64,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.14),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                    image: photoUrl != null && photoUrl.isNotEmpty
-                                        ? DecorationImage(
-                                            image: NetworkImage(photoUrl),
-                                            fit: BoxFit.cover,
-                                          )
-                                        : null,
-                                  ),
-                                  child: photoUrl == null || photoUrl.isEmpty
-                                      ? const Icon(LucideIcons.user, color: Colors.white, size: 28)
-                                      : null,
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  bottom: 0,
-                                  child: Container(
-                                    width: 22,
-                                    height: 22,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: _uploadingPhoto
-                                        ? const Padding(
-                                            padding: EdgeInsets.all(4),
-                                            child: CircularProgressIndicator(strokeWidth: 2),
-                                          )
-                                        : const Icon(LucideIcons.camera, size: 12, color: RawanaColors.primary),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        name,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 20,
-                                          letterSpacing: -0.4,
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () => _editName(name),
-                                      icon: const Icon(LucideIcons.pencil, color: Colors.white70, size: 16),
-                                      tooltip: context.l10n.editName,
-                                    ),
-                                  ],
-                                ),
-                                if (phone.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(LucideIcons.phone, color: Colors.white70, size: 12),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        phone,
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.85),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ] else if (email.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(LucideIcons.mail, color: Colors.white70, size: 12),
-                                      const SizedBox(width: 6),
-                                      Flexible(
-                                        child: Text(
-                                          email,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Colors.white.withValues(alpha: 0.85),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _miniStat(
-                              context.l10n.tripsStat,
-                              tripCount == null ? '—' : '$tripCount',
-                            ),
-                          ),
-                          Container(width: 1, height: 28, color: Colors.white.withValues(alpha: 0.2)),
-                          Expanded(
-                            child: _miniStat(
-                              context.l10n.ratingStat,
-                              rating is num ? rating.toStringAsFixed(1) : '—',
-                            ),
-                          ),
-                          Container(width: 1, height: 28, color: Colors.white.withValues(alpha: 0.2)),
-                          Expanded(child: _miniStat(context.l10n.memberStat, _memberLabel(profile))),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              RawanaSectionLabel(context.l10n.preferences),
-              _section([
-                _menuItem(
-                  icon: LucideIcons.globe,
-                  title: context.l10n.language,
-                  subtitle: context.l10n.languageName(ref.watch(localeProvider).languageCode),
-                  onTap: () => context.push('/language'),
-                ),
-                _menuItem(
-                  icon: LucideIcons.mapPin,
-                  title: context.l10n.savedAddresses,
-                  onTap: () => context.push('/saved-addresses'),
-                ),
-                _menuItem(
-                  icon: LucideIcons.bell,
-                  title: context.l10n.notifications,
-                  onTap: () => context.push('/notifications'),
-                ),
-                _menuItem(
-                  icon: LucideIcons.calendarClock,
-                  title: context.l10n.scheduledRides,
-                  onTap: () => context.push('/scheduled-rides'),
-                ),
-                _menuItem(
-                  icon: LucideIcons.clock,
-                  title: context.l10n.rideHistory,
-                  onTap: () => context.push('/history'),
-                ),
-              ]),
-              RawanaSectionLabel(context.l10n.safetyAndSupport),
-              _section([
-                _menuItem(
-                  icon: LucideIcons.shieldAlert,
-                  title: context.l10n.emergencyContacts,
-                  iconColor: RawanaColors.warning,
-                  onTap: () => context.push('/emergency-contacts'),
-                ),
-                _menuItem(
-                  icon: LucideIcons.lifeBuoy,
-                  title: context.l10n.helpCentre,
-                  onTap: () => context.push('/help'),
-                ),
-              ]),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: AccountPrivacyActions(
-                  onExport: () => ref.read(passengerServiceProvider).exportAccountData(),
-                  onDelete: () async {
-                    await ref.read(passengerServiceProvider).deleteAccount();
-                    await ref.read(authServiceProvider).signOut();
-                    if (context.mounted) context.go('/auth');
-                  },
-                ),
+              _ProfileHeader(
+                name: displayName,
+                contact: phone.isNotEmpty ? phone : email,
+                contactIcon: phone.isNotEmpty ? LucideIcons.phone : LucideIcons.mail,
+                photoUrl: profile['profile_photo_url'] as String?,
+                uploading: _uploadingPhoto,
+                onPhoto: _uploadingPhoto ? () {} : _pickPhoto,
+                onEditName: () => _editName(name ?? ''),
+                stats: [
+                  (l10n.tripsStat, tripCount == null ? '—' : '$tripCount'),
+                  (l10n.ratingStat, rating is num ? rating.toStringAsFixed(1) : '—'),
+                  (l10n.memberStat, _memberLabel(profile)),
+                ],
               ),
               const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    await ref.read(authServiceProvider).signOut();
-                    if (context.mounted) context.go('/auth');
-                  },
-                  icon: const Icon(LucideIcons.logOut, size: 18),
-                  label: Text(context.l10n.logOut),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: RawanaColors.error,
-                    side: BorderSide(color: RawanaColors.error.withValues(alpha: 0.4)),
-                    backgroundColor: Colors.white,
+              RawanaSettingsSection(
+                title: l10n.preferences,
+                children: [
+                  RawanaSettingsTile(
+                    icon: LucideIcons.globe,
+                    title: l10n.language,
+                    value: l10n.languageName(ref.watch(localeProvider).languageCode),
+                    onTap: () => context.push('/language'),
                   ),
-                ),
+                  RawanaSettingsTile(
+                    icon: LucideIcons.mapPin,
+                    title: l10n.savedAddresses,
+                    onTap: () => context.push('/saved-addresses'),
+                  ),
+                  RawanaSettingsTile(
+                    icon: LucideIcons.bell,
+                    title: l10n.notifications,
+                    onTap: () => context.push('/notifications'),
+                  ),
+                  RawanaSettingsTile(
+                    icon: LucideIcons.calendarClock,
+                    title: l10n.scheduledRides,
+                    onTap: () => context.push('/scheduled-rides'),
+                  ),
+                  RawanaSettingsTile(
+                    icon: LucideIcons.history,
+                    title: l10n.rideHistory,
+                    onTap: () => context.push('/history'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 20),
+              RawanaSettingsSection(
+                title: l10n.safetyAndSupport,
+                children: [
+                  RawanaSettingsTile(
+                    icon: LucideIcons.shieldAlert,
+                    title: l10n.emergencyContacts,
+                    subtitle: l10n.emergencyContactsHint,
+                    iconColor: RawanaColors.warning,
+                    onTap: () => context.push('/emergency-contacts'),
+                  ),
+                  RawanaSettingsTile(
+                    icon: LucideIcons.lifeBuoy,
+                    title: l10n.helpCentre,
+                    onTap: () => context.push('/help'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              RawanaSettingsSection(
+                title: l10n.legalSection,
+                children: [
+                  RawanaSettingsTile(
+                    icon: LucideIcons.fileText,
+                    title: l10n.termsOfService,
+                    onTap: () => context.push('/terms'),
+                  ),
+                  RawanaSettingsTile(
+                    icon: LucideIcons.lock,
+                    title: l10n.privacyPolicy,
+                    onTap: () => context.push('/privacy-policy'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              AccountPrivacyActions(
+                onExport: () => ref.read(passengerServiceProvider).exportAccountData(),
+                onDelete: () async {
+                  await ref.read(passengerServiceProvider).deleteAccount();
+                  await ref.read(authServiceProvider).signOut();
+                  if (context.mounted) context.go('/auth');
+                },
+              ),
+              const SizedBox(height: 20),
+              RawanaSettingsSection(
+                children: [
+                  RawanaSettingsTile(
+                    icon: LucideIcons.logOut,
+                    title: l10n.logOut,
+                    destructive: true,
+                    showChevron: false,
+                    onTap: _signOut,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               Center(
                 child: Text(
-                  context.l10n.appVersionFooter,
-                  style: TextStyle(
-                    color: RawanaColors.onSurfaceFaint,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.6,
-                  ),
+                  l10n.appVersionFooter,
+                  style: context.text.caption.copyWith(color: RawanaColors.onSurfaceFaint, letterSpacing: 0.6),
                 ),
               ),
             ],
@@ -354,85 +211,167 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
     );
   }
+}
 
-  Widget _miniStat(String label, String value) => Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w800,
-              fontSize: 18,
-              letterSpacing: -0.3,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.7),
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ],
-      );
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({
+    required this.name,
+    required this.contact,
+    required this.contactIcon,
+    required this.photoUrl,
+    required this.uploading,
+    required this.onPhoto,
+    required this.onEditName,
+    required this.stats,
+  });
 
-  Widget _section(List<Widget> children) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(RawanaSpacing.radiusLg),
-        border: Border.all(color: RawanaColors.divider),
-      ),
-      clipBehavior: Clip.antiAlias,
+  final String name;
+  final String contact;
+  final IconData contactIcon;
+  final String? photoUrl;
+  final bool uploading;
+  final VoidCallback onPhoto;
+  final VoidCallback onEditName;
+  final List<(String, String)> stats;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = Colors.white.withValues(alpha: 0.8);
+    return RawanaSurfaceCard(
+      padding: const EdgeInsets.all(20),
+      gradient: RawanaColors.inkGradient,
+      shadows: RawanaShadows.low,
       child: Column(
         children: [
-          for (int i = 0; i < children.length; i++) ...[
-            children[i],
-            if (i < children.length - 1)
-              const Padding(
-                padding: EdgeInsets.only(left: 64),
-                child: Divider(height: 1),
+          Row(
+            children: [
+              RawanaAvatarPicker(
+                name: name,
+                photoUrl: photoUrl,
+                uploading: uploading,
+                size: 68,
+                semanticLabel: photoUrl == null ? context.l10n.addPhoto : context.l10n.changePhoto,
+                onTap: onPhoto,
               ),
-          ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.text.headline.copyWith(color: Colors.white),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: onEditName,
+                          tooltip: context.l10n.editName,
+                          visualDensity: VisualDensity.compact,
+                          icon: Icon(LucideIcons.pencil, color: muted, size: 16),
+                        ),
+                      ],
+                    ),
+                    if (contact.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(contactIcon, color: muted, size: 13),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              contact,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textDirection: TextDirection.ltr,
+                              style: context.text.caption.copyWith(color: muted),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              for (var i = 0; i < stats.length; i++) ...[
+                if (i > 0) Container(width: 1, height: 28, color: Colors.white.withValues(alpha: 0.2)),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(stats[i].$2, style: context.text.title.copyWith(color: Colors.white)),
+                      const SizedBox(height: 2),
+                      Text(
+                        stats[i].$1,
+                        style: context.text.label.copyWith(color: Colors.white.withValues(alpha: 0.7)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _menuItem({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    Color? iconColor,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      onTap: onTap,
-      leading: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: (iconColor ?? RawanaColors.primary).withValues(alpha: 0.10),
-          borderRadius: BorderRadius.circular(11),
-        ),
-        child: Icon(icon, size: 18, color: iconColor ?? RawanaColors.primary),
-      ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-      trailing: Row(
+class _EditNameSheet extends StatefulWidget {
+  const _EditNameSheet({required this.initial});
+
+  final String initial;
+
+  @override
+  State<_EditNameSheet> createState() => _EditNameSheetState();
+}
+
+class _EditNameSheetState extends State<_EditNameSheet> {
+  late final _controller = TextEditingController(text: widget.initial);
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.of(context).pop(_controller.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Form(
+      key: _formKey,
+      child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (subtitle != null)
-            Text(
-              subtitle,
-              style: const TextStyle(color: RawanaColors.onSurfaceMuted, fontWeight: FontWeight.w700, fontSize: 13),
-            ),
-          const SizedBox(width: 8),
-          const Icon(LucideIcons.chevronRight, size: 18, color: RawanaColors.onSurfaceFaint),
+          Text(l10n.editName, style: context.text.headline),
+          const SizedBox(height: 16),
+          RawanaTextField(
+            controller: _controller,
+            label: l10n.fullName,
+            prefixIcon: LucideIcons.user,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.name],
+            maxLength: 60,
+            validator: (v) => (v ?? '').trim().length < 2 ? l10n.nameTooShort : null,
+            onSubmitted: (_) => _save(),
+          ),
+          const SizedBox(height: 16),
+          RawanaPrimaryButton(label: l10n.save, onPressed: _save),
         ],
       ),
     );
